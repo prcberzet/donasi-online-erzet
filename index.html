@@ -392,7 +392,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700 mb-1">ID Campaign *</label>
-                            <input type="text" id="add-id" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                            <div class="flex gap-2">
+                                <input type="text" id="add-id" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                                <button type="button" onclick="autoFillCampaignData('add')" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-4 py-2 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap">Tarik Data</button>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">Masukkan ID lalu klik Tarik Data untuk mengisi form otomatis dari Ringkasan Donasi.</p>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700 mb-1">Nama Campaign *</label>
@@ -478,7 +482,10 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700 mb-1">ID Campaign *</label>
-                            <input type="text" id="edit-id" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                            <div class="flex gap-2">
+                                <input type="text" id="edit-id" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                                <button type="button" onclick="autoFillCampaignData('edit')" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-4 py-2 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap">Tarik Data</button>
+                            </div>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700 mb-1">Nama Campaign *</label>
@@ -1100,8 +1107,16 @@
                                 <span class="font-semibold ${docColorClass}">${docStatus}</span>
                             </div>
                             <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Donasi Masuk</span>
+                                <span class="font-semibold text-slate-800">${campaign.donasiMasuk > 0 ? formatRupiah(campaign.donasiMasuk) : 'Rp 0'}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
                                 <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Total Cair</span>
                                 <span class="font-semibold text-slate-800">${totalDisbursed > 0 ? formatRupiah(totalDisbursed) : 'Rp 0'}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs mt-1 pt-2 border-t border-slate-200">
+                                <span class="text-slate-600 font-bold flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Saldo</span>
+                                <span class="font-bold ${(campaign.donasiMasuk || 0) - totalDisbursed < 0 ? 'text-red-600' : 'text-amber-600'}">${formatRupiah((campaign.donasiMasuk || 0) - totalDisbursed)}</span>
                             </div>
                         </div>
                         <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
@@ -1254,6 +1269,41 @@
             setTimeout(() => openModalAnimation('edit-modal', 'edit-modal-box'), 300);
         }
 
+        // Fungsi Autofill menggunakan ID Campaign (Konsep VLOOKUP)
+        function autoFillCampaignData(mode) {
+            const idInput = document.getElementById(`${mode}-id`).value.trim();
+            if (!idInput) {
+                alert("Silakan masukkan ID Campaign terlebih dahulu.");
+                return;
+            }
+
+            // Gabungkan data donasi dan transaksi untuk mendapatkan capaian lengkap
+            const combinedMap = {};
+            fullDataDonasi.forEach(d => { combinedMap[d.id] = { ...d, salur: 0 }; });
+            fullDataTransaksi.forEach(t => {
+                if (combinedMap[t.id]) combinedMap[t.id].salur += t.totalDonasi;
+                else combinedMap[t.id] = { id: t.id, campaign: t.programAkad, pic: 'System', transaksi: 0, salur: t.totalDonasi };
+            });
+
+            const campaignData = combinedMap[idInput];
+
+            if (campaignData) {
+                // Isi form dengan data yang ditemukan
+                document.getElementById(`${mode}-name`).value = campaignData.campaign !== '-' ? campaignData.campaign : '';
+                
+                // Set dataset donasiMasuk di form untuk digunakan saat disubmit
+                document.getElementById(`${mode}-campaign-form`).dataset.donasiMasuk = campaignData.transaksi;
+
+                if(campaignData.pic && campaignData.pic !== '-' && campaignData.pic !== 'System') {
+                    document.getElementById(`${mode}-pic`).value = campaignData.pic;
+                }
+
+                alert(`Data ditemukan!\nCapaian Donasi: ${formatRupiah(campaignData.transaksi)}\nTransaksi Salur (Excel): ${formatRupiah(campaignData.salur)}`);
+            } else {
+                alert("Data ID Campaign tidak ditemukan di Ringkasan Donasi.");
+            }
+        }
+
         document.getElementById('add-campaign-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const idInput = document.getElementById('add-id').value.trim();
@@ -1265,11 +1315,28 @@
             
             const posterInput = document.getElementById('add-poster');
             const posterUrlValue = (posterInput.files && posterInput.files[0]) ? await fileToBase64(posterInput.files[0]) : "";
+            
+            // Ambil nominal donasi masuk dari atribut dataset jika ada autofill
+            const donasiMasuk = parseFloat(this.dataset.donasiMasuk) || 0;
+
             const newCamp = {
-                id: idInput, name: document.getElementById('add-name').value, posterUrl: posterUrlValue, link: document.getElementById('add-link').value, releaseDate: document.getElementById('add-date').value, partnershipStatus: document.getElementById('add-status').value, location: document.getElementById('add-location').value, address: document.getElementById('add-address').value, pic: document.getElementById('add-pic').value, docLink: document.getElementById('add-doclink').value, disbursements: [],
+                id: idInput, 
+                name: document.getElementById('add-name').value, 
+                posterUrl: posterUrlValue, 
+                link: document.getElementById('add-link').value, 
+                releaseDate: document.getElementById('add-date').value, 
+                partnershipStatus: document.getElementById('add-status').value, 
+                location: document.getElementById('add-location').value, 
+                address: document.getElementById('add-address').value, 
+                pic: document.getElementById('add-pic').value, 
+                docLink: document.getElementById('add-doclink').value, 
+                disbursements: [],
+                donasiMasuk: donasiMasuk, // Simpan nilai donasi awal
                 documents: { mou: document.getElementById('add-mou-check').checked, consentLetter: document.getElementById('add-consent-check').checked, proposal: document.getElementById('add-proposal-check').checked }
             };
             campaigns.unshift(newCamp); await saveCampaignsToDB(); renderCampaigns(); closeModal('add-modal', 'add-modal-box');
+            // Bersihkan dataset setelah submit
+            delete this.dataset.donasiMasuk;
         });
 
         document.getElementById('edit-campaign-form').addEventListener('submit', async function(e) {
@@ -1287,14 +1354,31 @@
             const posterInput = document.getElementById('edit-poster');
             const posterUrlValue = (posterInput.files && posterInput.files[0]) ? await fileToBase64(posterInput.files[0]) : campaigns[idx].posterUrl;
             
+            // Gunakan nilai donasi baru jika ditarik ulang, jika tidak gunakan nilai lama
+            const donasiMasukBaru = this.dataset.donasiMasuk !== undefined ? parseFloat(this.dataset.donasiMasuk) : campaigns[idx].donasiMasuk;
+
             campaigns[idx] = { 
                 ...campaigns[idx], 
                 id: newIdInput, // Update the ID
-                name: document.getElementById('edit-name').value, posterUrl: posterUrlValue, link: document.getElementById('edit-link').value, releaseDate: document.getElementById('edit-date').value, partnershipStatus: document.getElementById('edit-status').value, location: document.getElementById('edit-location').value, address: document.getElementById('edit-address').value, pic: document.getElementById('edit-pic').value, docLink: document.getElementById('edit-doclink').value, documents: { mou: document.getElementById('edit-mou-check').checked, consentLetter: document.getElementById('edit-consent-check').checked, proposal: document.getElementById('edit-proposal-check').checked } };
+                name: document.getElementById('edit-name').value, 
+                posterUrl: posterUrlValue, 
+                link: document.getElementById('edit-link').value, 
+                releaseDate: document.getElementById('edit-date').value, 
+                partnershipStatus: document.getElementById('edit-status').value, 
+                location: document.getElementById('edit-location').value, 
+                address: document.getElementById('edit-address').value, 
+                pic: document.getElementById('edit-pic').value, 
+                docLink: document.getElementById('edit-doclink').value, 
+                donasiMasuk: donasiMasukBaru || 0, // Update nilai donasi
+                documents: { mou: document.getElementById('edit-mou-check').checked, consentLetter: document.getElementById('edit-consent-check').checked, proposal: document.getElementById('edit-proposal-check').checked } 
+            };
             
             currentCampaignId = newIdInput; // Update current ID reference
             
             await saveCampaignsToDB(); renderCampaigns(); closeModal('edit-modal', 'edit-modal-box'); setTimeout(() => openModal(currentCampaignId), 300);
+            
+            // Bersihkan dataset setelah submit
+            delete this.dataset.donasiMasuk;
         });
 
         window.addEventListener('click', function(e) {
