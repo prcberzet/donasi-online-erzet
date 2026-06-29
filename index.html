@@ -73,7 +73,7 @@
                     <span>Database Master</span>
                 </button>
                 <button onclick="clearStoredData()" class="text-[11px] bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-1.5 rounded-full transition-colors font-bold uppercase tracking-wider">Hapus Data</button>
-                <div id="lastUpdate" class="text-xs text-slate-500 font-medium px-2">Menyambungkan ke Server...</div>
+                <div id="lastUpdate" class="text-xs text-slate-500 font-medium px-2 py-1 rounded-md transition-colors duration-300">Menyambungkan ke Server...</div>
             </div>
         </div>
         
@@ -717,9 +717,15 @@
             } catch (error) {
                 console.error("Firebase Auth Error:", error);
                 
+                const updateEl = document.getElementById('lastUpdate');
+                updateEl.classList.remove('text-slate-500');
+                updateEl.classList.add('text-red-500', 'font-bold');
+
                 if (error.code === 'auth/configuration-not-found' || error.code === 'auth/operation-not-allowed') {
+                    updateEl.innerText = "Error: Auth Anonim Nonaktif";
                     alert("Firebase Error: Autentikasi Anonim (Anonymous) belum diaktifkan. Silakan buka Firebase Console -> Authentication -> tab Sign-in method -> Aktifkan opsi 'Anonymous'.");
                 } else {
+                    updateEl.innerText = "Gagal Terhubung (Cek Internet)";
                     alert("Gagal terhubung ke Firebase. Pastikan koneksi internet stabil atau cek konfigurasi API Key Anda. Detail error: " + error.message);
                 }
             }
@@ -731,6 +737,12 @@
             if (user && !isFirebaseInitialized) {
                 currentUser = user;
                 isFirebaseInitialized = true;
+                
+                const updateEl = document.getElementById('lastUpdate');
+                updateEl.classList.remove('text-red-500');
+                updateEl.classList.add('text-emerald-600', 'font-bold');
+                updateEl.innerText = "Menarik Data dari Server...";
+
                 setupFirestoreListeners(user.uid);
             }
         });
@@ -797,7 +809,6 @@
         // FIRESTORE REALTIME LISTENERS
         // ==========================================
         function setupFirestoreListeners(uid) {
-            // PERUBAHAN: Gunakan path 'public' -> 'data' agar data tersinkron untuk semua orang/pengunjung di GitHub Pages
             dashboardRef = collection(db, 'artifacts', appIdToUse, 'public', 'data', 'dashboardData');
 
             // Dengarkan Perubahan Tab 1 (Ringkasan Donasi & Master)
@@ -810,11 +821,23 @@
                     donasiPeriodText = data.donasiPeriodText || "";
                     
                     const st = data.lastUpdate;
-                    if(st) document.getElementById('lastUpdate').innerText = "Realtime Update: " + new Date(st).toLocaleTimeString();
+                    if(st) {
+                        const updateEl = document.getElementById('lastUpdate');
+                        updateEl.innerText = "Realtime Update: " + new Date(st).toLocaleTimeString();
+                        updateEl.classList.remove('text-red-500');
+                        updateEl.classList.add('text-slate-500');
+                        updateEl.classList.remove('font-bold');
+                    }
+                } else {
+                    document.getElementById('lastUpdate').innerText = "Terhubung (Database Kosong)";
                 }
                 updateUnifiedDashboard();
                 renderMasterTable();
-            }, (err) => console.error(err));
+            }, (err) => {
+                console.error(err);
+                document.getElementById('lastUpdate').innerText = "Error Akses Database (Cek Rules)";
+                document.getElementById('lastUpdate').classList.add('text-red-500', 'font-bold');
+            });
 
             // Dengarkan Perubahan Tab 2 (Campaigns)
             onSnapshot(doc(dashboardRef, 'tab2_campaigns'), (docSnap) => {
