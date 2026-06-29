@@ -684,7 +684,7 @@
     <!-- Script menggunakan ES Module agar bisa mengimpor Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Konfigurasi dari Anda atau fallback ke konfigurasi Canvas dinamis
@@ -716,7 +716,12 @@
                 }
             } catch (error) {
                 console.error("Firebase Auth Error:", error);
-                alert("Gagal terhubung ke Firebase. Pastikan aturan (rules) Firestore Anda memperbolehkan akses pembacaan dan penulisan (Test Mode) dan koneksi internet Anda stabil.");
+                
+                if (error.code === 'auth/configuration-not-found' || error.code === 'auth/operation-not-allowed') {
+                    alert("Firebase Error: Autentikasi Anonim (Anonymous) belum diaktifkan. Silakan buka Firebase Console -> Authentication -> tab Sign-in method -> Aktifkan opsi 'Anonymous'.");
+                } else {
+                    alert("Gagal terhubung ke Firebase. Pastikan koneksi internet stabil atau cek konfigurasi API Key Anda. Detail error: " + error.message);
+                }
             }
         };
 
@@ -1225,8 +1230,16 @@
                                 <span class="font-semibold ${docColorClass}">${docStatus}</span>
                             </div>
                             <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Donasi Masuk</span>
+                                <span class="font-semibold text-slate-800">${campaign.donasiMasuk > 0 ? formatRupiah(campaign.donasiMasuk) : 'Rp 0'}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
                                 <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Total Cair</span>
                                 <span class="font-semibold text-slate-800">${totalDisbursed > 0 ? formatRupiah(totalDisbursed) : 'Rp 0'}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs mt-1 pt-2 border-t border-slate-200">
+                                <span class="text-slate-600 font-bold flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Saldo</span>
+                                <span class="font-bold ${(campaign.donasiMasuk || 0) - totalDisbursed < 0 ? 'text-red-600' : 'text-amber-600'}">${formatRupiah((campaign.donasiMasuk || 0) - totalDisbursed)}</span>
                             </div>
                         </div>
                         <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
