@@ -405,7 +405,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <form id="add-campaign-form" onsubmit="handleAddCampaign(event)" class="flex flex-col flex-1 overflow-hidden">
+            <form id="add-campaign-form" class="flex flex-col flex-1 overflow-hidden">
                 <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
@@ -495,7 +495,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <form id="edit-campaign-form" onsubmit="handleEditCampaign(event)" class="flex flex-col flex-1 overflow-hidden">
+            <form id="edit-campaign-form" class="flex flex-col flex-1 overflow-hidden">
                 <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
@@ -584,7 +584,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <form id="add-disbursement-form" onsubmit="handleAddDisbursement(event)" class="flex flex-col flex-1 overflow-hidden">
+            <form id="add-disbursement-form" class="flex flex-col flex-1 overflow-hidden">
                 <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Pencairan *</label>
@@ -616,7 +616,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <form id="edit-disbursement-form" onsubmit="handleEditDisbursement(event)" class="flex flex-col flex-1 overflow-hidden">
+            <form id="edit-disbursement-form" class="flex flex-col flex-1 overflow-hidden">
                 <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Pencairan *</label>
@@ -1594,12 +1594,113 @@
             openEditModal,
             autoFillCampaignData,
             clearStoredData,
-            handleLinkClick,
-            handleAddCampaign,
-            handleEditCampaign,
-            handleAddDisbursement,
-            handleEditDisbursement
+            handleLinkClick
         });
+
+        // Form Submit Handlers
+        async function handleAddCampaign(e) {
+            e.preventDefault();
+            const idInput = document.getElementById('add-id').value.trim();
+            if (campaigns.some(c => String(c.id) === idInput)) {
+                alert("ID Campaign sudah digunakan. Silakan gunakan ID lain.");
+                return;
+            }
+            
+            const formEl = document.getElementById('add-campaign-form');
+            const posterInput = document.getElementById('add-poster');
+            const posterUrlValue = (posterInput.files && posterInput.files[0]) ? await fileToBase64(posterInput.files[0]) : "";
+            const donasiMasuk = parseFloat(formEl.dataset.donasiMasuk) || 0;
+
+            const newCamp = {
+                id: idInput, 
+                name: document.getElementById('add-name').value, 
+                posterUrl: posterUrlValue, 
+                link: document.getElementById('add-link').value, 
+                releaseDate: document.getElementById('add-date').value, 
+                partnershipStatus: document.getElementById('add-status').value, 
+                location: document.getElementById('add-location').value, 
+                address: document.getElementById('add-address').value, 
+                pic: document.getElementById('add-pic').value, 
+                docLink: document.getElementById('add-doclink').value, 
+                disbursements: [],
+                donasiMasuk: donasiMasuk,
+                documents: { mou: document.getElementById('add-mou-check').checked, consentLetter: document.getElementById('add-consent-check').checked, proposal: document.getElementById('add-proposal-check').checked }
+            };
+            
+            campaigns.unshift(newCamp); 
+            await saveCampaignsToFirestore(); 
+            renderCampaigns();
+            closeModal('add-modal', 'add-modal-box');
+            delete formEl.dataset.donasiMasuk;
+        }
+
+        async function handleEditCampaign(e) {
+            e.preventDefault();
+            const idx = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
+            if (idx === -1) return;
+            
+            const newIdInput = document.getElementById('edit-id').value.trim();
+            if (String(currentCampaignId) !== newIdInput && campaigns.some(c => String(c.id) === newIdInput)) {
+                 alert("ID Campaign sudah digunakan oleh campaign lain. Silakan gunakan ID unik.");
+                 return;
+            }
+
+            const formEl = document.getElementById('edit-campaign-form');
+            const posterInput = document.getElementById('edit-poster');
+            const posterUrlValue = (posterInput.files && posterInput.files[0]) ? await fileToBase64(posterInput.files[0]) : campaigns[idx].posterUrl;
+            const donasiMasukBaru = formEl.dataset.donasiMasuk !== undefined ? parseFloat(formEl.dataset.donasiMasuk) : campaigns[idx].donasiMasuk;
+
+            campaigns[idx] = { 
+                ...campaigns[idx], 
+                id: newIdInput,
+                name: document.getElementById('edit-name').value, 
+                posterUrl: posterUrlValue, 
+                link: document.getElementById('edit-link').value, 
+                releaseDate: document.getElementById('edit-date').value, 
+                partnershipStatus: document.getElementById('edit-status').value, 
+                location: document.getElementById('edit-location').value, 
+                address: document.getElementById('edit-address').value, 
+                pic: document.getElementById('edit-pic').value, 
+                docLink: document.getElementById('edit-doclink').value, 
+                donasiMasuk: donasiMasukBaru || 0,
+                documents: { mou: document.getElementById('edit-mou-check').checked, consentLetter: document.getElementById('edit-consent-check').checked, proposal: document.getElementById('edit-proposal-check').checked } 
+            };
+            
+            currentCampaignId = newIdInput;
+            await saveCampaignsToFirestore(); 
+            renderCampaigns();
+            closeModal('edit-modal', 'edit-modal-box'); 
+            setTimeout(() => openModal(currentCampaignId), 300);
+            delete formEl.dataset.donasiMasuk;
+        }
+
+        async function handleAddDisbursement(e) {
+            e.preventDefault();
+            const index = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
+            if (index === -1) return;
+            const newDisb = { date: document.getElementById('disbursement-date').value, amount: parseFloat(document.getElementById('disbursement-amount').value), purpose: document.getElementById('disbursement-purpose').value };
+            if (!campaigns[index].disbursements) campaigns[index].disbursements = [];
+            campaigns[index].disbursements.push(newDisb);
+            campaigns[index].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            await saveCampaignsToFirestore(); 
+            renderCampaigns();
+            openModal(currentCampaignId); 
+            closeModal('add-disbursement-modal', 'add-disbursement-box');
+        }
+
+        async function handleEditDisbursement(e) {
+            e.preventDefault();
+            const idx = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
+            if (idx === -1 || currentDisbursementIndex === null) return;
+            campaigns[idx].disbursements[currentDisbursementIndex] = { date: document.getElementById('edit-disbursement-date').value, amount: parseFloat(document.getElementById('edit-disbursement-amount').value), purpose: document.getElementById('edit-disbursement-purpose').value };
+            campaigns[idx].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            await saveCampaignsToFirestore(); 
+            renderCampaigns();
+            openModal(currentCampaignId); 
+            closeModal('edit-disbursement-modal', 'edit-disbursement-box');
+        }
 
         // DOM Listeners
         document.addEventListener('DOMContentLoaded', () => {
@@ -1607,6 +1708,11 @@
             document.getElementById('fileInputTransaksi')?.addEventListener('change', (e) => handleExcel(e, 'transaksi'));
             document.getElementById('fileInputMaster')?.addEventListener('change', (e) => handleExcel(e, 'master'));
             document.getElementById('tableSearchDonasi')?.addEventListener('input', updateUnifiedDashboard);
+
+            document.getElementById('add-campaign-form')?.addEventListener('submit', handleAddCampaign);
+            document.getElementById('edit-campaign-form')?.addEventListener('submit', handleEditCampaign);
+            document.getElementById('add-disbursement-form')?.addEventListener('submit', handleAddDisbursement);
+            document.getElementById('edit-disbursement-form')?.addEventListener('submit', handleEditDisbursement);
 
             document.getElementById('add-status')?.addEventListener('change', function(e) {
                 const isPer = e.target.value.toLowerCase() === 'perorangan';
