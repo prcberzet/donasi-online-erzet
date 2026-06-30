@@ -61,7 +61,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.48 12H2"/></svg>
                 <div class="flex flex-col">
                     <span class="tracking-tight uppercase leading-none">Donasi Online Rumah Zakat</span>
-                    <span class="text-[10px] opacity-70 tracking-widest mt-1 text-slate-500">VERSION 20.4.26 (Realtime)</span>
+                    <span class="text-[10px] opacity-70 tracking-widest mt-1 text-slate-500">VERSION 20.4.26 (Lokal)</span>
                 </div>
             </h1>
             
@@ -73,7 +73,7 @@
                     <span>Database Master</span>
                 </button>
                 <button onclick="clearStoredData()" class="text-[11px] bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-1.5 rounded-full transition-colors font-bold uppercase tracking-wider">Hapus Data</button>
-                <div id="lastUpdate" class="text-xs text-slate-500 font-medium px-2 py-1 rounded-md transition-colors duration-300">Menyambungkan ke Server...</div>
+                <div id="lastUpdate" class="text-xs text-slate-500 font-medium px-2">Siap...</div>
             </div>
         </div>
         
@@ -92,17 +92,17 @@
             <div>
                 <h2 class="text-xl font-semibold text-slate-800">Dashboard Ringkasan Donasi</h2>
                 <p class="text-slate-500 text-sm mt-1">Monitoring capaian, penyaluran (transaksi), dan saldo dalam satu muka.</p>
-                <p id="donasi-period-display" class="text-xs font-medium text-indigo-600 mt-2 hidden bg-indigo-50 inline-block px-2.5 py-1 rounded-md border border-indigo-100"></p>
             </div>
             
             <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
                 <div class="relative w-full sm:w-auto">
-                    <button onclick="openUploadDonasiModal()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm transition-all flex items-center justify-center space-x-2 text-sm">
+                    <input type="file" id="fileInputDonasi" class="hidden" accept=".xlsx, .xls, .csv" />
+                    <label for="fileInputDonasi" class="cursor-pointer w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm transition-all flex items-center justify-center space-x-2 text-sm m-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                         </svg>
                         <span>Unggah Donasi</span>
-                    </button>
+                    </label>
                 </div>
 
                 <div class="relative w-full sm:w-auto">
@@ -140,6 +140,7 @@
         <!-- Tables Area -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div class="lg:col-span-4 space-y-6">
+                <!-- Ringkasan Data Card -->
                 <div class="bg-indigo-600 p-6 rounded-2xl shadow-md text-white">
                     <h3 class="font-bold mb-4 flex items-center text-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -155,14 +156,12 @@
                     </div>
                     <div class="mt-6 text-xs text-indigo-200/80 leading-relaxed border-t border-indigo-500/50 pt-4">
                         <p>Data "Salur" dihitung otomatis dari file <strong>Unggah Transaksi</strong> berdasarkan kesesuaian ID Campaign dengan Database Master / Data Donasi.</p>
-                        <p class="mt-2 text-emerald-300 flex items-center gap-1 font-semibold">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg> Realtime Sync Aktif
-                        </p>
                     </div>
                 </div>
             </div>
 
             <div class="lg:col-span-8 space-y-8">
+                <!-- Combined Monitoring Table -->
                 <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200 border-t-4 border-t-indigo-500">
                     <div class="p-5 bg-slate-50 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4">
                         <h3 class="font-bold text-slate-800">Monitoring Capaian & Saldo per Campaign</h3>
@@ -184,7 +183,7 @@
                             </thead>
                             <tbody id="dataTableBodyCombined" class="divide-y divide-slate-100 text-sm">
                                 <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center text-slate-400 italic">Memuat data secara realtime...</td>
+                                    <td colspan="5" class="px-6 py-12 text-center text-slate-400 italic">Belum ada data unggahan.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -211,7 +210,7 @@
              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
              <div>
                  <p class="font-semibold mb-1">Catatan Integrasi</p>
-                 <p class="text-indigo-700/80">Menu "Daftar Campaign Aktif" ini berfungsi sebagai basis data visual mandiri. Donasi Masuk dan Total Cair di menu ini sekarang terhubung otomatis dengan data "Unggah Transaksi" & "Donasi" menggunakan ID Campaign.</p>
+                 <p class="text-indigo-700/80">Menu "Daftar Campaign Aktif" ini berfungsi sebagai basis data visual mandiri. Donasi Masuk dan Total Cair di menu ini sekarang terhubung otomatis dengan data "Unggah Transaksi" & "Donasi" menggunakan VLOOKUP ID Campaign.</p>
              </div>
         </div>
 
@@ -221,41 +220,10 @@
         </div>
     </div> <!-- END OF TAB 2 -->
 
-    <!-- Modal Upload Donasi -->
-    <div id="upload-donasi-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="upload-donasi-box">
-            <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
-                <h3 class="text-lg font-bold text-slate-800">Tentukan Rentang Transaksi</h3>
-                <button onclick="closeModal('upload-donasi-modal', 'upload-donasi-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </button>
-            </div>
-            <div class="p-6 bg-white space-y-4">
-                <p class="text-sm text-slate-500 mb-2">Tentukan rentang tanggal transaksi sebelum mengunggah file data donasi Anda.</p>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Awal</label>
-                        <input type="date" id="donasi-start-date" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Akhir</label>
-                        <input type="date" id="donasi-end-date" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                    </div>
-                </div>
-            </div>
-            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl">
-                <button type="button" onclick="closeModal('upload-donasi-modal', 'upload-donasi-box')" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
-                <div class="relative">
-                    <input type="file" id="fileInputDonasi" class="hidden" accept=".xlsx, .xls, .csv" />
-                    <label for="fileInputDonasi" class="cursor-pointer px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm inline-block m-0">Pilih File & Proses</label>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal Detail Overlay -->
     <div id="detail-modal" class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="modal-box">
+            <!-- Modal Header -->
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
                 <h3 class="text-lg font-bold text-slate-800" id="modal-title">Detail Campaign</h3>
                 <div class="flex items-center gap-2">
@@ -265,16 +233,19 @@
                     <button onclick="openEditModal()" class="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-100 p-2 rounded-full transition-colors" title="Edit Campaign">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                     </button>
-                    <button onclick="closeModal('detail-modal', 'modal-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                    <button type="button" onclick="closeModal('detail-modal', 'modal-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                 </div>
             </div>
 
+            <!-- Modal Body (Scrollable) -->
             <div class="p-6 overflow-y-auto flex-1 bg-white">
                 <div class="flex flex-col md:flex-row gap-6">
+                    <!-- Left Column: Poster & Basic Info -->
                     <div class="w-full md:w-1/3 flex flex-col gap-4">
                         <img id="modal-poster" src="" alt="Poster" class="w-full h-auto rounded-lg object-cover aspect-[4/3] shadow-sm border border-slate-100" onerror="this.src='https://placehold.co/600x400/eeeeee/999999?text=No+Image'">
+                        
                         <div class="space-y-3 mt-2">
                             <div>
                                 <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Status Kerjasama</p>
@@ -294,7 +265,9 @@
                         </div>
                     </div>
 
+                    <!-- Right Column: Details & Checklists -->
                     <div class="w-full md:w-2/3 space-y-6">
+                        <!-- PIC & Location Info -->
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Penanggung Jawab (PIC)</p>
@@ -316,6 +289,7 @@
                             </div>
                         </div>
 
+                        <!-- Documents Checklist -->
                         <div>
                             <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2 border-b pb-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg>
@@ -350,6 +324,7 @@
                                 <p id="modal-saldo" class="text-slate-800 font-bold mt-1 text-xl">Rp 0</p>
                             </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -385,8 +360,10 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Modal Footer -->
             <div class="p-4 border-t border-slate-100 bg-slate-50 text-right rounded-b-2xl">
-                <button onclick="closeModal('detail-modal', 'modal-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Tutup</button>
+                <button type="button" onclick="closeModal('detail-modal', 'modal-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Tutup</button>
             </div>
         </div>
     </div>
@@ -396,12 +373,12 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="add-modal-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
                 <h3 class="text-lg font-bold text-slate-800">Tambah Campaign Baru</h3>
-                <button onclick="closeModal('add-modal', 'add-modal-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                <button type="button" onclick="closeModal('add-modal', 'add-modal-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <div class="p-6 overflow-y-auto flex-1 bg-white">
-                <form id="add-campaign-form" class="space-y-4">
+            <form id="add-campaign-form" onsubmit="handleAddCampaign(event)" class="flex flex-col flex-1 overflow-hidden">
+                <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700 mb-1">ID Campaign *</label>
@@ -472,12 +449,12 @@
                             <input type="url" id="add-doclink" placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl">
-                <button type="button" onclick="closeModal('add-modal', 'add-modal-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
-                <button type="submit" form="add-campaign-form" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan</button>
-            </div>
+                </div>
+                <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl shrink-0">
+                    <button type="button" onclick="closeModal('add-modal', 'add-modal-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -486,12 +463,12 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="edit-modal-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
                 <h3 class="text-lg font-bold text-slate-800">Edit Campaign</h3>
-                <button onclick="closeModal('edit-modal', 'edit-modal-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                <button type="button" onclick="closeModal('edit-modal', 'edit-modal-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <div class="p-6 overflow-y-auto flex-1 bg-white">
-                <form id="edit-campaign-form" class="space-y-4">
+            <form id="edit-campaign-form" onsubmit="handleEditCampaign(event)" class="flex flex-col flex-1 overflow-hidden">
+                <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700 mb-1">ID Campaign *</label>
@@ -561,12 +538,12 @@
                             <input type="url" id="edit-doclink" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl">
-                <button type="button" onclick="closeModal('edit-modal', 'edit-modal-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
-                <button type="submit" form="edit-campaign-form" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan Perubahan</button>
-            </div>
+                </div>
+                <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl shrink-0">
+                    <button type="button" onclick="closeModal('edit-modal', 'edit-modal-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan Perubahan</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -575,12 +552,12 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="add-disbursement-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
                 <h3 class="text-lg font-bold text-slate-800">Tambah Pencairan Dana</h3>
-                <button onclick="closeModal('add-disbursement-modal', 'add-disbursement-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                <button type="button" onclick="closeModal('add-disbursement-modal', 'add-disbursement-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <div class="p-6 overflow-y-auto flex-1 bg-white">
-                <form id="add-disbursement-form" class="space-y-4">
+            <form id="add-disbursement-form" onsubmit="handleAddDisbursement(event)" class="flex flex-col flex-1 overflow-hidden">
+                <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Pencairan *</label>
                         <input type="date" id="disbursement-date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
@@ -593,12 +570,12 @@
                         <label class="block text-sm font-medium text-slate-700 mb-1">Peruntukan / Tujuan *</label>
                         <textarea id="disbursement-purpose" rows="3" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"></textarea>
                     </div>
-                </form>
-            </div>
-            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl">
-                <button type="button" onclick="closeModal('add-disbursement-modal', 'add-disbursement-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
-                <button type="submit" form="add-disbursement-form" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan Data</button>
-            </div>
+                </div>
+                <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl shrink-0">
+                    <button type="button" onclick="closeModal('add-disbursement-modal', 'add-disbursement-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan Data</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -607,12 +584,12 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="edit-disbursement-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
                 <h3 class="text-lg font-bold text-slate-800">Edit Pencairan Dana</h3>
-                <button onclick="closeModal('edit-disbursement-modal', 'edit-disbursement-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                <button type="button" onclick="closeModal('edit-disbursement-modal', 'edit-disbursement-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <div class="p-6 overflow-y-auto flex-1 bg-white">
-                <form id="edit-disbursement-form" class="space-y-4">
+            <form id="edit-disbursement-form" onsubmit="handleEditDisbursement(event)" class="flex flex-col flex-1 overflow-hidden">
+                <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Pencairan *</label>
                         <input type="date" id="edit-disbursement-date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
@@ -625,12 +602,12 @@
                         <label class="block text-sm font-medium text-slate-700 mb-1">Peruntukan / Tujuan *</label>
                         <textarea id="edit-disbursement-purpose" rows="3" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"></textarea>
                     </div>
-                </form>
-            </div>
-            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl">
-                <button type="button" onclick="closeModal('edit-disbursement-modal', 'edit-disbursement-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
-                <button type="submit" form="edit-disbursement-form" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan Perubahan</button>
-            </div>
+                </div>
+                <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl shrink-0">
+                    <button type="button" onclick="closeModal('edit-disbursement-modal', 'edit-disbursement-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan Perubahan</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -645,8 +622,8 @@
                 <p class="text-sm text-slate-500">Apakah Anda yakin ingin menghapus campaign ini? Data yang sudah dihapus tidak dapat dikembalikan.</p>
             </div>
             <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-center gap-3 rounded-b-2xl">
-                <button onclick="closeModal('delete-modal', 'delete-modal-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm flex-1">Batal</button>
-                <button onclick="confirmDeleteCampaign()" class="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-sm font-medium text-sm flex-1">Ya, Hapus</button>
+                <button type="button" onclick="closeModal('delete-modal', 'delete-modal-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm flex-1">Batal</button>
+                <button type="button" onclick="confirmDeleteCampaign()" class="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-sm font-medium text-sm flex-1">Ya, Hapus</button>
             </div>
         </div>
     </div>
@@ -693,89 +670,20 @@
             
             <div class="p-4 bg-slate-50 border-t flex justify-between items-center text-[10px] text-slate-400 rounded-b-2xl">
                 <span id="masterStats">Total: 0 Data</span>
-                <span>Data tersinkronisasi secara Real-Time dengan Firebase.</span>
+                <span>Data tersimpan otomatis di browser ini.</span>
             </div>
         </div>
     </div>
 
-    <!-- Script menggunakan ES Module agar bisa mengimpor Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        // Konfigurasi dari Anda atau fallback ke konfigurasi Canvas dinamis
-        const configToUse = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyCf_AbkQMknih3A32I-GJaVxCZqrehFhQ4",
-            authDomain: "donasi-online-erzet.firebaseapp.com",
-            projectId: "donasi-online-erzet",
-            storageBucket: "donasi-online-erzet.firebasestorage.app",
-            messagingSenderId: "318119366712",
-            appId: "1:318119366712:web:bcb52d5bff898014ac56cd",
-            measurementId: "G-6QTWRPR57H"
-        };
-        const appIdToUse = typeof __app_id !== 'undefined' ? __app_id : 'donasi-online-erzet';
-
-        const app = initializeApp(configToUse);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let currentUser = null;
-        let isFirebaseInitialized = false;
-
-        // Inisiasi Autentikasi yang disesuaikan dengan lingkungan Canvas
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Firebase Auth Error:", error);
-                
-                const updateEl = document.getElementById('lastUpdate');
-                if (updateEl) {
-                    updateEl.classList.remove('text-slate-500');
-                    updateEl.classList.add('text-red-500', 'font-bold');
-
-                    if (error.code === 'auth/configuration-not-found' || error.code === 'auth/operation-not-allowed') {
-                        updateEl.innerText = "Error: Auth Anonim Nonaktif";
-                        alert("Firebase Error: Autentikasi Anonim (Anonymous) belum diaktifkan. Silakan buka Firebase Console -> Authentication -> tab Sign-in method -> Aktifkan opsi 'Anonymous'.");
-                    } else {
-                        updateEl.innerText = "Gagal Terhubung (Cek Internet)";
-                        alert("Gagal terhubung ke Firebase. Pastikan koneksi internet stabil atau cek konfigurasi API Key Anda. Detail error: " + error.message);
-                    }
-                }
-            }
-        };
-
-        initAuth();
-
-        onAuthStateChanged(auth, (user) => {
-            if (user && !isFirebaseInitialized) {
-                currentUser = user;
-                isFirebaseInitialized = true;
-                
-                const updateEl = document.getElementById('lastUpdate');
-                if (updateEl) {
-                    updateEl.classList.remove('text-red-500');
-                    updateEl.classList.add('text-emerald-600', 'font-bold');
-                    updateEl.innerText = "Menarik Data dari Server...";
-                }
-
-                setupFirestoreListeners(user.uid);
-            }
-        });
-
+    <script>
         // ==========================================
         // STATE MANAGEMENT
         // ==========================================
         let fullDataDonasi = [];
         let fullDataTransaksi = []; 
-        let masterCampaigns = []; 
+        let masterCampaigns = [];
         let donasiPeriodText = "";
-        
+
         let currentCampaignId = null;
         let currentDisbursementIndex = null;
         let campaigns = [];
@@ -805,124 +713,7 @@
             style: 'currency', currency: 'IDR', minimumFractionDigits: 0
         });
 
-        // Mendaftarkan Fungsi Global agar bisa diakses HTML (karena menggunakan type="module")
-        window.switchTab = switchTab;
-        window.toggleMasterModal = toggleMasterModal;
-        window.openUploadDonasiModal = openUploadDonasiModal;
-        window.closeModal = closeModal;
-        window.openModalAnimation = openModalAnimation;
-        window.renderMasterTable = renderMasterTable;
-        window.openModal = openModal;
-        window.openDeleteConfirmModal = openDeleteConfirmModal;
-        window.confirmDeleteCampaign = confirmDeleteCampaign;
-        window.openAddDisbursementModal = openAddDisbursementModal;
-        window.openEditDisbursementModal = openEditDisbursementModal;
-        window.handleEditFileChange = handleEditFileChange;
-        window.openAddModal = openAddModal;
-        window.openEditModal = openEditModal;
-        window.autoFillCampaignData = autoFillCampaignData;
-        window.clearStoredData = clearStoredData;
-        window.handleLinkClick = handleLinkClick;
-
-        let dashboardRef;
-
-        // ==========================================
-        // FIRESTORE REALTIME LISTENERS
-        // ==========================================
-        function setupFirestoreListeners(uid) {
-            dashboardRef = collection(db, 'artifacts', appIdToUse, 'public', 'data', 'dashboardData');
-
-            // Dengarkan Perubahan Tab 1 (Ringkasan Donasi & Master)
-            onSnapshot(doc(dashboardRef, 'tab1_state'), (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    fullDataDonasi = data.fullDataDonasi || [];
-                    fullDataTransaksi = data.fullDataTransaksi || [];
-                    masterCampaigns = data.masterCampaigns || [];
-                    donasiPeriodText = data.donasiPeriodText || "";
-                    
-                    const st = data.lastUpdate;
-                    const updateEl = document.getElementById('lastUpdate');
-                    if(st && updateEl) {
-                        updateEl.innerText = "Realtime Update: " + new Date(st).toLocaleTimeString();
-                        updateEl.classList.remove('text-red-500');
-                        updateEl.classList.add('text-slate-500');
-                        updateEl.classList.remove('font-bold');
-                    }
-                } else {
-                    const updateEl = document.getElementById('lastUpdate');
-                    if (updateEl) updateEl.innerText = "Terhubung (Database Kosong)";
-                }
-                updateUnifiedDashboard();
-                renderMasterTable();
-                renderCampaigns(); // Render ulang kartu agar sinkron jika data Excel baru diupload
-            }, (err) => {
-                console.error(err);
-                const updateEl = document.getElementById('lastUpdate');
-                if (updateEl) {
-                    updateEl.innerText = "Error Akses Database (Cek Rules)";
-                    updateEl.classList.add('text-red-500', 'font-bold');
-                }
-            });
-
-            // Dengarkan Perubahan Tab 2 (Campaigns)
-            onSnapshot(doc(dashboardRef, 'tab2_campaigns'), (docSnap) => {
-                if (docSnap.exists()) {
-                    campaigns = docSnap.data().list || [];
-                } else {
-                    // Jika belum ada data campaign sama sekali di DB
-                    campaigns = [...defaultCampaigns];
-                    saveCampaignsToFirestore();
-                }
-                renderCampaigns();
-            }, (err) => console.error(err));
-        }
-
-        // ==========================================
-        // FIRESTORE WRITERS
-        // ==========================================
-        async function saveTab1ToFirestore() {
-            if (!currentUser || !dashboardRef) return;
-            try {
-                await setDoc(doc(dashboardRef, 'tab1_state'), {
-                    fullDataDonasi,
-                    fullDataTransaksi,
-                    masterCampaigns,
-                    donasiPeriodText,
-                    lastUpdate: new Date().toISOString()
-                });
-            } catch (e) {
-                console.error("Error saving data", e);
-            }
-        }
-
-        async function saveCampaignsToFirestore() {
-            if (!currentUser || !dashboardRef) return;
-            try {
-                await setDoc(doc(dashboardRef, 'tab2_campaigns'), { list: campaigns });
-            } catch (e) {
-                console.error("Error saving campaigns", e);
-            }
-        }
-
-        async function clearStoredData() {
-            if(!currentUser || !dashboardRef) return;
-            if(confirm('Yakin ingin menghapus seluruh data pada Server Firebase?')) {
-                fullDataDonasi = [];
-                fullDataTransaksi = [];
-                masterCampaigns = [];
-                donasiPeriodText = "";
-                campaigns = [...defaultCampaigns];
-                
-                await saveTab1ToFirestore();
-                await saveCampaignsToFirestore();
-                alert('Semua data berhasil dibersihkan dari server.');
-            }
-        }
-
-        // ==========================================
-        // UI & LOGIC HELPERS
-        // ==========================================
+        // Tab Switching Logic
         function switchTab(tabId) {
             document.getElementById('tab-ringkasan').className = tabId === 'ringkasan' ? 'tab-btn active' : 'tab-btn';
             document.getElementById('tab-monitoring').className = tabId === 'monitoring' ? 'tab-btn active' : 'tab-btn';
@@ -941,6 +732,15 @@
                 numericVal = parseFloat(cleaned) || 0;
             }
             return numericVal;
+        }
+
+        // ==========================================
+        // EXCEL PARSER (TAB 1: RINGKASAN DONASI)
+        // ==========================================
+        function toggleMasterModal() {
+            const modal = document.getElementById('masterModal');
+            modal.classList.toggle('hidden');
+            if(!modal.classList.contains('hidden')) renderMasterTable();
         }
 
         function scanSheet(sheet, keywordMappings) {
@@ -1001,7 +801,7 @@
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = async function(evt) {
+            reader.onload = function(evt) {
                 const data = new Uint8Array(evt.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
                 const worksheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -1010,28 +810,32 @@
                     const sd = document.getElementById('donasi-start-date').value;
                     const ed = document.getElementById('donasi-end-date').value;
                     
-                    if (sd && ed) donasiPeriodText = `Periode: ${formatDate(sd)} s/d ${formatDate(ed)}`;
-                    else if (sd) donasiPeriodText = `Periode: Sejak ${formatDate(sd)}`;
-                    else if (ed) donasiPeriodText = `Periode: Hingga ${formatDate(ed)}`;
-                    else donasiPeriodText = "";
+                    if (sd && ed) {
+                        donasiPeriodText = `Periode: ${formatDate(sd)} s/d ${formatDate(ed)}`;
+                    } else if (sd) {
+                        donasiPeriodText = `Periode: Sejak ${formatDate(sd)}`;
+                    } else if (ed) {
+                        donasiPeriodText = `Periode: Hingga ${formatDate(ed)}`;
+                    } else {
+                        donasiPeriodText = "";
+                    }
 
                     processDonasi(worksheet);
                     closeModal('upload-donasi-modal', 'upload-donasi-box');
                 }
-                else if (type === 'transaksi') processTransaksi(worksheet);
                 else if (type === 'master') processMaster(worksheet);
+                else if (type === 'transaksi') processTransaksi(worksheet);
                 
-                await saveTab1ToFirestore(); // Simpan Data ke Firestore
+                saveToLocalStorage();
+                updateUnifiedDashboard();
+                renderCampaigns(); // Render ulang UI agar VLOOKUP Saldo termutakhir
+                if(type === 'master') renderMasterTable();
+                const updateEl = document.getElementById('lastUpdate');
+                if (updateEl) updateEl.innerText = "Data Lokal: " + new Date().toLocaleTimeString();
                 
                 e.target.value = null;
             };
             reader.readAsArrayBuffer(file);
-        }
-
-        function toggleMasterModal() {
-            const modal = document.getElementById('masterModal');
-            modal.classList.toggle('hidden');
-            if(!modal.classList.contains('hidden')) renderMasterTable();
         }
 
         function processMaster(sheet) {
@@ -1085,8 +889,8 @@
 
                 const nominal = parseNominal(row[totalDonasiColIdx]);
                 if (!aggregatedTrans[idValue]) {
-                    const foundDonasi = fullDataDonasi.find(d => d.id === idValue);
-                    aggregatedTrans[idValue] = { id: idValue, totalDonasi: 0, programAkad: foundDonasi ? foundDonasi.campaign : 'ID Campaign ' + idValue };
+                    const foundMaster = masterCampaigns.find(m => m.id === idValue) || fullDataDonasi.find(d => d.id === idValue);
+                    aggregatedTrans[idValue] = { id: idValue, totalDonasi: 0, programAkad: foundMaster ? (foundMaster.name || foundMaster.campaign) : 'ID Campaign ' + idValue };
                 }
                 aggregatedTrans[idValue].totalDonasi += nominal;
             }
@@ -1129,7 +933,10 @@
 
                 if (!aggregated[id]) {
                     let campaignName = row[nameColIdx] ? String(row[nameColIdx]).trim() : '';
-                    if (!campaignName || campaignName === '-') campaignName = '-';
+                    if (!campaignName || campaignName === '-') {
+                        const found = masterCampaigns.find(m => m.id === id);
+                        campaignName = found ? found.name : '-';
+                    }
                     aggregated[id] = { id: id, campaign: campaignName, pic: row[picColIdx] ? String(row[picColIdx]).trim() : '-', transaksi: 0 };
                 }
                 aggregated[id].transaksi += nominal;
@@ -1138,9 +945,10 @@
         }
 
         function renderMasterTable() {
-            const query = document.getElementById('searchMaster')?.value.toLowerCase() || '';
+            const query = document.getElementById('searchMaster')?.value.toLowerCase() || "";
             const tbody = document.getElementById('masterTableBody');
             if (!tbody) return;
+
             const filtered = masterCampaigns.filter(m => m.id.includes(query) || m.name.toLowerCase().includes(query));
             tbody.innerHTML = filtered.length ? '' : '<tr><td colspan="2" class="p-8 text-center text-slate-400">Data tidak ditemukan</td></tr>';
             filtered.forEach(m => {
@@ -1149,16 +957,16 @@
                 row.innerHTML = `<td class="px-6 py-3 font-mono font-bold text-indigo-600">${m.id}</td><td class="px-6 py-3 text-slate-700">${m.name}</td>`;
                 tbody.appendChild(row);
             });
-            const masterStats = document.getElementById('masterStats');
-            if (masterStats) masterStats.innerText = `Total: ${filtered.length} Data`;
+            const stats = document.getElementById('masterStats');
+            if(stats) stats.innerText = `Total: ${filtered.length} Data`;
         }
 
         function updateUnifiedDashboard() {
-            const searchDonasi = document.getElementById('tableSearchDonasi')?.value.toLowerCase() || '';
+            const searchDonasi = document.getElementById('tableSearchDonasi')?.value.toLowerCase() || "";
             const combinedMap = {};
             
-            const countCampaignEl = document.getElementById('countCampaign');
-            if (countCampaignEl) countCampaignEl.innerText = fullDataDonasi.length;
+            const countEl = document.getElementById('countCampaign');
+            if(countEl) countEl.innerText = fullDataDonasi.length;
 
             const periodBadge = document.getElementById('donasi-period-display');
             if (periodBadge) {
@@ -1182,17 +990,17 @@
             const totalIn = Object.values(combinedMap).reduce((s, i) => s + i.transaksi, 0);
             const totalOut = Object.values(combinedMap).reduce((s, i) => s + i.salur, 0);
             
-            const totalDonasiEl = document.getElementById('totalDonasi');
-            if(totalDonasiEl) totalDonasiEl.innerText = formatter.format(totalIn);
+            const elDonasi = document.getElementById('totalDonasi');
+            if(elDonasi) elDonasi.innerText = formatter.format(totalIn);
             
-            const totalPenyaluranEl = document.getElementById('totalPenyaluran');
-            if(totalPenyaluranEl) totalPenyaluranEl.innerText = formatter.format(totalOut);
+            const elPenyaluran = document.getElementById('totalPenyaluran');
+            if(elPenyaluran) elPenyaluran.innerText = formatter.format(totalOut);
             
-            const saldoDonasiEl = document.getElementById('saldoDonasi');
-            if(saldoDonasiEl) saldoDonasiEl.innerText = formatter.format(totalIn - totalOut);
+            const elSaldo = document.getElementById('saldoDonasi');
+            if(elSaldo) elSaldo.innerText = formatter.format(totalIn - totalOut);
             
-            const serapanPersenEl = document.getElementById('serapanPersen');
-            if(serapanPersenEl) serapanPersenEl.innerText = (totalIn > 0 ? (totalOut/totalIn)*100 : 0).toFixed(1) + "%";
+            const elSerapan = document.getElementById('serapanPersen');
+            if(elSerapan) elSerapan.innerText = (totalIn > 0 ? (totalOut/totalIn)*100 : 0).toFixed(1) + "%";
             
             const tbCombined = document.getElementById('dataTableBodyCombined');
             if(tbCombined) {
@@ -1211,6 +1019,49 @@
                     tbCombined.appendChild(row);
                 });
             }
+        }
+
+        // ==========================================
+        // STATE & LOGIC (TAB 2: MONITORING CAMPAIGN)
+        // ==========================================
+        // IndexedDB for Tab 2
+        const DB_NAME = 'DonationAppDB';
+        const STORE_NAME = 'app_data';
+
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, 1);
+                request.onerror = (e) => reject("DB error: " + e.target.error);
+                request.onsuccess = (e) => resolve(e.target.result);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME);
+                };
+            });
+        }
+
+        async function saveCampaignsToDB() {
+            try {
+                const db = await initDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORE_NAME, 'readwrite');
+                    const request = tx.objectStore(STORE_NAME).put(campaigns, 'campaigns_data');
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            } catch (e) { console.error("Storage error:", e); }
+        }
+
+        async function loadCampaignsFromDB() {
+            try {
+                const db = await initDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORE_NAME, 'readonly');
+                    const request = tx.objectStore(STORE_NAME).get('campaigns_data');
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            } catch (e) { return null; }
         }
 
         const fileToBase64 = file => new Promise((resolve, reject) => {
@@ -1233,18 +1084,18 @@
 
         function renderCampaigns() {
             const gridContainer = document.getElementById('campaign-grid');
-            if (!gridContainer) return;
-
+            if(!gridContainer) return;
             gridContainer.innerHTML = ''; 
+            
             campaigns.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
 
             campaigns.forEach(campaign => {
-                // VLOOKUP data dari Ringkasan Donasi & Transaksi Excel berdasarkan ID Campaign
+                // VLOOKUP Calculate Saldo, Donasi, dan Cair dari Uploaded Excel (Tab 1)
                 const donasiMasukVlookup = fullDataDonasi
                     .filter(d => String(d.id).trim() === String(campaign.id).trim())
                     .reduce((sum, d) => sum + d.transaksi, 0);
                 
-                // Gunakan nilai Excel jika ada, jika tidak fallback ke nilai donasi form manual
+                // Gunakan nilai Excel jika ada, jika tidak fallback ke nilai form manual
                 const currentDonasiMasuk = donasiMasukVlookup > 0 ? donasiMasukVlookup : (campaign.donasiMasuk || 0);
 
                 const totalCair = fullDataTransaksi
@@ -1323,7 +1174,7 @@
 
         function openModalAnimation(modalId, boxId) {
             const modal = document.getElementById(modalId); const box = document.getElementById(boxId);
-            if (modal && box) {
+            if(modal && box) {
                 modal.classList.remove('hidden');
                 setTimeout(() => { modal.classList.remove('opacity-0'); modal.classList.add('opacity-100'); box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
                 document.body.style.overflow = 'hidden';
@@ -1332,7 +1183,7 @@
 
         function closeModal(modalId, boxId) {
             const modal = document.getElementById(modalId); const box = document.getElementById(boxId);
-            if (modal && box) {
+            if(modal && box) {
                 modal.classList.remove('opacity-100'); modal.classList.add('opacity-0'); box.classList.remove('scale-100'); box.classList.add('scale-95');
                 setTimeout(() => { 
                     modal.classList.add('hidden'); 
@@ -1355,7 +1206,7 @@
             document.querySelector('#modal-location span').innerText = campaign.location;
             document.getElementById('modal-address').innerText = campaign.address;
 
-            // VLOOKUP data dari Ringkasan Donasi & Transaksi Excel
+            // VLOOKUP Data
             const donasiMasukVlookup = fullDataDonasi
                 .filter(d => String(d.id).trim() === String(campaign.id).trim())
                 .reduce((sum, d) => sum + d.transaksi, 0);
@@ -1367,17 +1218,21 @@
                 
             const currentSaldo = currentDonasiMasuk - totalCair;
 
-            document.getElementById('modal-donasi-masuk').innerText = currentDonasiMasuk > 0 ? formatRupiah(currentDonasiMasuk) : 'Rp 0';
-            document.getElementById('modal-total-cair').innerText = totalCair > 0 ? formatRupiah(totalCair) : 'Rp 0';
+            const elDonasiMasuk = document.getElementById('modal-donasi-masuk');
+            if(elDonasiMasuk) elDonasiMasuk.innerText = currentDonasiMasuk > 0 ? formatRupiah(currentDonasiMasuk) : 'Rp 0';
+            
+            const elTotalCair = document.getElementById('modal-total-cair');
+            if(elTotalCair) elTotalCair.innerText = totalCair > 0 ? formatRupiah(totalCair) : 'Rp 0';
             
             const saldoEl = document.getElementById('modal-saldo');
-            if (saldoEl) {
+            if(saldoEl) {
                 saldoEl.innerText = formatRupiah(currentSaldo);
                 saldoEl.className = `text-slate-800 font-bold mt-1 text-xl ${currentSaldo < 0 ? 'text-red-600' : 'text-amber-600'}`;
             }
 
             let docStatus = "", docColorClass = "";
             const docs = campaign.documents || {};
+            
             if (campaign.partnershipStatus.toLowerCase() === 'perorangan') {
                 docStatus = docs.consentLetter ? "Lengkap (1/1)" : "Belum (0/1)";
                 docColorClass = docs.consentLetter ? "text-emerald-600" : "text-amber-500";
@@ -1395,14 +1250,14 @@
             document.getElementById('modal-doclink').href = campaign.docLink || "#";
 
             const historyBody = document.getElementById('modal-history-body'); const emptyState = document.getElementById('modal-history-empty');
-            if (historyBody && emptyState) {
+            if(historyBody && emptyState) {
                 historyBody.innerHTML = ''; 
                 
                 if (campaign.disbursements && campaign.disbursements.length > 0) {
                     historyBody.parentElement.classList.remove('hidden'); emptyState.classList.add('hidden');
                     campaign.disbursements.forEach((item, index) => {
                         const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 transition-colors";
-                        tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-slate-600">${formatDate(item.date)}</td><td class="px-6 py-4 whitespace-nowrap font-medium text-slate-800">${formatRupiah(item.amount)}</td><td class="px-6 py-4 text-slate-600">${item.purpose}</td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button onclick="openEditDisbursementModal(${index})" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button></td>`;
+                        tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-slate-600">${formatDate(item.date)}</td><td class="px-6 py-4 whitespace-nowrap font-medium text-slate-800">${formatRupiah(item.amount)}</td><td class="px-6 py-4 text-slate-600">${item.purpose}</td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button type="button" onclick="openEditDisbursementModal(${index})" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button></td>`;
                         historyBody.appendChild(tr);
                     });
                 } else { historyBody.parentElement.classList.add('hidden'); emptyState.classList.remove('hidden'); }
@@ -1411,7 +1266,8 @@
             openModalAnimation('detail-modal', 'modal-box');
         }
 
-        function autoFillCampaignData(mode) {
+        // Action Handlers
+        window.autoFillCampaignData = function(mode) {
             const idInput = document.getElementById(`${mode}-id`).value.trim();
             if (!idInput) {
                 alert("Silakan masukkan ID Campaign terlebih dahulu.");
@@ -1438,25 +1294,26 @@
             } else {
                 alert("Data ID Campaign tidak ditemukan di Ringkasan Donasi.");
             }
-        }
+        };
 
         function openDeleteConfirmModal() { if (currentCampaignId) openModalAnimation('delete-modal', 'delete-modal-box'); }
 
         async function confirmDeleteCampaign() {
             if (!currentCampaignId) return;
             campaigns = campaigns.filter(c => c.id !== currentCampaignId);
-            await saveCampaignsToFirestore(); 
+            await saveCampaignsToDB(); 
+            renderCampaigns();
             closeModal('delete-modal', 'delete-modal-box'); closeModal('detail-modal', 'modal-box');
         }
 
         function openAddDisbursementModal() {
             if (!currentCampaignId) return;
             const form = document.getElementById('add-disbursement-form');
-            if (form) form.reset();
+            if(form) form.reset();
             openModalAnimation('add-disbursement-modal', 'add-disbursement-box');
         }
 
-        function openEditDisbursementModal(index) {
+        window.openEditDisbursementModal = function(index) {
             if (!currentCampaignId) return;
             const campaign = campaigns.find(c => c.id === currentCampaignId);
             if (!campaign || !campaign.disbursements || !campaign.disbursements[index]) return;
@@ -1464,16 +1321,16 @@
             const item = campaign.disbursements[index];
             document.getElementById('edit-disbursement-date').value = item.date; document.getElementById('edit-disbursement-amount').value = item.amount; document.getElementById('edit-disbursement-purpose').value = item.purpose;
             openModalAnimation('edit-disbursement-modal', 'edit-disbursement-box');
-        }
+        };
 
         function handleEditFileChange(docType) {
             const fileInput = document.getElementById(`edit-${docType}-file`); const checkbox = document.getElementById(`edit-${docType}-check`);
-            if (fileInput && checkbox) checkbox.checked = (fileInput.files && fileInput.files.length > 0) ? true : fileInput.dataset.original === 'true';
+            if(fileInput && checkbox) checkbox.checked = (fileInput.files && fileInput.files.length > 0) ? true : fileInput.dataset.original === 'true';
         }
 
         function openAddModal() {
             const form = document.getElementById('add-campaign-form');
-            if (form) form.reset();
+            if(form) form.reset();
             document.getElementById('add-mou-wrapper').style.display = ''; document.getElementById('add-proposal-wrapper').style.display = '';
             openModalAnimation('add-modal', 'add-modal-box');
         }
@@ -1484,7 +1341,7 @@
             if (!camp) return;
             closeModal('detail-modal', 'modal-box');
             const form = document.getElementById('edit-campaign-form');
-            if (form) form.reset(); 
+            if(form) form.reset(); 
             document.getElementById('edit-id').value = camp.id;
             document.getElementById('edit-name').value = camp.name; document.getElementById('edit-link').value = camp.link; document.getElementById('edit-date').value = camp.releaseDate; document.getElementById('edit-status').value = camp.partnershipStatus; document.getElementById('edit-pic').value = camp.pic; document.getElementById('edit-location').value = camp.location; document.getElementById('edit-address').value = camp.address;
             const isPer = camp.partnershipStatus.toLowerCase() === 'perorangan';
@@ -1495,53 +1352,8 @@
             setTimeout(() => openModalAnimation('edit-modal', 'edit-modal-box'), 300);
         }
 
-        // ==========================================
-        // SAFE DOM EVENT ATTACHMENTS
-        // ==========================================
-        // Event Listener didaftarkan secara langsung
-        document.getElementById('fileInputDonasi')?.addEventListener('change', (e) => handleExcel(e, 'donasi'));
-        document.getElementById('fileInputTransaksi')?.addEventListener('change', (e) => handleExcel(e, 'transaksi'));
-        document.getElementById('fileInputMaster')?.addEventListener('change', (e) => handleExcel(e, 'master'));
-
-        document.getElementById('add-status')?.addEventListener('change', function(e) {
-            const isPer = e.target.value.toLowerCase() === 'perorangan';
-            document.getElementById('add-mou-wrapper').style.display = isPer ? 'none' : '';
-            document.getElementById('add-proposal-wrapper').style.display = isPer ? 'none' : '';
-        });
-
-        document.getElementById('edit-status')?.addEventListener('change', function(e) {
-            const isPer = e.target.value.toLowerCase() === 'perorangan';
-            document.getElementById('edit-mou-wrapper').style.display = isPer ? 'none' : '';
-            document.getElementById('edit-proposal-wrapper').style.display = isPer ? 'none' : '';
-        });
-
-        document.getElementById('add-disbursement-form')?.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const index = campaigns.findIndex(c => c.id === currentCampaignId);
-            if (index === -1) return;
-            const newDisb = { date: document.getElementById('disbursement-date').value, amount: parseFloat(document.getElementById('disbursement-amount').value), purpose: document.getElementById('disbursement-purpose').value };
-            if (!campaigns[index].disbursements) campaigns[index].disbursements = [];
-            campaigns[index].disbursements.push(newDisb);
-            campaigns[index].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            await saveCampaignsToFirestore(); 
-            openModal(currentCampaignId); 
-            closeModal('add-disbursement-modal', 'add-disbursement-box');
-        });
-
-        document.getElementById('edit-disbursement-form')?.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const idx = campaigns.findIndex(c => c.id === currentCampaignId);
-            if (idx === -1 || currentDisbursementIndex === null) return;
-            campaigns[idx].disbursements[currentDisbursementIndex] = { date: document.getElementById('edit-disbursement-date').value, amount: parseFloat(document.getElementById('edit-disbursement-amount').value), purpose: document.getElementById('edit-disbursement-purpose').value };
-            campaigns[idx].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            await saveCampaignsToFirestore(); 
-            openModal(currentCampaignId); 
-            closeModal('edit-disbursement-modal', 'edit-disbursement-box');
-        });
-
-        document.getElementById('add-campaign-form')?.addEventListener('submit', async function(e) {
+        // Form Submit Handlers (Eksplisit untuk Mencegah Reload)
+        window.handleAddCampaign = async function(e) {
             e.preventDefault();
             const idInput = document.getElementById('add-id').value.trim();
             if (campaigns.some(c => String(c.id) === idInput)) {
@@ -1549,10 +1361,10 @@
                 return;
             }
             
+            const formEl = document.getElementById('add-campaign-form');
             const posterInput = document.getElementById('add-poster');
             const posterUrlValue = (posterInput.files && posterInput.files[0]) ? await fileToBase64(posterInput.files[0]) : "";
-            
-            const donasiMasuk = parseFloat(this.dataset.donasiMasuk) || 0;
+            const donasiMasuk = parseFloat(formEl.dataset.donasiMasuk) || 0;
 
             const newCamp = {
                 id: idInput, 
@@ -1569,15 +1381,17 @@
                 donasiMasuk: donasiMasuk,
                 documents: { mou: document.getElementById('add-mou-check').checked, consentLetter: document.getElementById('add-consent-check').checked, proposal: document.getElementById('add-proposal-check').checked }
             };
+            
             campaigns.unshift(newCamp); 
-            await saveCampaignsToFirestore(); 
+            await saveCampaignsToDB(); 
+            renderCampaigns();
             closeModal('add-modal', 'add-modal-box');
-            delete this.dataset.donasiMasuk;
-        });
+            delete formEl.dataset.donasiMasuk;
+        };
 
-        document.getElementById('edit-campaign-form')?.addEventListener('submit', async function(e) {
+        window.handleEditCampaign = async function(e) {
             e.preventDefault();
-            const idx = campaigns.findIndex(c => c.id === currentCampaignId);
+            const idx = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
             if (idx === -1) return;
             
             const newIdInput = document.getElementById('edit-id').value.trim();
@@ -1586,10 +1400,10 @@
                  return;
             }
 
+            const formEl = document.getElementById('edit-campaign-form');
             const posterInput = document.getElementById('edit-poster');
             const posterUrlValue = (posterInput.files && posterInput.files[0]) ? await fileToBase64(posterInput.files[0]) : campaigns[idx].posterUrl;
-            
-            const donasiMasukBaru = this.dataset.donasiMasuk !== undefined ? parseFloat(this.dataset.donasiMasuk) : campaigns[idx].donasiMasuk;
+            const donasiMasukBaru = formEl.dataset.donasiMasuk !== undefined ? parseFloat(formEl.dataset.donasiMasuk) : campaigns[idx].donasiMasuk;
 
             campaigns[idx] = { 
                 ...campaigns[idx], 
@@ -1608,14 +1422,60 @@
             };
             
             currentCampaignId = newIdInput;
-            
-            await saveCampaignsToFirestore(); 
+            await saveCampaignsToDB(); 
+            renderCampaigns();
             closeModal('edit-modal', 'edit-modal-box'); 
             setTimeout(() => openModal(currentCampaignId), 300);
-            delete this.dataset.donasiMasuk;
-        });
+            delete formEl.dataset.donasiMasuk;
+        };
 
-        document.getElementById('tableSearchDonasi')?.addEventListener('input', updateUnifiedDashboard);
+        window.handleAddDisbursement = async function(e) {
+            e.preventDefault();
+            const index = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
+            if (index === -1) return;
+            const newDisb = { date: document.getElementById('disbursement-date').value, amount: parseFloat(document.getElementById('disbursement-amount').value), purpose: document.getElementById('disbursement-purpose').value };
+            if (!campaigns[index].disbursements) campaigns[index].disbursements = [];
+            campaigns[index].disbursements.push(newDisb);
+            campaigns[index].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            await saveCampaignsToDB(); 
+            renderCampaigns();
+            openModal(currentCampaignId); 
+            closeModal('add-disbursement-modal', 'add-disbursement-box');
+        };
+
+        window.handleEditDisbursement = async function(e) {
+            e.preventDefault();
+            const idx = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
+            if (idx === -1 || currentDisbursementIndex === null) return;
+            campaigns[idx].disbursements[currentDisbursementIndex] = { date: document.getElementById('edit-disbursement-date').value, amount: parseFloat(document.getElementById('edit-disbursement-amount').value), purpose: document.getElementById('edit-disbursement-purpose').value };
+            campaigns[idx].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            await saveCampaignsToDB(); 
+            renderCampaigns();
+            openModal(currentCampaignId); 
+            closeModal('edit-disbursement-modal', 'edit-disbursement-box');
+        };
+
+        // DOM Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('fileInputDonasi')?.addEventListener('change', (e) => handleExcel(e, 'donasi'));
+            document.getElementById('fileInputTransaksi')?.addEventListener('change', (e) => handleExcel(e, 'transaksi'));
+            document.getElementById('fileInputMaster')?.addEventListener('change', (e) => handleExcel(e, 'master'));
+            document.getElementById('tableSearchDonasi')?.addEventListener('input', updateUnifiedDashboard);
+
+            document.getElementById('add-status')?.addEventListener('change', function(e) {
+                const isPer = e.target.value.toLowerCase() === 'perorangan';
+                document.getElementById('add-mou-wrapper').style.display = isPer ? 'none' : '';
+                document.getElementById('add-proposal-wrapper').style.display = isPer ? 'none' : '';
+            });
+
+            document.getElementById('edit-status')?.addEventListener('change', function(e) {
+                const isPer = e.target.value.toLowerCase() === 'perorangan';
+                document.getElementById('edit-mou-wrapper').style.display = isPer ? 'none' : '';
+                document.getElementById('edit-proposal-wrapper').style.display = isPer ? 'none' : '';
+            });
+        });
 
         window.addEventListener('click', function(e) {
             const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-disbursement-modal', 'edit-disbursement-modal', 'delete-modal', 'upload-donasi-modal', 'masterModal'];
@@ -1646,6 +1506,50 @@
                 }
             }
         });
+
+        // ==========================================
+        // INITIALIZATION & PERSISTENCE
+        // ==========================================
+        function saveToLocalStorage() {
+            localStorage.setItem('df_donasi', JSON.stringify(fullDataDonasi));
+            localStorage.setItem('df_transaksi', JSON.stringify(fullDataTransaksi));
+            localStorage.setItem('df_master', JSON.stringify(masterCampaigns));
+            localStorage.setItem('df_donasi_period', donasiPeriodText);
+            localStorage.setItem('df_last_update', new Date().toISOString());
+        }
+
+        async function loadFromLocalStorage() {
+            const sd = localStorage.getItem('df_donasi');
+            const sx = localStorage.getItem('df_transaksi');
+            const sm = localStorage.getItem('df_master');
+            const dp = localStorage.getItem('df_donasi_period');
+            const st = localStorage.getItem('df_last_update');
+            if (sd) fullDataDonasi = JSON.parse(sd);
+            if (sx) fullDataTransaksi = JSON.parse(sx);
+            if (sm) masterCampaigns = JSON.parse(sm);
+            if (dp) donasiPeriodText = dp;
+
+            if (fullDataDonasi.length || masterCampaigns.length || fullDataTransaksi.length) {
+                updateUnifiedDashboard();
+                const updateEl = document.getElementById('lastUpdate');
+                if(st && updateEl) updateEl.innerText = "Data Lokal: " + new Date(st).toLocaleTimeString();
+            }
+
+            // Load DB for Tab 2
+            const storedCamp = await loadCampaignsFromDB();
+            if (storedCamp && storedCamp.length > 0) campaigns = storedCamp;
+            else { campaigns = [...defaultCampaigns]; await saveCampaignsToDB(); }
+            renderCampaigns();
+        }
+
+        function clearStoredData() {
+            localStorage.clear();
+            indexedDB.deleteDatabase(DB_NAME);
+            location.reload();
+        }
+
+        // Bootstrap App
+        window.onload = loadFromLocalStorage;
 
     </script>
 </body>
