@@ -1498,125 +1498,124 @@
         // ==========================================
         // SAFE DOM EVENT ATTACHMENTS
         // ==========================================
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('fileInputDonasi')?.addEventListener('change', (e) => handleExcel(e, 'donasi'));
-            document.getElementById('fileInputTransaksi')?.addEventListener('change', (e) => handleExcel(e, 'transaksi'));
-            document.getElementById('fileInputMaster')?.addEventListener('change', (e) => handleExcel(e, 'master'));
+        // Event Listener didaftarkan secara langsung
+        document.getElementById('fileInputDonasi')?.addEventListener('change', (e) => handleExcel(e, 'donasi'));
+        document.getElementById('fileInputTransaksi')?.addEventListener('change', (e) => handleExcel(e, 'transaksi'));
+        document.getElementById('fileInputMaster')?.addEventListener('change', (e) => handleExcel(e, 'master'));
 
-            document.getElementById('add-status')?.addEventListener('change', function(e) {
-                const isPer = e.target.value.toLowerCase() === 'perorangan';
-                document.getElementById('add-mou-wrapper').style.display = isPer ? 'none' : '';
-                document.getElementById('add-proposal-wrapper').style.display = isPer ? 'none' : '';
-            });
-
-            document.getElementById('edit-status')?.addEventListener('change', function(e) {
-                const isPer = e.target.value.toLowerCase() === 'perorangan';
-                document.getElementById('edit-mou-wrapper').style.display = isPer ? 'none' : '';
-                document.getElementById('edit-proposal-wrapper').style.display = isPer ? 'none' : '';
-            });
-
-            document.getElementById('add-disbursement-form')?.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const index = campaigns.findIndex(c => c.id === currentCampaignId);
-                if (index === -1) return;
-                const newDisb = { date: document.getElementById('disbursement-date').value, amount: parseFloat(document.getElementById('disbursement-amount').value), purpose: document.getElementById('disbursement-purpose').value };
-                if (!campaigns[index].disbursements) campaigns[index].disbursements = [];
-                campaigns[index].disbursements.push(newDisb);
-                campaigns[index].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                await saveCampaignsToFirestore(); 
-                openModal(currentCampaignId); 
-                closeModal('add-disbursement-modal', 'add-disbursement-box');
-            });
-
-            document.getElementById('edit-disbursement-form')?.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const idx = campaigns.findIndex(c => c.id === currentCampaignId);
-                if (idx === -1 || currentDisbursementIndex === null) return;
-                campaigns[idx].disbursements[currentDisbursementIndex] = { date: document.getElementById('edit-disbursement-date').value, amount: parseFloat(document.getElementById('edit-disbursement-amount').value), purpose: document.getElementById('edit-disbursement-purpose').value };
-                campaigns[idx].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                await saveCampaignsToFirestore(); 
-                openModal(currentCampaignId); 
-                closeModal('edit-disbursement-modal', 'edit-disbursement-box');
-            });
-
-            document.getElementById('add-campaign-form')?.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const idInput = document.getElementById('add-id').value.trim();
-                if (campaigns.some(c => String(c.id) === idInput)) {
-                    alert("ID Campaign sudah digunakan. Silakan gunakan ID lain.");
-                    return;
-                }
-                
-                const posterInput = document.getElementById('add-poster');
-                const posterUrlValue = (posterInput.files && posterInput.files[0]) ? await fileToBase64(posterInput.files[0]) : "";
-                
-                const donasiMasuk = parseFloat(this.dataset.donasiMasuk) || 0;
-
-                const newCamp = {
-                    id: idInput, 
-                    name: document.getElementById('add-name').value, 
-                    posterUrl: posterUrlValue, 
-                    link: document.getElementById('add-link').value, 
-                    releaseDate: document.getElementById('add-date').value, 
-                    partnershipStatus: document.getElementById('add-status').value, 
-                    location: document.getElementById('add-location').value, 
-                    address: document.getElementById('add-address').value, 
-                    pic: document.getElementById('add-pic').value, 
-                    docLink: document.getElementById('add-doclink').value, 
-                    disbursements: [],
-                    donasiMasuk: donasiMasuk,
-                    documents: { mou: document.getElementById('add-mou-check').checked, consentLetter: document.getElementById('add-consent-check').checked, proposal: document.getElementById('add-proposal-check').checked }
-                };
-                campaigns.unshift(newCamp); 
-                await saveCampaignsToFirestore(); 
-                closeModal('add-modal', 'add-modal-box');
-                delete this.dataset.donasiMasuk;
-            });
-
-            document.getElementById('edit-campaign-form')?.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const idx = campaigns.findIndex(c => c.id === currentCampaignId);
-                if (idx === -1) return;
-                
-                const newIdInput = document.getElementById('edit-id').value.trim();
-                if (String(currentCampaignId) !== newIdInput && campaigns.some(c => String(c.id) === newIdInput)) {
-                     alert("ID Campaign sudah digunakan oleh campaign lain. Silakan gunakan ID unik.");
-                     return;
-                }
-
-                const posterInput = document.getElementById('edit-poster');
-                const posterUrlValue = (posterInput.files && posterInput.files[0]) ? await fileToBase64(posterInput.files[0]) : campaigns[idx].posterUrl;
-                
-                const donasiMasukBaru = this.dataset.donasiMasuk !== undefined ? parseFloat(this.dataset.donasiMasuk) : campaigns[idx].donasiMasuk;
-
-                campaigns[idx] = { 
-                    ...campaigns[idx], 
-                    id: newIdInput,
-                    name: document.getElementById('edit-name').value, 
-                    posterUrl: posterUrlValue, 
-                    link: document.getElementById('edit-link').value, 
-                    releaseDate: document.getElementById('edit-date').value, 
-                    partnershipStatus: document.getElementById('edit-status').value, 
-                    location: document.getElementById('edit-location').value, 
-                    address: document.getElementById('edit-address').value, 
-                    pic: document.getElementById('edit-pic').value, 
-                    docLink: document.getElementById('edit-doclink').value, 
-                    donasiMasuk: donasiMasukBaru || 0,
-                    documents: { mou: document.getElementById('edit-mou-check').checked, consentLetter: document.getElementById('edit-consent-check').checked, proposal: document.getElementById('edit-proposal-check').checked } 
-                };
-                
-                currentCampaignId = newIdInput;
-                
-                await saveCampaignsToFirestore(); 
-                closeModal('edit-modal', 'edit-modal-box'); 
-                setTimeout(() => openModal(currentCampaignId), 300);
-                delete this.dataset.donasiMasuk;
-            });
-
-            document.getElementById('tableSearchDonasi')?.addEventListener('input', updateUnifiedDashboard);
+        document.getElementById('add-status')?.addEventListener('change', function(e) {
+            const isPer = e.target.value.toLowerCase() === 'perorangan';
+            document.getElementById('add-mou-wrapper').style.display = isPer ? 'none' : '';
+            document.getElementById('add-proposal-wrapper').style.display = isPer ? 'none' : '';
         });
+
+        document.getElementById('edit-status')?.addEventListener('change', function(e) {
+            const isPer = e.target.value.toLowerCase() === 'perorangan';
+            document.getElementById('edit-mou-wrapper').style.display = isPer ? 'none' : '';
+            document.getElementById('edit-proposal-wrapper').style.display = isPer ? 'none' : '';
+        });
+
+        document.getElementById('add-disbursement-form')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const index = campaigns.findIndex(c => c.id === currentCampaignId);
+            if (index === -1) return;
+            const newDisb = { date: document.getElementById('disbursement-date').value, amount: parseFloat(document.getElementById('disbursement-amount').value), purpose: document.getElementById('disbursement-purpose').value };
+            if (!campaigns[index].disbursements) campaigns[index].disbursements = [];
+            campaigns[index].disbursements.push(newDisb);
+            campaigns[index].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            await saveCampaignsToFirestore(); 
+            openModal(currentCampaignId); 
+            closeModal('add-disbursement-modal', 'add-disbursement-box');
+        });
+
+        document.getElementById('edit-disbursement-form')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const idx = campaigns.findIndex(c => c.id === currentCampaignId);
+            if (idx === -1 || currentDisbursementIndex === null) return;
+            campaigns[idx].disbursements[currentDisbursementIndex] = { date: document.getElementById('edit-disbursement-date').value, amount: parseFloat(document.getElementById('edit-disbursement-amount').value), purpose: document.getElementById('edit-disbursement-purpose').value };
+            campaigns[idx].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            await saveCampaignsToFirestore(); 
+            openModal(currentCampaignId); 
+            closeModal('edit-disbursement-modal', 'edit-disbursement-box');
+        });
+
+        document.getElementById('add-campaign-form')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const idInput = document.getElementById('add-id').value.trim();
+            if (campaigns.some(c => String(c.id) === idInput)) {
+                alert("ID Campaign sudah digunakan. Silakan gunakan ID lain.");
+                return;
+            }
+            
+            const posterInput = document.getElementById('add-poster');
+            const posterUrlValue = (posterInput.files && posterInput.files[0]) ? await fileToBase64(posterInput.files[0]) : "";
+            
+            const donasiMasuk = parseFloat(this.dataset.donasiMasuk) || 0;
+
+            const newCamp = {
+                id: idInput, 
+                name: document.getElementById('add-name').value, 
+                posterUrl: posterUrlValue, 
+                link: document.getElementById('add-link').value, 
+                releaseDate: document.getElementById('add-date').value, 
+                partnershipStatus: document.getElementById('add-status').value, 
+                location: document.getElementById('add-location').value, 
+                address: document.getElementById('add-address').value, 
+                pic: document.getElementById('add-pic').value, 
+                docLink: document.getElementById('add-doclink').value, 
+                disbursements: [],
+                donasiMasuk: donasiMasuk,
+                documents: { mou: document.getElementById('add-mou-check').checked, consentLetter: document.getElementById('add-consent-check').checked, proposal: document.getElementById('add-proposal-check').checked }
+            };
+            campaigns.unshift(newCamp); 
+            await saveCampaignsToFirestore(); 
+            closeModal('add-modal', 'add-modal-box');
+            delete this.dataset.donasiMasuk;
+        });
+
+        document.getElementById('edit-campaign-form')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const idx = campaigns.findIndex(c => c.id === currentCampaignId);
+            if (idx === -1) return;
+            
+            const newIdInput = document.getElementById('edit-id').value.trim();
+            if (String(currentCampaignId) !== newIdInput && campaigns.some(c => String(c.id) === newIdInput)) {
+                 alert("ID Campaign sudah digunakan oleh campaign lain. Silakan gunakan ID unik.");
+                 return;
+            }
+
+            const posterInput = document.getElementById('edit-poster');
+            const posterUrlValue = (posterInput.files && posterInput.files[0]) ? await fileToBase64(posterInput.files[0]) : campaigns[idx].posterUrl;
+            
+            const donasiMasukBaru = this.dataset.donasiMasuk !== undefined ? parseFloat(this.dataset.donasiMasuk) : campaigns[idx].donasiMasuk;
+
+            campaigns[idx] = { 
+                ...campaigns[idx], 
+                id: newIdInput,
+                name: document.getElementById('edit-name').value, 
+                posterUrl: posterUrlValue, 
+                link: document.getElementById('edit-link').value, 
+                releaseDate: document.getElementById('edit-date').value, 
+                partnershipStatus: document.getElementById('edit-status').value, 
+                location: document.getElementById('edit-location').value, 
+                address: document.getElementById('edit-address').value, 
+                pic: document.getElementById('edit-pic').value, 
+                docLink: document.getElementById('edit-doclink').value, 
+                donasiMasuk: donasiMasukBaru || 0,
+                documents: { mou: document.getElementById('edit-mou-check').checked, consentLetter: document.getElementById('edit-consent-check').checked, proposal: document.getElementById('edit-proposal-check').checked } 
+            };
+            
+            currentCampaignId = newIdInput;
+            
+            await saveCampaignsToFirestore(); 
+            closeModal('edit-modal', 'edit-modal-box'); 
+            setTimeout(() => openModal(currentCampaignId), 300);
+            delete this.dataset.donasiMasuk;
+        });
+
+        document.getElementById('tableSearchDonasi')?.addEventListener('input', updateUnifiedDashboard);
 
         window.addEventListener('click', function(e) {
             const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-disbursement-modal', 'edit-disbursement-modal', 'delete-modal', 'upload-donasi-modal', 'masterModal'];
