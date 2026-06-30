@@ -211,7 +211,7 @@
              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
              <div>
                  <p class="font-semibold mb-1">Catatan Integrasi</p>
-                 <p class="text-indigo-700/80">Menu "Daftar Campaign Aktif" ini berfungsi sebagai basis data visual mandiri. Total Cair di menu ini didasarkan pada input manual riwayat pencairan di dalam modal, bukan terhubung dengan data file "Unggah Transaksi".</p>
+                 <p class="text-indigo-700/80">Menu "Daftar Campaign Aktif" ini berfungsi sebagai basis data visual mandiri. Donasi Masuk dan Total Cair di menu ini sekarang terhubung otomatis dengan data "Unggah Transaksi" & "Donasi" menggunakan ID Campaign.</p>
              </div>
         </div>
 
@@ -334,9 +334,26 @@
                                 </a>
                             </div>
                         </div>
+
+                        <!-- Data Realtime VLOOKUP -->
+                        <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wider flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Donasi Masuk</p>
+                                <p id="modal-donasi-masuk" class="text-slate-800 font-bold mt-1 text-lg">Rp 0</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wider flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Total Cair</p>
+                                <p id="modal-total-cair" class="text-slate-800 font-bold mt-1 text-lg">Rp 0</p>
+                            </div>
+                            <div class="sm:col-span-2 pt-3 border-t border-indigo-200">
+                                <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wider flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Saldo Campaign</p>
+                                <p id="modal-saldo" class="text-slate-800 font-bold mt-1 text-xl">Rp 0</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- History Table -->
                 <div class="mt-8">
                     <div class="flex justify-between items-center mb-3 border-b pb-2">
                         <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
@@ -464,7 +481,7 @@
         </div>
     </div>
 
-    <!-- Modal Edit Campaign -->
+    <!-- Modal Edit Campaign Overlay -->
     <div id="edit-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="edit-modal-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
@@ -718,15 +735,17 @@
                 console.error("Firebase Auth Error:", error);
                 
                 const updateEl = document.getElementById('lastUpdate');
-                updateEl.classList.remove('text-slate-500');
-                updateEl.classList.add('text-red-500', 'font-bold');
+                if (updateEl) {
+                    updateEl.classList.remove('text-slate-500');
+                    updateEl.classList.add('text-red-500', 'font-bold');
 
-                if (error.code === 'auth/configuration-not-found' || error.code === 'auth/operation-not-allowed') {
-                    updateEl.innerText = "Error: Auth Anonim Nonaktif";
-                    alert("Firebase Error: Autentikasi Anonim (Anonymous) belum diaktifkan. Silakan buka Firebase Console -> Authentication -> tab Sign-in method -> Aktifkan opsi 'Anonymous'.");
-                } else {
-                    updateEl.innerText = "Gagal Terhubung (Cek Internet)";
-                    alert("Gagal terhubung ke Firebase. Pastikan koneksi internet stabil atau cek konfigurasi API Key Anda. Detail error: " + error.message);
+                    if (error.code === 'auth/configuration-not-found' || error.code === 'auth/operation-not-allowed') {
+                        updateEl.innerText = "Error: Auth Anonim Nonaktif";
+                        alert("Firebase Error: Autentikasi Anonim (Anonymous) belum diaktifkan. Silakan buka Firebase Console -> Authentication -> tab Sign-in method -> Aktifkan opsi 'Anonymous'.");
+                    } else {
+                        updateEl.innerText = "Gagal Terhubung (Cek Internet)";
+                        alert("Gagal terhubung ke Firebase. Pastikan koneksi internet stabil atau cek konfigurasi API Key Anda. Detail error: " + error.message);
+                    }
                 }
             }
         };
@@ -739,9 +758,11 @@
                 isFirebaseInitialized = true;
                 
                 const updateEl = document.getElementById('lastUpdate');
-                updateEl.classList.remove('text-red-500');
-                updateEl.classList.add('text-emerald-600', 'font-bold');
-                updateEl.innerText = "Menarik Data dari Server...";
+                if (updateEl) {
+                    updateEl.classList.remove('text-red-500');
+                    updateEl.classList.add('text-emerald-600', 'font-bold');
+                    updateEl.innerText = "Menarik Data dari Server...";
+                }
 
                 setupFirestoreListeners(user.uid);
             }
@@ -821,22 +842,27 @@
                     donasiPeriodText = data.donasiPeriodText || "";
                     
                     const st = data.lastUpdate;
-                    if(st) {
-                        const updateEl = document.getElementById('lastUpdate');
+                    const updateEl = document.getElementById('lastUpdate');
+                    if(st && updateEl) {
                         updateEl.innerText = "Realtime Update: " + new Date(st).toLocaleTimeString();
                         updateEl.classList.remove('text-red-500');
                         updateEl.classList.add('text-slate-500');
                         updateEl.classList.remove('font-bold');
                     }
                 } else {
-                    document.getElementById('lastUpdate').innerText = "Terhubung (Database Kosong)";
+                    const updateEl = document.getElementById('lastUpdate');
+                    if (updateEl) updateEl.innerText = "Terhubung (Database Kosong)";
                 }
                 updateUnifiedDashboard();
                 renderMasterTable();
+                renderCampaigns(); // Render ulang kartu agar sinkron jika data Excel baru diupload
             }, (err) => {
                 console.error(err);
-                document.getElementById('lastUpdate').innerText = "Error Akses Database (Cek Rules)";
-                document.getElementById('lastUpdate').classList.add('text-red-500', 'font-bold');
+                const updateEl = document.getElementById('lastUpdate');
+                if (updateEl) {
+                    updateEl.innerText = "Error Akses Database (Cek Rules)";
+                    updateEl.classList.add('text-red-500', 'font-bold');
+                }
             });
 
             // Dengarkan Perubahan Tab 2 (Campaigns)
@@ -970,14 +996,6 @@
             document.getElementById('fileInputDonasi').value = null;
             openModalAnimation('upload-donasi-modal', 'upload-donasi-box');
         }
-
-        // Listener ditambahkan setelah DOM load (di dalam script module)
-        setTimeout(() => {
-            document.getElementById('fileInputDonasi').addEventListener('change', (e) => handleExcel(e, 'donasi'));
-            document.getElementById('fileInputTransaksi').addEventListener('change', (e) => handleExcel(e, 'transaksi'));
-            document.getElementById('fileInputMaster').addEventListener('change', (e) => handleExcel(e, 'master'));
-            document.getElementById('tableSearchDonasi').addEventListener('input', updateUnifiedDashboard);
-        }, 100);
 
         function handleExcel(e, type) {
             const file = e.target.files[0];
@@ -1120,8 +1138,9 @@
         }
 
         function renderMasterTable() {
-            const query = document.getElementById('searchMaster').value.toLowerCase();
+            const query = document.getElementById('searchMaster')?.value.toLowerCase() || '';
             const tbody = document.getElementById('masterTableBody');
+            if (!tbody) return;
             const filtered = masterCampaigns.filter(m => m.id.includes(query) || m.name.toLowerCase().includes(query));
             tbody.innerHTML = filtered.length ? '' : '<tr><td colspan="2" class="p-8 text-center text-slate-400">Data tidak ditemukan</td></tr>';
             filtered.forEach(m => {
@@ -1130,21 +1149,25 @@
                 row.innerHTML = `<td class="px-6 py-3 font-mono font-bold text-indigo-600">${m.id}</td><td class="px-6 py-3 text-slate-700">${m.name}</td>`;
                 tbody.appendChild(row);
             });
-            document.getElementById('masterStats').innerText = `Total: ${filtered.length} Data`;
+            const masterStats = document.getElementById('masterStats');
+            if (masterStats) masterStats.innerText = `Total: ${filtered.length} Data`;
         }
 
         function updateUnifiedDashboard() {
-            const searchDonasi = document.getElementById('tableSearchDonasi').value.toLowerCase();
+            const searchDonasi = document.getElementById('tableSearchDonasi')?.value.toLowerCase() || '';
             const combinedMap = {};
             
-            document.getElementById('countCampaign').innerText = fullDataDonasi.length;
+            const countCampaignEl = document.getElementById('countCampaign');
+            if (countCampaignEl) countCampaignEl.innerText = fullDataDonasi.length;
 
             const periodBadge = document.getElementById('donasi-period-display');
-            if (donasiPeriodText) {
-                periodBadge.innerText = donasiPeriodText;
-                periodBadge.classList.remove('hidden');
-            } else {
-                periodBadge.classList.add('hidden');
+            if (periodBadge) {
+                if (donasiPeriodText) {
+                    periodBadge.innerText = donasiPeriodText;
+                    periodBadge.classList.remove('hidden');
+                } else {
+                    periodBadge.classList.add('hidden');
+                }
             }
 
             fullDataDonasi.forEach(d => { combinedMap[d.id] = { ...d, salur: 0 }; });
@@ -1159,26 +1182,35 @@
             const totalIn = Object.values(combinedMap).reduce((s, i) => s + i.transaksi, 0);
             const totalOut = Object.values(combinedMap).reduce((s, i) => s + i.salur, 0);
             
-            document.getElementById('totalDonasi').innerText = formatter.format(totalIn);
-            document.getElementById('totalPenyaluran').innerText = formatter.format(totalOut);
-            document.getElementById('saldoDonasi').innerText = formatter.format(totalIn - totalOut);
-            document.getElementById('serapanPersen').innerText = (totalIn > 0 ? (totalOut/totalIn)*100 : 0).toFixed(1) + "%";
+            const totalDonasiEl = document.getElementById('totalDonasi');
+            if(totalDonasiEl) totalDonasiEl.innerText = formatter.format(totalIn);
+            
+            const totalPenyaluranEl = document.getElementById('totalPenyaluran');
+            if(totalPenyaluranEl) totalPenyaluranEl.innerText = formatter.format(totalOut);
+            
+            const saldoDonasiEl = document.getElementById('saldoDonasi');
+            if(saldoDonasiEl) saldoDonasiEl.innerText = formatter.format(totalIn - totalOut);
+            
+            const serapanPersenEl = document.getElementById('serapanPersen');
+            if(serapanPersenEl) serapanPersenEl.innerText = (totalIn > 0 ? (totalOut/totalIn)*100 : 0).toFixed(1) + "%";
             
             const tbCombined = document.getElementById('dataTableBodyCombined');
-            tbCombined.innerHTML = combinedList.length ? '' : '<tr><td colspan="5" class="p-8 text-center text-slate-400 italic">Data Kosong</td></tr>';
-            combinedList.forEach(item => {
-                const row = document.createElement('tr');
-                const saldo = item.transaksi - item.salur;
-                row.className = "hover:bg-slate-50";
-                row.innerHTML = `
-                    <td class="px-5 py-3 font-mono text-xs text-slate-500">${item.id}</td>
-                    <td class="px-5 py-3 font-medium text-slate-800">${item.campaign}</td>
-                    <td class="px-5 py-3 text-right text-indigo-600 font-medium">${formatter.format(item.transaksi)}</td>
-                    <td class="px-5 py-3 text-right text-purple-600 font-medium">${formatter.format(item.salur)}</td>
-                    <td class="px-5 py-3 text-right font-bold ${saldo < 0 ? 'text-red-600' : 'text-amber-600'}">${formatter.format(saldo)}</td>
-                `;
-                tbCombined.appendChild(row);
-            });
+            if(tbCombined) {
+                tbCombined.innerHTML = combinedList.length ? '' : '<tr><td colspan="5" class="p-8 text-center text-slate-400 italic">Data Kosong</td></tr>';
+                combinedList.forEach(item => {
+                    const row = document.createElement('tr');
+                    const saldo = item.transaksi - item.salur;
+                    row.className = "hover:bg-slate-50";
+                    row.innerHTML = `
+                        <td class="px-5 py-3 font-mono text-xs text-slate-500">${item.id}</td>
+                        <td class="px-5 py-3 font-medium text-slate-800">${item.campaign}</td>
+                        <td class="px-5 py-3 text-right text-indigo-600 font-medium">${formatter.format(item.transaksi)}</td>
+                        <td class="px-5 py-3 text-right text-purple-600 font-medium">${formatter.format(item.salur)}</td>
+                        <td class="px-5 py-3 text-right font-bold ${saldo < 0 ? 'text-red-600' : 'text-amber-600'}">${formatter.format(saldo)}</td>
+                    `;
+                    tbCombined.appendChild(row);
+                });
+            }
         }
 
         const fileToBase64 = file => new Promise((resolve, reject) => {
@@ -1199,28 +1231,28 @@
             return `<span class="px-2.5 py-1 text-xs font-semibold rounded-full border ${color}">${status}</span>`;
         };
 
-        const gridContainer = document.getElementById('campaign-grid');
-        
-        setTimeout(() => {
-            document.getElementById('add-status').addEventListener('change', function(e) {
-                const isPer = e.target.value.toLowerCase() === 'perorangan';
-                document.getElementById('add-mou-wrapper').style.display = isPer ? 'none' : '';
-                document.getElementById('add-proposal-wrapper').style.display = isPer ? 'none' : '';
-            });
-
-            document.getElementById('edit-status').addEventListener('change', function(e) {
-                const isPer = e.target.value.toLowerCase() === 'perorangan';
-                document.getElementById('edit-mou-wrapper').style.display = isPer ? 'none' : '';
-                document.getElementById('edit-proposal-wrapper').style.display = isPer ? 'none' : '';
-            });
-        }, 100);
-
         function renderCampaigns() {
+            const gridContainer = document.getElementById('campaign-grid');
+            if (!gridContainer) return;
+
             gridContainer.innerHTML = ''; 
             campaigns.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
 
             campaigns.forEach(campaign => {
-                const totalDisbursed = campaign.disbursements ? campaign.disbursements.reduce((sum, item) => sum + Number(item.amount), 0) : 0;
+                // VLOOKUP data dari Ringkasan Donasi & Transaksi Excel berdasarkan ID Campaign
+                const donasiMasukVlookup = fullDataDonasi
+                    .filter(d => String(d.id).trim() === String(campaign.id).trim())
+                    .reduce((sum, d) => sum + d.transaksi, 0);
+                
+                // Gunakan nilai Excel jika ada, jika tidak fallback ke nilai donasi form manual
+                const currentDonasiMasuk = donasiMasukVlookup > 0 ? donasiMasukVlookup : (campaign.donasiMasuk || 0);
+
+                const totalCair = fullDataTransaksi
+                    .filter(t => String(t.id).trim() === String(campaign.id).trim())
+                    .reduce((sum, t) => sum + t.totalDonasi, 0);
+                    
+                const currentSaldo = currentDonasiMasuk - totalCair;
+
                 let docStatus = "", docColorClass = "";
                 const docs = campaign.documents || {};
                 
@@ -1255,15 +1287,15 @@
                             </div>
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Donasi Masuk</span>
-                                <span class="font-semibold text-slate-800">${campaign.donasiMasuk > 0 ? formatRupiah(campaign.donasiMasuk) : 'Rp 0'}</span>
+                                <span class="font-semibold text-slate-800">${currentDonasiMasuk > 0 ? formatRupiah(currentDonasiMasuk) : 'Rp 0'}</span>
                             </div>
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Total Cair</span>
-                                <span class="font-semibold text-slate-800">${totalDisbursed > 0 ? formatRupiah(totalDisbursed) : 'Rp 0'}</span>
+                                <span class="font-semibold text-slate-800">${totalCair > 0 ? formatRupiah(totalCair) : 'Rp 0'}</span>
                             </div>
                             <div class="flex justify-between items-center text-xs mt-1 pt-2 border-t border-slate-200">
                                 <span class="text-slate-600 font-bold flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Saldo</span>
-                                <span class="font-bold ${(campaign.donasiMasuk || 0) - totalDisbursed < 0 ? 'text-red-600' : 'text-amber-600'}">${formatRupiah((campaign.donasiMasuk || 0) - totalDisbursed)}</span>
+                                <span class="font-bold ${currentSaldo < 0 ? 'text-red-600' : 'text-amber-600'}">${formatRupiah(currentSaldo)}</span>
                             </div>
                         </div>
                         <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
@@ -1291,18 +1323,22 @@
 
         function openModalAnimation(modalId, boxId) {
             const modal = document.getElementById(modalId); const box = document.getElementById(boxId);
-            modal.classList.remove('hidden');
-            setTimeout(() => { modal.classList.remove('opacity-0'); modal.classList.add('opacity-100'); box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
-            document.body.style.overflow = 'hidden';
+            if (modal && box) {
+                modal.classList.remove('hidden');
+                setTimeout(() => { modal.classList.remove('opacity-0'); modal.classList.add('opacity-100'); box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
+                document.body.style.overflow = 'hidden';
+            }
         }
 
         function closeModal(modalId, boxId) {
             const modal = document.getElementById(modalId); const box = document.getElementById(boxId);
-            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0'); box.classList.remove('scale-100'); box.classList.add('scale-95');
-            setTimeout(() => { 
-                modal.classList.add('hidden'); 
-                if (document.querySelectorAll('.fixed.inset-0:not(.hidden)').length <= 1) document.body.style.overflow = '';
-            }, 300);
+            if (modal && box) {
+                modal.classList.remove('opacity-100'); modal.classList.add('opacity-0'); box.classList.remove('scale-100'); box.classList.add('scale-95');
+                setTimeout(() => { 
+                    modal.classList.add('hidden'); 
+                    if (document.querySelectorAll('.fixed.inset-0:not(.hidden)').length <= 1) document.body.style.overflow = '';
+                }, 300);
+            }
         }
 
         function openModal(campaignId) {
@@ -1319,7 +1355,27 @@
             document.querySelector('#modal-location span').innerText = campaign.location;
             document.getElementById('modal-address').innerText = campaign.address;
 
-            const totalDisbursed = campaign.disbursements ? campaign.disbursements.reduce((sum, item) => sum + Number(item.amount), 0) : 0;
+            // VLOOKUP data dari Ringkasan Donasi & Transaksi Excel
+            const donasiMasukVlookup = fullDataDonasi
+                .filter(d => String(d.id).trim() === String(campaign.id).trim())
+                .reduce((sum, d) => sum + d.transaksi, 0);
+            const currentDonasiMasuk = donasiMasukVlookup > 0 ? donasiMasukVlookup : (campaign.donasiMasuk || 0);
+
+            const totalCair = fullDataTransaksi
+                .filter(t => String(t.id).trim() === String(campaign.id).trim())
+                .reduce((sum, t) => sum + t.totalDonasi, 0);
+                
+            const currentSaldo = currentDonasiMasuk - totalCair;
+
+            document.getElementById('modal-donasi-masuk').innerText = currentDonasiMasuk > 0 ? formatRupiah(currentDonasiMasuk) : 'Rp 0';
+            document.getElementById('modal-total-cair').innerText = totalCair > 0 ? formatRupiah(totalCair) : 'Rp 0';
+            
+            const saldoEl = document.getElementById('modal-saldo');
+            if (saldoEl) {
+                saldoEl.innerText = formatRupiah(currentSaldo);
+                saldoEl.className = `text-slate-800 font-bold mt-1 text-xl ${currentSaldo < 0 ? 'text-red-600' : 'text-amber-600'}`;
+            }
+
             let docStatus = "", docColorClass = "";
             const docs = campaign.documents || {};
             if (campaign.partnershipStatus.toLowerCase() === 'perorangan') {
@@ -1339,16 +1395,18 @@
             document.getElementById('modal-doclink').href = campaign.docLink || "#";
 
             const historyBody = document.getElementById('modal-history-body'); const emptyState = document.getElementById('modal-history-empty');
-            historyBody.innerHTML = ''; 
-            
-            if (campaign.disbursements && campaign.disbursements.length > 0) {
-                historyBody.parentElement.classList.remove('hidden'); emptyState.classList.add('hidden');
-                campaign.disbursements.forEach((item, index) => {
-                    const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 transition-colors";
-                    tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-slate-600">${formatDate(item.date)}</td><td class="px-6 py-4 whitespace-nowrap font-medium text-slate-800">${formatRupiah(item.amount)}</td><td class="px-6 py-4 text-slate-600">${item.purpose}</td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button onclick="openEditDisbursementModal(${index})" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button></td>`;
-                    historyBody.appendChild(tr);
-                });
-            } else { historyBody.parentElement.classList.add('hidden'); emptyState.classList.remove('hidden'); }
+            if (historyBody && emptyState) {
+                historyBody.innerHTML = ''; 
+                
+                if (campaign.disbursements && campaign.disbursements.length > 0) {
+                    historyBody.parentElement.classList.remove('hidden'); emptyState.classList.add('hidden');
+                    campaign.disbursements.forEach((item, index) => {
+                        const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 transition-colors";
+                        tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-slate-600">${formatDate(item.date)}</td><td class="px-6 py-4 whitespace-nowrap font-medium text-slate-800">${formatRupiah(item.amount)}</td><td class="px-6 py-4 text-slate-600">${item.purpose}</td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button onclick="openEditDisbursementModal(${index})" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button></td>`;
+                        historyBody.appendChild(tr);
+                    });
+                } else { historyBody.parentElement.classList.add('hidden'); emptyState.classList.remove('hidden'); }
+            }
 
             openModalAnimation('detail-modal', 'modal-box');
         }
@@ -1393,7 +1451,8 @@
 
         function openAddDisbursementModal() {
             if (!currentCampaignId) return;
-            document.getElementById('add-disbursement-form').reset();
+            const form = document.getElementById('add-disbursement-form');
+            if (form) form.reset();
             openModalAnimation('add-disbursement-modal', 'add-disbursement-box');
         }
 
@@ -1407,9 +1466,56 @@
             openModalAnimation('edit-disbursement-modal', 'edit-disbursement-box');
         }
 
-        // Listener ditambahkan setelah DOM load (di dalam script module)
-        setTimeout(() => {
-            document.getElementById('add-disbursement-form').addEventListener('submit', async function(e) {
+        function handleEditFileChange(docType) {
+            const fileInput = document.getElementById(`edit-${docType}-file`); const checkbox = document.getElementById(`edit-${docType}-check`);
+            if (fileInput && checkbox) checkbox.checked = (fileInput.files && fileInput.files.length > 0) ? true : fileInput.dataset.original === 'true';
+        }
+
+        function openAddModal() {
+            const form = document.getElementById('add-campaign-form');
+            if (form) form.reset();
+            document.getElementById('add-mou-wrapper').style.display = ''; document.getElementById('add-proposal-wrapper').style.display = '';
+            openModalAnimation('add-modal', 'add-modal-box');
+        }
+
+        function openEditModal() {
+            if (!currentCampaignId) return;
+            const camp = campaigns.find(c => c.id === currentCampaignId);
+            if (!camp) return;
+            closeModal('detail-modal', 'modal-box');
+            const form = document.getElementById('edit-campaign-form');
+            if (form) form.reset(); 
+            document.getElementById('edit-id').value = camp.id;
+            document.getElementById('edit-name').value = camp.name; document.getElementById('edit-link').value = camp.link; document.getElementById('edit-date').value = camp.releaseDate; document.getElementById('edit-status').value = camp.partnershipStatus; document.getElementById('edit-pic').value = camp.pic; document.getElementById('edit-location').value = camp.location; document.getElementById('edit-address').value = camp.address;
+            const isPer = camp.partnershipStatus.toLowerCase() === 'perorangan';
+            document.getElementById('edit-mou-wrapper').style.display = isPer ? 'none' : ''; document.getElementById('edit-proposal-wrapper').style.display = isPer ? 'none' : '';
+            document.getElementById('edit-mou-check').checked = camp.documents.mou; document.getElementById('edit-consent-check').checked = camp.documents.consentLetter; document.getElementById('edit-proposal-check').checked = camp.documents.proposal;
+            document.getElementById('edit-mou-file').dataset.original = camp.documents.mou; document.getElementById('edit-consent-file').dataset.original = camp.documents.consentLetter; document.getElementById('edit-proposal-file').dataset.original = camp.documents.proposal;
+            document.getElementById('edit-doclink').value = camp.docLink || "";
+            setTimeout(() => openModalAnimation('edit-modal', 'edit-modal-box'), 300);
+        }
+
+        // ==========================================
+        // SAFE DOM EVENT ATTACHMENTS
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('fileInputDonasi')?.addEventListener('change', (e) => handleExcel(e, 'donasi'));
+            document.getElementById('fileInputTransaksi')?.addEventListener('change', (e) => handleExcel(e, 'transaksi'));
+            document.getElementById('fileInputMaster')?.addEventListener('change', (e) => handleExcel(e, 'master'));
+
+            document.getElementById('add-status')?.addEventListener('change', function(e) {
+                const isPer = e.target.value.toLowerCase() === 'perorangan';
+                document.getElementById('add-mou-wrapper').style.display = isPer ? 'none' : '';
+                document.getElementById('add-proposal-wrapper').style.display = isPer ? 'none' : '';
+            });
+
+            document.getElementById('edit-status')?.addEventListener('change', function(e) {
+                const isPer = e.target.value.toLowerCase() === 'perorangan';
+                document.getElementById('edit-mou-wrapper').style.display = isPer ? 'none' : '';
+                document.getElementById('edit-proposal-wrapper').style.display = isPer ? 'none' : '';
+            });
+
+            document.getElementById('add-disbursement-form')?.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const index = campaigns.findIndex(c => c.id === currentCampaignId);
                 if (index === -1) return;
@@ -1423,7 +1529,7 @@
                 closeModal('add-disbursement-modal', 'add-disbursement-box');
             });
 
-            document.getElementById('edit-disbursement-form').addEventListener('submit', async function(e) {
+            document.getElementById('edit-disbursement-form')?.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const idx = campaigns.findIndex(c => c.id === currentCampaignId);
                 if (idx === -1 || currentDisbursementIndex === null) return;
@@ -1435,7 +1541,7 @@
                 closeModal('edit-disbursement-modal', 'edit-disbursement-box');
             });
 
-            document.getElementById('add-campaign-form').addEventListener('submit', async function(e) {
+            document.getElementById('add-campaign-form')?.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const idInput = document.getElementById('add-id').value.trim();
                 if (campaigns.some(c => String(c.id) === idInput)) {
@@ -1469,7 +1575,7 @@
                 delete this.dataset.donasiMasuk;
             });
 
-            document.getElementById('edit-campaign-form').addEventListener('submit', async function(e) {
+            document.getElementById('edit-campaign-form')?.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const idx = campaigns.findIndex(c => c.id === currentCampaignId);
                 if (idx === -1) return;
@@ -1508,34 +1614,9 @@
                 setTimeout(() => openModal(currentCampaignId), 300);
                 delete this.dataset.donasiMasuk;
             });
-        }, 100);
 
-        function handleEditFileChange(docType) {
-            const fileInput = document.getElementById(`edit-${docType}-file`); const checkbox = document.getElementById(`edit-${docType}-check`);
-            checkbox.checked = (fileInput.files && fileInput.files.length > 0) ? true : fileInput.dataset.original === 'true';
-        }
-
-        function openAddModal() {
-            document.getElementById('add-campaign-form').reset();
-            document.getElementById('add-mou-wrapper').style.display = ''; document.getElementById('add-proposal-wrapper').style.display = '';
-            openModalAnimation('add-modal', 'add-modal-box');
-        }
-
-        function openEditModal() {
-            if (!currentCampaignId) return;
-            const camp = campaigns.find(c => c.id === currentCampaignId);
-            if (!camp) return;
-            closeModal('detail-modal', 'modal-box');
-            document.getElementById('edit-campaign-form').reset(); 
-            document.getElementById('edit-id').value = camp.id;
-            document.getElementById('edit-name').value = camp.name; document.getElementById('edit-link').value = camp.link; document.getElementById('edit-date').value = camp.releaseDate; document.getElementById('edit-status').value = camp.partnershipStatus; document.getElementById('edit-pic').value = camp.pic; document.getElementById('edit-location').value = camp.location; document.getElementById('edit-address').value = camp.address;
-            const isPer = camp.partnershipStatus.toLowerCase() === 'perorangan';
-            document.getElementById('edit-mou-wrapper').style.display = isPer ? 'none' : ''; document.getElementById('edit-proposal-wrapper').style.display = isPer ? 'none' : '';
-            document.getElementById('edit-mou-check').checked = camp.documents.mou; document.getElementById('edit-consent-check').checked = camp.documents.consentLetter; document.getElementById('edit-proposal-check').checked = camp.documents.proposal;
-            document.getElementById('edit-mou-file').dataset.original = camp.documents.mou; document.getElementById('edit-consent-file').dataset.original = camp.documents.consentLetter; document.getElementById('edit-proposal-file').dataset.original = camp.documents.proposal;
-            document.getElementById('edit-doclink').value = camp.docLink || "";
-            setTimeout(() => openModalAnimation('edit-modal', 'edit-modal-box'), 300);
-        }
+            document.getElementById('tableSearchDonasi')?.addEventListener('input', updateUnifiedDashboard);
+        });
 
         window.addEventListener('click', function(e) {
             const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-disbursement-modal', 'edit-disbursement-modal', 'delete-modal', 'upload-donasi-modal', 'masterModal'];
@@ -1555,7 +1636,7 @@
                 const arr = ['delete-modal', 'edit-disbursement-modal', 'add-disbursement-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'masterModal'];
                 for (const id of arr) { 
                     const el = document.getElementById(id); 
-                    if (!el.classList.contains('hidden')) { 
+                    if (el && !el.classList.contains('hidden')) { 
                         if (id === 'masterModal') {
                             el.classList.add('hidden');
                         } else {
