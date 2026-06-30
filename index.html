@@ -719,16 +719,56 @@
             appId: "1:318119366712:web:bcb52d5bff898014ac56cd",
             measurementId: "G-6QTWRPR57H"
         };
-        const appIdToUse = typeof __app_id !== 'undefined' ? __app_id : 'donasi-online-erzet';
-
+        
         const app = initializeApp(configToUse);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // ==========================================
+        // DEKLARASI STATE (HOISTED)
+        // ==========================================
         let currentUser = null;
         let isFirebaseInitialized = false;
+        let dashboardRef = null;
+        const appIdToUse = typeof __app_id !== 'undefined' ? __app_id : 'donasi-online-erzet';
 
-        // Inisiasi Autentikasi yang disesuaikan dengan lingkungan Canvas
+        let fullDataDonasi = [];
+        let fullDataTransaksi = []; 
+        let masterCampaigns = []; 
+        let donasiPeriodText = "";
+        
+        let currentCampaignId = null;
+        let currentDisbursementIndex = null;
+        let campaigns = [];
+
+        const defaultCampaigns = [
+            {
+                id: 1,
+                name: "Bantuan Pendidikan Anak Yatim Piatu Pelosok",
+                posterUrl: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                link: "https://kitabisa.com/bantuanpendidikanyatim",
+                releaseDate: "2023-10-12",
+                partnershipStatus: "Lembaga",
+                location: "Kab. Garut, Jawa Barat",
+                address: "Desa Sukamaju RT 03/05, Kec. Cilawu, Kabupaten Garut. Dekat balai desa lama.",
+                pic: "Ahmad Fauzi (Yayasan Peduli Negeri)",
+                donasiMasuk: 25000000,
+                documents: { mou: true, consentLetter: true, proposal: true },
+                docLink: "https://drive.google.com/drive/folders/contoh-link-1",
+                disbursements: [
+                    { date: "2023-12-10", amount: 15000000, purpose: "Pembayaran SPP semester ganjil" },
+                    { date: "2023-11-01", amount: 5000000, purpose: "Pembelian paket alat tulis 50 anak" }
+                ]
+            }
+        ];
+
+        const formatter = new Intl.NumberFormat('id-ID', {
+            style: 'currency', currency: 'IDR', minimumFractionDigits: 0
+        });
+
+        // ==========================================
+        // MENGAKTIFKAN OTENTIKASI
+        // ==========================================
         const initAuth = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -738,7 +778,6 @@
                 }
             } catch (error) {
                 console.error("Firebase Auth Error:", error);
-                
                 const updateEl = document.getElementById('lastUpdate');
                 if (updateEl) {
                     updateEl.classList.remove('text-slate-500');
@@ -774,71 +813,11 @@
         });
 
         // ==========================================
-        // STATE MANAGEMENT
-        // ==========================================
-        let fullDataDonasi = [];
-        let fullDataTransaksi = []; 
-        let masterCampaigns = []; 
-        let donasiPeriodText = "";
-        
-        let currentCampaignId = null;
-        let currentDisbursementIndex = null;
-        let campaigns = [];
-
-        const defaultCampaigns = [
-            {
-                id: 1,
-                name: "Bantuan Pendidikan Anak Yatim Piatu Pelosok",
-                posterUrl: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-                link: "https://kitabisa.com/bantuanpendidikanyatim",
-                releaseDate: "2023-10-12",
-                partnershipStatus: "Lembaga",
-                location: "Kab. Garut, Jawa Barat",
-                address: "Desa Sukamaju RT 03/05, Kec. Cilawu, Kabupaten Garut. Dekat balai desa lama.",
-                pic: "Ahmad Fauzi (Yayasan Peduli Negeri)",
-                donasiMasuk: 25000000,
-                documents: { mou: true, consentLetter: true, proposal: true },
-                docLink: "https://drive.google.com/drive/folders/contoh-link-1",
-                disbursements: [
-                    { date: "2023-12-10", amount: 15000000, purpose: "Pembayaran SPP semester ganjil" },
-                    { date: "2023-11-01", amount: 5000000, purpose: "Pembelian paket alat tulis 50 anak" }
-                ]
-            }
-        ];
-
-        const formatter = new Intl.NumberFormat('id-ID', {
-            style: 'currency', currency: 'IDR', minimumFractionDigits: 0
-        });
-
-        // Mendaftarkan Fungsi Global agar bisa diakses HTML (karena menggunakan type="module")
-        window.switchTab = switchTab;
-        window.toggleMasterModal = toggleMasterModal;
-        window.openUploadDonasiModal = openUploadDonasiModal;
-        window.closeModal = closeModal;
-        window.openModalAnimation = openModalAnimation;
-        window.renderMasterTable = renderMasterTable;
-        window.openModal = openModal;
-        window.openDeleteConfirmModal = openDeleteConfirmModal;
-        window.confirmDeleteCampaign = confirmDeleteCampaign;
-        window.openAddDisbursementModal = openAddDisbursementModal;
-        window.openEditDisbursementModal = openEditDisbursementModal;
-        window.handleEditFileChange = handleEditFileChange;
-        window.openAddModal = openAddModal;
-        window.openEditModal = openEditModal;
-        window.autoFillCampaignData = autoFillCampaignData;
-        window.clearStoredData = clearStoredData;
-        window.handleLinkClick = handleLinkClick;
-
-        let dashboardRef;
-
-        // ==========================================
         // FIRESTORE REALTIME LISTENERS
         // ==========================================
         function setupFirestoreListeners(uid) {
-            // PERUBAHAN: Gunakan path 'public' -> 'data' agar data tersinkron untuk semua orang/pengunjung di GitHub Pages
             dashboardRef = collection(db, 'artifacts', appIdToUse, 'public', 'data', 'dashboardData');
 
-            // Dengarkan Perubahan Tab 1 (Ringkasan Donasi & Master)
             onSnapshot(doc(dashboardRef, 'tab1_state'), (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -861,7 +840,7 @@
                 }
                 updateUnifiedDashboard();
                 renderMasterTable();
-                renderCampaigns(); // Render ulang kartu agar sinkron jika data Excel baru diupload
+                renderCampaigns(); 
             }, (err) => {
                 console.error(err);
                 const updateEl = document.getElementById('lastUpdate');
@@ -871,12 +850,10 @@
                 }
             });
 
-            // Dengarkan Perubahan Tab 2 (Campaigns)
             onSnapshot(doc(dashboardRef, 'tab2_campaigns'), (docSnap) => {
                 if (docSnap.exists()) {
                     campaigns = docSnap.data().list || [];
                 } else {
-                    // Jika belum ada data campaign sama sekali di DB
                     campaigns = [...defaultCampaigns];
                     saveCampaignsToFirestore();
                 }
@@ -897,29 +874,20 @@
                     donasiPeriodText,
                     lastUpdate: new Date().toISOString()
                 });
-            } catch (e) {
-                console.error("Error saving data", e);
-            }
+            } catch (e) { console.error("Error saving data", e); }
         }
 
         async function saveCampaignsToFirestore() {
             if (!currentUser || !dashboardRef) return;
             try {
                 await setDoc(doc(dashboardRef, 'tab2_campaigns'), { list: campaigns });
-            } catch (e) {
-                console.error("Error saving campaigns", e);
-            }
+            } catch (e) { console.error("Error saving campaigns", e); }
         }
 
         async function clearStoredData() {
             if(!currentUser || !dashboardRef) return;
             if(confirm('Yakin ingin menghapus seluruh data pada Server Firebase?')) {
-                fullDataDonasi = [];
-                fullDataTransaksi = [];
-                masterCampaigns = [];
-                donasiPeriodText = "";
-                campaigns = [...defaultCampaigns];
-                
+                fullDataDonasi = []; fullDataTransaksi = []; masterCampaigns = []; donasiPeriodText = ""; campaigns = [...defaultCampaigns];
                 await saveTab1ToFirestore();
                 await saveCampaignsToFirestore();
                 alert('Semua data berhasil dibersihkan dari server.');
@@ -932,7 +900,6 @@
         function switchTab(tabId) {
             document.getElementById('tab-ringkasan').className = tabId === 'ringkasan' ? 'tab-btn active' : 'tab-btn';
             document.getElementById('tab-monitoring').className = tabId === 'monitoring' ? 'tab-btn active' : 'tab-btn';
-            
             document.getElementById('view-ringkasan').style.display = tabId === 'ringkasan' ? 'block' : 'none';
             document.getElementById('view-monitoring').style.display = tabId === 'monitoring' ? 'block' : 'none';
         }
@@ -1003,15 +970,7 @@
             openModalAnimation('upload-donasi-modal', 'upload-donasi-box');
         }
 
-        // Listener ditambahkan setelah DOM load (di dalam script module)
-        setTimeout(() => {
-            document.getElementById('fileInputDonasi')?.addEventListener('change', (e) => handleExcel(e, 'donasi'));
-            document.getElementById('fileInputTransaksi')?.addEventListener('change', (e) => handleExcel(e, 'transaksi'));
-            document.getElementById('fileInputMaster')?.addEventListener('change', (e) => handleExcel(e, 'master'));
-            document.getElementById('tableSearchDonasi')?.addEventListener('input', updateUnifiedDashboard);
-        }, 100);
-
-        function handleExcel(e, type) {
+        async function handleExcel(e, type) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
@@ -1035,8 +994,7 @@
                 else if (type === 'transaksi') processTransaksi(worksheet);
                 else if (type === 'master') processMaster(worksheet);
                 
-                await saveTab1ToFirestore(); // Simpan Data ke Firestore
-                
+                await saveTab1ToFirestore(); 
                 e.target.value = null;
             };
             reader.readAsArrayBuffer(file);
@@ -1235,7 +1193,6 @@
             reader.onerror = error => reject(error);
         });
 
-        const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
         const formatDate = (dateString) => new Date(dateString).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
         const getStatusBadge = (status) => {
@@ -1302,15 +1259,15 @@
                             </div>
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Donasi Masuk</span>
-                                <span class="font-semibold text-slate-800">${currentDonasiMasuk > 0 ? formatRupiah(currentDonasiMasuk) : 'Rp 0'}</span>
+                                <span class="font-semibold text-slate-800">${currentDonasiMasuk > 0 ? formatter.format(currentDonasiMasuk) : 'Rp 0'}</span>
                             </div>
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Total Cair</span>
-                                <span class="font-semibold text-slate-800">${totalCair > 0 ? formatRupiah(totalCair) : 'Rp 0'}</span>
+                                <span class="font-semibold text-slate-800">${totalCair > 0 ? formatter.format(totalCair) : 'Rp 0'}</span>
                             </div>
                             <div class="flex justify-between items-center text-xs mt-1 pt-2 border-t border-slate-200">
                                 <span class="text-slate-600 font-bold flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Saldo</span>
-                                <span class="font-bold ${currentSaldo < 0 ? 'text-red-600' : 'text-amber-600'}">${formatRupiah(currentSaldo)}</span>
+                                <span class="font-bold ${currentSaldo < 0 ? 'text-red-600' : 'text-amber-600'}">${formatter.format(currentSaldo)}</span>
                             </div>
                         </div>
                         <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
@@ -1383,14 +1340,14 @@
             const currentSaldo = currentDonasiMasuk - totalCair;
 
             const elDonasiMasuk = document.getElementById('modal-donasi-masuk');
-            if(elDonasiMasuk) elDonasiMasuk.innerText = currentDonasiMasuk > 0 ? formatRupiah(currentDonasiMasuk) : 'Rp 0';
+            if(elDonasiMasuk) elDonasiMasuk.innerText = currentDonasiMasuk > 0 ? formatter.format(currentDonasiMasuk) : 'Rp 0';
             
             const elTotalCair = document.getElementById('modal-total-cair');
-            if(elTotalCair) elTotalCair.innerText = totalCair > 0 ? formatRupiah(totalCair) : 'Rp 0';
+            if(elTotalCair) elTotalCair.innerText = totalCair > 0 ? formatter.format(totalCair) : 'Rp 0';
             
             const saldoEl = document.getElementById('modal-saldo');
             if(saldoEl) {
-                saldoEl.innerText = formatRupiah(currentSaldo);
+                saldoEl.innerText = formatter.format(currentSaldo);
                 saldoEl.className = `text-slate-800 font-bold mt-1 text-xl ${currentSaldo < 0 ? 'text-red-600' : 'text-amber-600'}`;
             }
 
@@ -1421,7 +1378,7 @@
                     historyBody.parentElement.classList.remove('hidden'); emptyState.classList.add('hidden');
                     campaign.disbursements.forEach((item, index) => {
                         const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 transition-colors";
-                        tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-slate-600">${formatDate(item.date)}</td><td class="px-6 py-4 whitespace-nowrap font-medium text-slate-800">${formatRupiah(item.amount)}</td><td class="px-6 py-4 text-slate-600">${item.purpose}</td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button type="button" onclick="openEditDisbursementModal(${index})" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button></td>`;
+                        tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-slate-600">${formatDate(item.date)}</td><td class="px-6 py-4 whitespace-nowrap font-medium text-slate-800">${formatter.format(item.amount)}</td><td class="px-6 py-4 text-slate-600">${item.purpose}</td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button type="button" onclick="openEditDisbursementModal(${index})" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button></td>`;
                         historyBody.appendChild(tr);
                     });
                 } else { historyBody.parentElement.classList.add('hidden'); emptyState.classList.remove('hidden'); }
@@ -1430,8 +1387,7 @@
             openModalAnimation('detail-modal', 'modal-box');
         }
 
-        // Action Handlers
-        window.autoFillCampaignData = function(mode) {
+        function autoFillCampaignData(mode) {
             const idInput = document.getElementById(`${mode}-id`).value.trim();
             if (!idInput) {
                 alert("Silakan masukkan ID Campaign terlebih dahulu.");
@@ -1454,11 +1410,11 @@
                 if(campaignData.pic && campaignData.pic !== '-' && campaignData.pic !== 'System') {
                     document.getElementById(`${mode}-pic`).value = campaignData.pic;
                 }
-                alert(`Data ditemukan!\nCapaian Donasi: ${formatRupiah(campaignData.transaksi)}\nTransaksi Salur (Excel): ${formatRupiah(campaignData.salur)}`);
+                alert(`Data ditemukan!\nCapaian Donasi: ${formatter.format(campaignData.transaksi)}\nTransaksi Salur (Excel): ${formatter.format(campaignData.salur)}`);
             } else {
                 alert("Data ID Campaign tidak ditemukan di Ringkasan Donasi.");
             }
-        };
+        }
 
         function openDeleteConfirmModal() { if (currentCampaignId) openModalAnimation('delete-modal', 'delete-modal-box'); }
 
@@ -1477,7 +1433,7 @@
             openModalAnimation('add-disbursement-modal', 'add-disbursement-box');
         }
 
-        window.openEditDisbursementModal = function(index) {
+        function openEditDisbursementModal(index) {
             if (!currentCampaignId) return;
             const campaign = campaigns.find(c => c.id === currentCampaignId);
             if (!campaign || !campaign.disbursements || !campaign.disbursements[index]) return;
@@ -1485,7 +1441,7 @@
             const item = campaign.disbursements[index];
             document.getElementById('edit-disbursement-date').value = item.date; document.getElementById('edit-disbursement-amount').value = item.amount; document.getElementById('edit-disbursement-purpose').value = item.purpose;
             openModalAnimation('edit-disbursement-modal', 'edit-disbursement-box');
-        };
+        }
 
         function handleEditFileChange(docType) {
             const fileInput = document.getElementById(`edit-${docType}-file`); const checkbox = document.getElementById(`edit-${docType}-check`);
@@ -1516,8 +1472,7 @@
             setTimeout(() => openModalAnimation('edit-modal', 'edit-modal-box'), 300);
         }
 
-        // Form Submit Handlers (Eksplisit untuk Mencegah Reload)
-        window.handleAddCampaign = async function(e) {
+        async function handleAddCampaign(e) {
             e.preventDefault();
             const idInput = document.getElementById('add-id').value.trim();
             if (campaigns.some(c => String(c.id) === idInput)) {
@@ -1551,9 +1506,9 @@
             renderCampaigns();
             closeModal('add-modal', 'add-modal-box');
             delete formEl.dataset.donasiMasuk;
-        };
+        }
 
-        window.handleEditCampaign = async function(e) {
+        async function handleEditCampaign(e) {
             e.preventDefault();
             const idx = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
             if (idx === -1) return;
@@ -1591,9 +1546,9 @@
             closeModal('edit-modal', 'edit-modal-box'); 
             setTimeout(() => openModal(currentCampaignId), 300);
             delete formEl.dataset.donasiMasuk;
-        };
+        }
 
-        window.handleAddDisbursement = async function(e) {
+        async function handleAddDisbursement(e) {
             e.preventDefault();
             const index = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
             if (index === -1) return;
@@ -1606,9 +1561,9 @@
             renderCampaigns();
             openModal(currentCampaignId); 
             closeModal('add-disbursement-modal', 'add-disbursement-box');
-        };
+        }
 
-        window.handleEditDisbursement = async function(e) {
+        async function handleEditDisbursement(e) {
             e.preventDefault();
             const idx = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
             if (idx === -1 || currentDisbursementIndex === null) return;
@@ -1619,7 +1574,32 @@
             renderCampaigns();
             openModal(currentCampaignId); 
             closeModal('edit-disbursement-modal', 'edit-disbursement-box');
-        };
+        }
+
+        // Ekspos ke global window SELETAH deklarasi
+        Object.assign(window, {
+            switchTab,
+            toggleMasterModal,
+            openUploadDonasiModal,
+            closeModal,
+            openModalAnimation,
+            renderMasterTable,
+            openModal,
+            openDeleteConfirmModal,
+            confirmDeleteCampaign,
+            openAddDisbursementModal,
+            openEditDisbursementModal,
+            handleEditFileChange,
+            openAddModal,
+            openEditModal,
+            autoFillCampaignData,
+            clearStoredData,
+            handleLinkClick,
+            handleAddCampaign,
+            handleEditCampaign,
+            handleAddDisbursement,
+            handleEditDisbursement
+        });
 
         // DOM Listeners
         document.addEventListener('DOMContentLoaded', () => {
