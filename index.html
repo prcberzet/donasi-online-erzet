@@ -92,7 +92,7 @@
             <div>
                 <h2 class="text-xl font-semibold text-slate-800">Dashboard Ringkasan Donasi</h2>
                 <p class="text-slate-500 text-sm mt-1">Monitoring capaian, penyaluran (transaksi), dan saldo dalam satu muka.</p>
-                <p id="donasi-period-display" class="text-xs font-medium text-indigo-600 mt-2 hidden bg-indigo-50 inline-block px-2.5 py-1 rounded-md border border-indigo-100"></p>
+                <p id="donasi-period-display" class="text-xs font-medium text-indigo-600 mt-2 hidden bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100 inline-block"></p>
             </div>
             
             <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
@@ -365,7 +365,7 @@
                         </h4>
                         <button onclick="openAddDisbursementModal()" class="text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-md border border-indigo-200 transition-colors flex items-center gap-1 font-semibold">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            Tambah
+                            Tambah Manual
                         </button>
                     </div>
                     <div class="overflow-x-auto rounded-lg border border-slate-200">
@@ -383,15 +383,13 @@
                             </tbody>
                         </table>
                         <div id="modal-history-empty" class="hidden p-6 text-center text-slate-500 text-sm italic">
-                            Belum ada riwayat pencairan untuk campaign ini.
+                            Belum ada riwayat pencairan manual untuk campaign ini.
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Modal Footer -->
             <div class="p-4 border-t border-slate-100 bg-slate-50 text-right rounded-b-2xl">
-                <button type="button" onclick="closeModal('detail-modal', 'modal-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Tutup</button>
+                <button onclick="closeModal('detail-modal', 'modal-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Tutup</button>
             </div>
         </div>
     </div>
@@ -401,7 +399,7 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="add-modal-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
                 <h3 class="text-lg font-bold text-slate-800">Tambah Campaign Baru</h3>
-                <button type="button" onclick="closeModal('add-modal', 'add-modal-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                <button onclick="closeModal('add-modal', 'add-modal-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
@@ -458,17 +456,17 @@
                                 <div id="add-mou-wrapper" class="flex items-center gap-4 p-2 bg-slate-50 rounded border border-slate-200">
                                     <input type="checkbox" id="add-mou-check" disabled class="w-4 h-4 text-indigo-600 rounded bg-white">
                                     <span class="text-sm font-medium text-slate-700 w-32">MoU</span>
-                                    <input type="file" id="add-mou-file" accept=".pdf" onchange="document.getElementById('add-mou-check').checked = this.files.length > 0" class="text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer w-full">
+                                    <input type="file" id="add-mou-file" accept=".pdf" class="text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer w-full">
                                 </div>
                                 <div id="add-consent-wrapper" class="flex items-center gap-4 p-2 bg-slate-50 rounded border border-slate-200">
                                     <input type="checkbox" id="add-consent-check" disabled class="w-4 h-4 text-indigo-600 rounded bg-white">
                                     <span class="text-sm font-medium text-slate-700 w-32">Consent Letter</span>
-                                    <input type="file" id="add-consent-file" accept=".pdf" onchange="document.getElementById('add-consent-check').checked = this.files.length > 0" class="text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer w-full">
+                                    <input type="file" id="add-consent-file" accept=".pdf" class="text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer w-full">
                                 </div>
                                 <div id="add-proposal-wrapper" class="flex items-center gap-4 p-2 bg-slate-50 rounded border border-slate-200">
                                     <input type="checkbox" id="add-proposal-check" disabled class="w-4 h-4 text-indigo-600 rounded bg-white">
                                     <span class="text-sm font-medium text-slate-700 w-32">Proposal</span>
-                                    <input type="file" id="add-proposal-file" accept=".pdf" onchange="document.getElementById('add-proposal-check').checked = this.files.length > 0" class="text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer w-full">
+                                    <input type="file" id="add-proposal-file" accept=".pdf" class="text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer w-full">
                                 </div>
                             </div>
                         </div>
@@ -486,12 +484,12 @@
         </div>
     </div>
 
-    <!-- Modal Edit Campaign Overlay -->
+    <!-- Modal Edit Campaign -->
     <div id="edit-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="edit-modal-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
                 <h3 class="text-lg font-bold text-slate-800">Edit Campaign</h3>
-                <button type="button" onclick="closeModal('edit-modal', 'edit-modal-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                <button onclick="closeModal('edit-modal', 'edit-modal-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
@@ -547,17 +545,17 @@
                                 <div id="edit-mou-wrapper" class="flex items-center gap-4 p-2 bg-slate-50 rounded border border-slate-200">
                                     <input type="checkbox" id="edit-mou-check" disabled class="w-4 h-4 text-indigo-600 rounded bg-white">
                                     <span class="text-sm font-medium text-slate-700 w-32">MoU</span>
-                                    <input type="file" id="edit-mou-file" accept=".pdf" onchange="handleEditFileChange('mou')" class="text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer w-full">
+                                    <input type="file" id="edit-mou-file" accept=".pdf" class="text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer w-full">
                                 </div>
                                 <div id="edit-consent-wrapper" class="flex items-center gap-4 p-2 bg-slate-50 rounded border border-slate-200">
                                     <input type="checkbox" id="edit-consent-check" disabled class="w-4 h-4 text-indigo-600 rounded bg-white">
                                     <span class="text-sm font-medium text-slate-700 w-32">Consent Letter</span>
-                                    <input type="file" id="edit-consent-file" accept=".pdf" onchange="handleEditFileChange('consent')" class="text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer w-full">
+                                    <input type="file" id="edit-consent-file" accept=".pdf" class="text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer w-full">
                                 </div>
                                 <div id="edit-proposal-wrapper" class="flex items-center gap-4 p-2 bg-slate-50 rounded border border-slate-200">
                                     <input type="checkbox" id="edit-proposal-check" disabled class="w-4 h-4 text-indigo-600 rounded bg-white">
                                     <span class="text-sm font-medium text-slate-700 w-32">Proposal</span>
-                                    <input type="file" id="edit-proposal-file" accept=".pdf" onchange="handleEditFileChange('proposal')" class="text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer w-full">
+                                    <input type="file" id="edit-proposal-file" accept=".pdf" class="text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer w-full">
                                 </div>
                             </div>
                         </div>
@@ -580,7 +578,7 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="add-disbursement-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
                 <h3 class="text-lg font-bold text-slate-800">Tambah Pencairan Dana</h3>
-                <button type="button" onclick="closeModal('add-disbursement-modal', 'add-disbursement-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                <button onclick="closeModal('add-disbursement-modal', 'add-disbursement-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
@@ -612,7 +610,7 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="edit-disbursement-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
                 <h3 class="text-lg font-bold text-slate-800">Edit Pencairan Dana</h3>
-                <button type="button" onclick="closeModal('edit-disbursement-modal', 'edit-disbursement-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                <button onclick="closeModal('edit-disbursement-modal', 'edit-disbursement-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
@@ -650,8 +648,8 @@
                 <p class="text-sm text-slate-500">Apakah Anda yakin ingin menghapus campaign ini? Data yang sudah dihapus tidak dapat dikembalikan.</p>
             </div>
             <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-center gap-3 rounded-b-2xl">
-                <button type="button" onclick="closeModal('delete-modal', 'delete-modal-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm flex-1">Batal</button>
-                <button type="button" onclick="confirmDeleteCampaign()" class="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-sm font-medium text-sm flex-1">Ya, Hapus</button>
+                <button onclick="closeModal('delete-modal', 'delete-modal-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm flex-1">Batal</button>
+                <button onclick="confirmDeleteCampaign()" class="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-sm font-medium text-sm flex-1">Ya, Hapus</button>
             </div>
         </div>
     </div>
@@ -705,9 +703,9 @@
 
     <!-- Script menggunakan ES Module agar bisa mengimpor Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Konfigurasi dari Anda (Hardcoded agar bekerja sempurna di GitHub Pages)
         const firebaseConfig = {
@@ -765,22 +763,33 @@
         });
 
         // Path dokumen sinkronisasi universal untuk GitHub Pages
-        const DOC_TAB1 = doc(db, 'dashboardData', 'tab1_state');
-        const DOC_TAB2 = doc(db, 'dashboardData', 'tab2_campaigns');
+        const appIdToUse = typeof __app_id !== 'undefined' ? __app_id : 'donasi-online-erzet';
+        const dashboardRef = collection(db, 'artifacts', appIdToUse, 'public', 'data', 'dashboardData');
+        const docTab1 = doc(dashboardRef, 'tab1_state');
+        const docTab2 = doc(dashboardRef, 'tab2_campaigns');
 
         // ==========================================
         // MENGAKTIFKAN OTENTIKASI & LISTENER
         // ==========================================
-        signInAnonymously(auth).catch((error) => {
-            console.error("Firebase Auth Error:", error);
-            const updateEl = document.getElementById('lastUpdate');
-            if (updateEl) {
-                updateEl.classList.remove('text-slate-500');
-                updateEl.classList.add('text-red-500', 'font-bold');
-                updateEl.innerText = "Error: Cek Konsol Firebase";
-                alert("Gagal terhubung ke Firebase: " + error.message);
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Firebase Auth Error:", error);
+                const updateEl = document.getElementById('lastUpdate');
+                if (updateEl) {
+                    updateEl.classList.remove('text-slate-500');
+                    updateEl.classList.add('text-red-500', 'font-bold');
+                    updateEl.innerText = "Error: Cek Konsol Firebase";
+                }
             }
-        });
+        };
+
+        initAuth();
 
         onAuthStateChanged(auth, (user) => {
             if (user && !isFirebaseInitialized) {
@@ -800,7 +809,7 @@
 
         function setupFirestoreListeners() {
             // Dengarkan Perubahan Tab 1 (Ringkasan Donasi & Master)
-            onSnapshot(DOC_TAB1, (docSnap) => {
+            onSnapshot(docTab1, (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     fullDataDonasi = data.fullDataDonasi || [];
@@ -821,7 +830,7 @@
                 }
                 updateUnifiedDashboard();
                 renderMasterTable();
-                renderCampaigns(); 
+                renderCampaigns(); // Render ulang kartu agar sinkron data Excel VLOOKUP
             }, (err) => {
                 console.error(err);
                 const updateEl = document.getElementById('lastUpdate');
@@ -832,7 +841,7 @@
             });
 
             // Dengarkan Perubahan Tab 2 (Campaigns)
-            onSnapshot(DOC_TAB2, (docSnap) => {
+            onSnapshot(docTab2, (docSnap) => {
                 if (docSnap.exists()) {
                     campaigns = docSnap.data().list || [];
                 } else {
@@ -847,43 +856,22 @@
         // FIRESTORE WRITERS
         // ==========================================
         async function saveTab1ToFirestore() {
-            if (!currentUser || !dashboardRef) return;
             try {
-                await setDoc(doc(dashboardRef, 'tab1_state'), {
+                await setDoc(docTab1, {
                     fullDataDonasi,
                     fullDataTransaksi,
                     masterCampaigns,
                     donasiPeriodText,
                     lastUpdate: new Date().toISOString()
                 });
-            } catch (e) {
-                console.error("Error saving data", e);
-            }
+            } catch (e) { console.error("Error saving data", e); }
         }
 
         async function saveCampaignsToFirestore() {
-            if (!currentUser || !dashboardRef) return;
             try {
-                await setDoc(doc(dashboardRef, 'tab2_campaigns'), { list: campaigns });
-            } catch (e) {
-                console.error("Error saving campaigns", e);
-            }
+                await setDoc(docTab2, { list: campaigns });
+            } catch (e) { console.error("Error saving campaigns", e); }
         }
-
-        window.clearStoredData = async function() {
-            if(!currentUser || !dashboardRef) return;
-            if(confirm('Yakin ingin menghapus seluruh data pada Server Firebase?')) {
-                fullDataDonasi = [];
-                fullDataTransaksi = [];
-                masterCampaigns = [];
-                donasiPeriodText = "";
-                campaigns = [...defaultCampaigns];
-                
-                await saveTab1ToFirestore();
-                await saveCampaignsToFirestore();
-                alert('Semua data berhasil dibersihkan dari server.');
-            }
-        };
 
         // ==========================================
         // UI & LOGIC HELPERS
@@ -958,11 +946,11 @@
             document.getElementById('donasi-start-date').value = '';
             document.getElementById('donasi-end-date').value = '';
             document.getElementById('fileInputDonasi').value = null;
-            openModalAnimation('upload-donasi-modal', 'upload-donasi-box');
+            window.openModalAnimation('upload-donasi-modal', 'upload-donasi-box');
         };
 
-        // Listener ditambahkan setelah DOM load (di dalam script module)
-        setTimeout(() => {
+        async function handleExcel(e, type) {
+            const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
             reader.onload = async function(evt) {
@@ -980,7 +968,7 @@
                     else donasiPeriodText = "";
 
                     processDonasi(worksheet);
-                    closeModal('upload-donasi-modal', 'upload-donasi-box');
+                    window.closeModal('upload-donasi-modal', 'upload-donasi-box');
                 }
                 else if (type === 'transaksi') processTransaksi(worksheet);
                 else if (type === 'master') processMaster(worksheet);
@@ -994,7 +982,7 @@
         window.toggleMasterModal = function() {
             const modal = document.getElementById('masterModal');
             modal.classList.toggle('hidden');
-            if(!modal.classList.contains('hidden')) renderMasterTable();
+            if(!modal.classList.contains('hidden')) window.renderMasterTable();
         };
 
         function processMaster(sheet) {
@@ -1228,7 +1216,7 @@
 
                 const card = document.createElement('div');
                 card.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col group";
-                card.onclick = () => openModal(campaign.id);
+                card.onclick = () => window.openModal(campaign.id);
                 
                 card.innerHTML = `
                     <div class="relative overflow-hidden aspect-[4/3]">
@@ -1260,7 +1248,7 @@
                             </div>
                         </div>
                         <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
-                            <span class="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1" onclick="handleLinkClick(event, '${campaign.link}')">
+                            <span class="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1" onclick="window.handleLinkClick(event, '${campaign.link}')">
                                 Link Donasi <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
                             </span>
                             <span class="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded">Klik Detail</span>
@@ -1268,43 +1256,43 @@
                     </div>
                 `;
                 gridContainer.appendChild(card);
-        });
-    }
+            });
+        }
 
-    window.handleLinkClick = function(event, url) { event.stopPropagation(); window.open(url, '_blank'); };
+        window.handleLinkClick = function(event, url) { event.stopPropagation(); window.open(url, '_blank'); };
 
-    function getCheckUI(isComplete, label) {
-        const icon = isComplete 
+        function getCheckUI(isComplete, label) {
+            const icon = isComplete 
                 ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-emerald-500"><path d="M20 6 9 17l-5-5"/></svg>`
                 : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red-400"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`;
             const textColor = isComplete ? 'text-slate-700' : 'text-slate-400 line-through decoration-slate-300';
             const borderColor = isComplete ? 'border-emerald-100 bg-emerald-50/30' : 'border-slate-200 bg-slate-50';
             return `<div class="${borderColor} absolute inset-0 rounded-lg pointer-events-none"></div><div class="relative z-10 flex items-center gap-2">${icon} <span class="${textColor}">${label}</span></div>`;
-    }
+        }
 
-    window.openModalAnimation = function(modalId, boxId) {
-        const modal = document.getElementById(modalId); const box = document.getElementById(boxId);
-        if(modal && box) {
-            modal.classList.remove('hidden');
+        window.openModalAnimation = function(modalId, boxId) {
+            const modal = document.getElementById(modalId); const box = document.getElementById(boxId);
+            if(modal && box) {
+                modal.classList.remove('hidden');
                 setTimeout(() => { modal.classList.remove('opacity-0'); modal.classList.add('opacity-100'); box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
                 document.body.style.overflow = 'hidden';
             }
-    };
+        };
 
-    window.closeModal = function(modalId, boxId) {
-        const modal = document.getElementById(modalId); const box = document.getElementById(boxId);
-        if(modal && box) {
-            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0'); box.classList.remove('scale-100'); box.classList.add('scale-95');
+        window.closeModal = function(modalId, boxId) {
+            const modal = document.getElementById(modalId); const box = document.getElementById(boxId);
+            if(modal && box) {
+                modal.classList.remove('opacity-100'); modal.classList.add('opacity-0'); box.classList.remove('scale-100'); box.classList.add('scale-95');
                 setTimeout(() => { 
                     modal.classList.add('hidden'); 
                     if (document.querySelectorAll('.fixed.inset-0:not(.hidden)').length <= 1) document.body.style.overflow = '';
                 }, 300);
             }
-    };
+        };
 
-    window.openModal = function(campaignId) {
-        currentCampaignId = campaignId;
-        const campaign = campaigns.find(c => c.id === campaignId);
+        window.openModal = function(campaignId) {
+            currentCampaignId = campaignId;
+            const campaign = campaigns.find(c => c.id === campaignId);
             if (!campaign) return;
 
             document.getElementById('modal-title').innerText = campaign.name;
@@ -1340,12 +1328,44 @@
                 saldoEl.className = `text-slate-800 font-bold mt-1 text-xl ${currentSaldo < 0 ? 'text-red-600' : 'text-amber-600'}`;
             }
 
-        openModalAnimation('detail-modal', 'modal-box');
-    };
+            let docStatus = "", docColorClass = "";
+            const docs = campaign.documents || {};
+            
+            if (campaign.partnershipStatus.toLowerCase() === 'perorangan') {
+                docStatus = docs.consentLetter ? "Lengkap (1/1)" : "Belum (0/1)";
+                docColorClass = docs.consentLetter ? "text-emerald-600" : "text-amber-500";
+                document.getElementById('check-mou').style.display = 'none'; document.getElementById('check-proposal').style.display = 'none';
+            } else {
+                const comp = (docs.mou ? 1 : 0) + (docs.consentLetter ? 1 : 0) + (docs.proposal ? 1 : 0);
+                docStatus = comp === 3 ? "Lengkap (3/3)" : `Belum (${comp}/3)`;
+                docColorClass = comp === 3 ? "text-emerald-600" : "text-amber-500";
+                
+                document.getElementById('check-mou').style.display = ''; document.getElementById('check-mou').className = "relative flex items-center gap-2 text-sm border px-3 py-1.5 rounded-lg w-32"; document.getElementById('check-mou').innerHTML = getCheckUI(campaign.documents.mou, 'MoU');
+                document.getElementById('check-proposal').style.display = ''; document.getElementById('check-proposal').className = "relative flex items-center gap-2 text-sm border px-3 py-1.5 rounded-lg w-36"; document.getElementById('check-proposal').innerHTML = getCheckUI(campaign.documents.proposal, 'Proposal');
+            }
+            document.getElementById('check-consent').className = "relative flex items-center gap-2 text-sm border px-3 py-1.5 rounded-lg w-44";
+            document.getElementById('check-consent').innerHTML = getCheckUI(campaign.documents.consentLetter, 'Consent Letter');
+            document.getElementById('modal-doclink').href = campaign.docLink || "#";
 
-    // Action Handlers
-    window.autoFillCampaignData = function(mode) {
-        const idInput = document.getElementById(`${mode}-id`).value.trim();
+            const historyBody = document.getElementById('modal-history-body'); const emptyState = document.getElementById('modal-history-empty');
+            if(historyBody && emptyState) {
+                historyBody.innerHTML = ''; 
+                
+                if (campaign.disbursements && campaign.disbursements.length > 0) {
+                    historyBody.parentElement.classList.remove('hidden'); emptyState.classList.add('hidden');
+                    campaign.disbursements.forEach((item, index) => {
+                        const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 transition-colors";
+                        tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-slate-600">${formatDate(item.date)}</td><td class="px-6 py-4 whitespace-nowrap font-medium text-slate-800">${formatter.format(item.amount)}</td><td class="px-6 py-4 text-slate-600">${item.purpose}</td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button type="button" onclick="window.openEditDisbursementModal(${index})" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button></td>`;
+                        historyBody.appendChild(tr);
+                    });
+                } else { historyBody.parentElement.classList.add('hidden'); emptyState.classList.remove('hidden'); }
+            }
+
+            window.openModalAnimation('detail-modal', 'modal-box');
+        };
+
+        window.autoFillCampaignData = function(mode) {
+            const idInput = document.getElementById(`${mode}-id`).value.trim();
             if (!idInput) {
                 alert("Silakan masukkan ID Campaign terlebih dahulu.");
                 return;
@@ -1369,47 +1389,53 @@
                 }
                 alert(`Data ditemukan!\nCapaian Donasi: ${formatter.format(campaignData.transaksi)}\nTransaksi Salur (Excel): ${formatter.format(campaignData.salur)}`);
             } else {
-            alert("Data ID Campaign tidak ditemukan di Ringkasan Donasi.");
-        }
-    };
+                alert("Data ID Campaign tidak ditemukan di Ringkasan Donasi.");
+            }
+        };
 
-    window.openDeleteConfirmModal = function() { if (currentCampaignId) openModalAnimation('delete-modal', 'delete-modal-box'); };
+        window.openDeleteConfirmModal = function() { if (currentCampaignId) window.openModalAnimation('delete-modal', 'delete-modal-box'); };
 
-    window.openAddDisbursementModal = function() {
-        if (!currentCampaignId) return;
-        const form = document.getElementById('add-disbursement-form');
-        if(form) form.reset();
-        openModalAnimation('add-disbursement-modal', 'add-disbursement-box');
-    };
+        window.confirmDeleteCampaign = async function() {
+            if (!currentCampaignId) return;
+            campaigns = campaigns.filter(c => c.id !== currentCampaignId);
+            await saveCampaignsToFirestore(); 
+            window.closeModal('delete-modal', 'delete-modal-box'); window.closeModal('detail-modal', 'modal-box');
+        };
 
-    window.openEditDisbursementModal = function(index) {
-        if (!currentCampaignId) return;
-        const campaign = campaigns.find(c => c.id === currentCampaignId);
+        window.openAddDisbursementModal = function() {
+            if (!currentCampaignId) return;
+            const form = document.getElementById('add-disbursement-form');
+            if(form) form.reset();
+            window.openModalAnimation('add-disbursement-modal', 'add-disbursement-box');
+        };
+
+        window.openEditDisbursementModal = function(index) {
+            if (!currentCampaignId) return;
+            const campaign = campaigns.find(c => c.id === currentCampaignId);
             if (!campaign || !campaign.disbursements || !campaign.disbursements[index]) return;
             currentDisbursementIndex = index;
             const item = campaign.disbursements[index];
             document.getElementById('edit-disbursement-date').value = item.date; document.getElementById('edit-disbursement-amount').value = item.amount; document.getElementById('edit-disbursement-purpose').value = item.purpose;
-        document.getElementById('edit-disbursement-purpose').value = item.purpose;
-        openModalAnimation('edit-disbursement-modal', 'edit-disbursement-box');
-    };
+            window.openModalAnimation('edit-disbursement-modal', 'edit-disbursement-box');
+        };
 
-    window.handleEditFileChange = function(docType) {
-        const fileInput = document.getElementById(`edit-${docType}-file`); const checkbox = document.getElementById(`edit-${docType}-check`);
-        if(fileInput && checkbox) checkbox.checked = (fileInput.files && fileInput.files.length > 0) ? true : fileInput.dataset.original === 'true';
-    };
+        window.handleEditFileChange = function(docType) {
+            const fileInput = document.getElementById(`edit-${docType}-file`); const checkbox = document.getElementById(`edit-${docType}-check`);
+            if(fileInput && checkbox) checkbox.checked = (fileInput.files && fileInput.files.length > 0) ? true : fileInput.dataset.original === 'true';
+        };
 
-    window.openAddModal = function() {
-        const form = document.getElementById('add-campaign-form');
-        if(form) form.reset();
-        document.getElementById('add-mou-wrapper').style.display = ''; document.getElementById('add-proposal-wrapper').style.display = '';
-        openModalAnimation('add-modal', 'add-modal-box');
-    };
+        window.openAddModal = function() {
+            const form = document.getElementById('add-campaign-form');
+            if(form) form.reset();
+            document.getElementById('add-mou-wrapper').style.display = ''; document.getElementById('add-proposal-wrapper').style.display = '';
+            window.openModalAnimation('add-modal', 'add-modal-box');
+        };
 
-    window.openEditModal = function() {
-        if (!currentCampaignId) return;
-        const camp = campaigns.find(c => c.id === currentCampaignId);
+        window.openEditModal = function() {
+            if (!currentCampaignId) return;
+            const camp = campaigns.find(c => c.id === currentCampaignId);
             if (!camp) return;
-            closeModal('detail-modal', 'modal-box');
+            window.closeModal('detail-modal', 'modal-box');
             const form = document.getElementById('edit-campaign-form');
             if(form) form.reset(); 
             document.getElementById('edit-id').value = camp.id;
@@ -1419,25 +1445,23 @@
             document.getElementById('edit-mou-check').checked = camp.documents.mou; document.getElementById('edit-consent-check').checked = camp.documents.consentLetter; document.getElementById('edit-proposal-check').checked = camp.documents.proposal;
             document.getElementById('edit-mou-file').dataset.original = camp.documents.mou; document.getElementById('edit-consent-file').dataset.original = camp.documents.consentLetter; document.getElementById('edit-proposal-file').dataset.original = camp.documents.proposal;
             document.getElementById('edit-doclink').value = camp.docLink || "";
-            setTimeout(() => openModalAnimation('edit-modal', 'edit-modal-box'), 300);
-        }
+            setTimeout(() => window.openModalAnimation('edit-modal', 'edit-modal-box'), 300);
+        };
 
-        // Ekspos ke global window SELETAH deklarasi
-        Object.assign(window, {
-            switchTab,
-            toggleMasterModal,
-            openUploadDonasiModal,
-            closeModal,
-            openModalAnimation,
-            renderMasterTable,
-            openModal,
-            openDeleteConfirmModal,
-            openAddDisbursementModal,
-            handleEditFileChange,
-            openAddModal,
-            openEditModal,
-            clearStoredData
-        });
+        window.clearStoredData = async function() {
+            if(!currentUser || !dashboardRef) return;
+            if(confirm('Yakin ingin menghapus seluruh data pada Server Firebase?')) {
+                fullDataDonasi = [];
+                fullDataTransaksi = [];
+                masterCampaigns = [];
+                donasiPeriodText = "";
+                campaigns = [...defaultCampaigns];
+                
+                await saveTab1ToFirestore();
+                await saveCampaignsToFirestore();
+                alert('Semua data berhasil dibersihkan dari server.');
+            }
+        };
 
         // DOM Listeners
         document.addEventListener('DOMContentLoaded', () => {
@@ -1468,8 +1492,8 @@
                 campaigns[index].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 await saveCampaignsToFirestore(); 
-                openModal(currentCampaignId); 
-                closeModal('add-disbursement-modal', 'add-disbursement-box');
+                window.openModal(currentCampaignId); 
+                window.closeModal('add-disbursement-modal', 'add-disbursement-box');
             });
 
             document.getElementById('edit-disbursement-form')?.addEventListener('submit', async function(e) {
@@ -1480,8 +1504,8 @@
                 campaigns[idx].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 await saveCampaignsToFirestore(); 
-                openModal(currentCampaignId); 
-                closeModal('edit-disbursement-modal', 'edit-disbursement-box');
+                window.openModal(currentCampaignId); 
+                window.closeModal('edit-disbursement-modal', 'edit-disbursement-box');
             });
 
             document.getElementById('add-campaign-form')?.addEventListener('submit', async function(e) {
@@ -1514,7 +1538,7 @@
                 };
                 campaigns.unshift(newCamp); 
                 await saveCampaignsToFirestore(); 
-                closeModal('add-modal', 'add-modal-box');
+                window.closeModal('add-modal', 'add-modal-box');
                 delete this.dataset.donasiMasuk;
             });
 
@@ -1553,8 +1577,8 @@
                 currentCampaignId = newIdInput;
                 
                 await saveCampaignsToFirestore(); 
-                closeModal('edit-modal', 'edit-modal-box'); 
-                setTimeout(() => openModal(currentCampaignId), 300);
+                window.closeModal('edit-modal', 'edit-modal-box'); 
+                setTimeout(() => window.openModal(currentCampaignId), 300);
                 delete this.dataset.donasiMasuk;
             });
         });
@@ -1566,7 +1590,7 @@
                     if (id === 'masterModal') {
                         document.getElementById('masterModal').classList.add('hidden');
                     } else {
-                        closeModal(id, id.replace('modal', 'box').replace('detail-', 'modal-').replace('upload-donasi-', 'upload-donasi-')); 
+                        window.closeModal(id, id.replace('modal', 'box').replace('detail-', 'modal-').replace('upload-donasi-', 'upload-donasi-')); 
                     }
                 }
             });
@@ -1581,7 +1605,7 @@
                         if (id === 'masterModal') {
                             el.classList.add('hidden');
                         } else {
-                            closeModal(id, id.replace('modal', 'box').replace('detail-', 'modal-')); 
+                            window.closeModal(id, id.replace('modal', 'box').replace('detail-', 'modal-')); 
                         }
                         break; 
                     } 
