@@ -118,6 +118,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-indigo-500">
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Donasi Masuk</p>
+                <p class="text-[10px] font-semibold text-slate-400 normal-case tracking-wide -mt-0.5">Campaign Progdist</p>
                 <h2 id="totalDonasi" class="text-2xl font-bold text-slate-800 mt-1">Rp 0</h2>
             </div>
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500">
@@ -891,6 +892,7 @@
                     saveCampaignsToFirestore();
                 }
                 renderCampaigns();
+                updateUnifiedDashboard(); // "Total Donasi Masuk" bergantung pada daftar campaign terdaftar
             }, (err) => console.error(err));
         }
 
@@ -1252,9 +1254,17 @@
 
             const totalIn = Object.values(combinedMap).reduce((s, i) => s + i.transaksi, 0);
             const totalOut = Object.values(combinedMap).reduce((s, i) => s + i.salur, 0);
-            
+
+            // "Total Donasi Masuk" di kartu KPI ini sengaja dibatasi hanya untuk ID Campaign yang
+            // sudah terdaftar sebagai Campaign di menu Monitoring Campaign (bukan seluruh ID yang
+            // muncul di file unggahan/Campaign Khusus Progdist).
+            const registeredCampaignIds = new Set(campaigns.map(c => String(c.id).trim()));
+            const totalInRegistered = Object.values(combinedMap)
+                .filter(i => registeredCampaignIds.has(String(i.id).trim()))
+                .reduce((s, i) => s + i.transaksi, 0);
+
             const elDonasi = document.getElementById('totalDonasi');
-            if(elDonasi) elDonasi.innerText = formatter.format(totalIn);
+            if(elDonasi) elDonasi.innerText = formatter.format(totalInRegistered);
             
             const elPenyaluran = document.getElementById('totalPenyaluran');
             if(elPenyaluran) elPenyaluran.innerText = formatter.format(totalOut);
