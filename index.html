@@ -93,6 +93,10 @@
                 <h2 class="text-xl font-semibold text-slate-800">Dashboard Ringkasan Donasi</h2>
                 <p class="text-slate-500 text-sm mt-1">Monitoring capaian, penyaluran (transaksi), dan saldo dalam satu muka.</p>
                 <p id="donasi-period-display" class="text-xs font-medium text-indigo-600 mt-2 hidden bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100 inline-block"></p>
+                <button onclick="openProgdistModal()" class="mt-2 inline-flex items-center gap-1.5 text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-1.5 rounded-full transition-all font-bold uppercase tracking-wider">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                    <span>Campaign Khusus Progdist</span>
+                </button>
             </div>
             
             <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
@@ -222,6 +226,91 @@
             <!-- Cards will be injected here by JS -->
         </div>
     </div> <!-- END OF TAB 2 -->
+
+    <!-- Modal Campaign Khusus Progdist -->
+    <div id="progdist-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="progdist-modal-box">
+            <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800">Campaign Khusus Progdist</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Input capaian awal (baseline) yang akan otomatis ditambahkan ke nominal capaian setiap kali Anda mengunggah data donasi baru untuk ID Campaign yang sama.</p>
+                </div>
+                <button onclick="closeModal('progdist-modal', 'progdist-modal-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <div class="overflow-y-auto flex-1">
+                <form id="progdist-form" class="p-6 border-b border-slate-100 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">ID Campaign *</label>
+                            <input type="text" id="progdist-id" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Campaign *</label>
+                            <input type="text" id="progdist-campaign" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Program</label>
+                            <input type="text" id="progdist-program" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Kantor</label>
+                            <input type="text" id="progdist-kantor" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                            <input type="text" id="progdist-status" placeholder="cth. Lembaga / Perorangan / Kepanitiaan" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Nama CRM</label>
+                            <input type="text" id="progdist-crm" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Link</label>
+                            <input type="url" id="progdist-link" placeholder="https://..." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Capaian (Rp) *</label>
+                            <input type="number" id="progdist-capaian" required min="0" step="1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                            <p class="text-xs text-slate-500 mt-1">Total capaian sejak campaign terbit s/d akhir 2025.</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Periode (Rentang Tanggal)</label>
+                            <div class="flex items-center gap-2">
+                                <input type="date" id="progdist-start" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                                <span class="text-slate-400 text-xs">s/d</span>
+                                <input type="date" id="progdist-end" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 pt-2">
+                        <button type="button" onclick="resetProgdistForm()" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal Edit</button>
+                        <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan</button>
+                    </div>
+                </form>
+
+                <div class="p-6">
+                    <h4 class="text-sm font-bold text-slate-800 mb-3">Daftar Campaign Khusus Progdist Tersimpan</h4>
+                    <div class="overflow-x-auto rounded-lg border border-slate-200">
+                        <table class="min-w-full divide-y divide-slate-200 text-sm">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left font-semibold text-slate-500 uppercase tracking-wider text-xs">ID</th>
+                                    <th class="px-4 py-2 text-left font-semibold text-slate-500 uppercase tracking-wider text-xs">Campaign</th>
+                                    <th class="px-4 py-2 text-right font-semibold text-slate-500 uppercase tracking-wider text-xs">Capaian (s/d 2025)</th>
+                                    <th class="px-4 py-2 text-left font-semibold text-slate-500 uppercase tracking-wider text-xs">Periode</th>
+                                    <th class="px-4 py-2 text-right font-semibold text-slate-500 uppercase tracking-wider text-xs">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="progdist-table-body" class="bg-white divide-y divide-slate-200"></tbody>
+                        </table>
+                        <div id="progdist-table-empty" class="hidden p-6 text-center text-slate-500 text-sm italic">Belum ada data Campaign Khusus Progdist.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Upload Donasi -->
     <div id="upload-donasi-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
@@ -736,6 +825,8 @@
         let currentCampaignId = null;
         let currentDisbursementIndex = null;
         let campaigns = [];
+        let progdistCampaigns = [];
+        let editingProgdistId = null;
 
         const defaultCampaigns = [
             {
@@ -815,6 +906,7 @@
                     fullDataDonasi = data.fullDataDonasi || [];
                     fullDataTransaksi = data.fullDataTransaksi || [];
                     masterCampaigns = data.masterCampaigns || [];
+                    progdistCampaigns = data.progdistCampaigns || [];
                     donasiPeriodText = data.donasiPeriodText || "";
                     
                     const st = data.lastUpdate;
@@ -830,6 +922,7 @@
                 }
                 updateUnifiedDashboard();
                 renderMasterTable();
+                renderProgdistTable();
                 renderCampaigns(); // Render ulang kartu agar sinkron data Excel VLOOKUP
             }, (err) => {
                 console.error(err);
@@ -861,6 +954,7 @@
                     fullDataDonasi,
                     fullDataTransaksi,
                     masterCampaigns,
+                    progdistCampaigns,
                     donasiPeriodText,
                     lastUpdate: new Date().toISOString()
                 });
@@ -1118,6 +1212,74 @@
             if(stats) stats.innerText = `Total: ${filtered.length} Data`;
         }
 
+        // ==========================================
+        // CAMPAIGN KHUSUS PROGDIST
+        // ==========================================
+        window.openProgdistModal = function() {
+            resetProgdistForm();
+            renderProgdistTable();
+            window.openModalAnimation('progdist-modal', 'progdist-modal-box');
+        };
+
+        window.resetProgdistForm = function() {
+            editingProgdistId = null;
+            const form = document.getElementById('progdist-form');
+            if (form) form.reset();
+        };
+
+        window.renderProgdistTable = function() {
+            const tbody = document.getElementById('progdist-table-body');
+            const empty = document.getElementById('progdist-table-empty');
+            if (!tbody || !empty) return;
+            tbody.innerHTML = '';
+            if (!progdistCampaigns.length) {
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+            progdistCampaigns.forEach(p => {
+                const periode = (p.periodeStart || p.periodeEnd)
+                    ? `${p.periodeStart ? formatDate(p.periodeStart) : '-'} s/d ${p.periodeEnd ? formatDate(p.periodeEnd) : '-'}`
+                    : '-';
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors";
+                tr.innerHTML = `
+                    <td class="px-4 py-3 font-mono text-xs text-slate-500">${p.id}</td>
+                    <td class="px-4 py-3 text-slate-800 font-medium">${p.campaign || '-'}</td>
+                    <td class="px-4 py-3 text-right text-indigo-600 font-medium">${formatter.format(p.capaian || 0)}</td>
+                    <td class="px-4 py-3 text-xs text-slate-500">${periode}</td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">
+                        <button type="button" onclick="editProgdistEntry('${p.id}')" class="text-indigo-600 hover:text-indigo-800 font-semibold text-xs mr-3">Edit</button>
+                        <button type="button" onclick="deleteProgdistEntry('${p.id}')" class="text-red-500 hover:text-red-700 font-semibold text-xs">Hapus</button>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+        };
+
+        window.editProgdistEntry = function(id) {
+            const p = progdistCampaigns.find(x => String(x.id) === String(id));
+            if (!p) return;
+            editingProgdistId = p.id;
+            document.getElementById('progdist-id').value = p.id || '';
+            document.getElementById('progdist-campaign').value = p.campaign || '';
+            document.getElementById('progdist-program').value = p.program || '';
+            document.getElementById('progdist-kantor').value = p.kantor || '';
+            document.getElementById('progdist-status').value = p.status || '';
+            document.getElementById('progdist-crm').value = p.namaCRM || '';
+            document.getElementById('progdist-link').value = p.link || '';
+            document.getElementById('progdist-capaian').value = p.capaian || 0;
+            document.getElementById('progdist-start').value = p.periodeStart || '';
+            document.getElementById('progdist-end').value = p.periodeEnd || '';
+        };
+
+        window.deleteProgdistEntry = async function(id) {
+            if (!confirm(`Hapus data Campaign Khusus Progdist dengan ID "${id}"?`)) return;
+            progdistCampaigns = progdistCampaigns.filter(p => String(p.id) !== String(id));
+            await saveTab1ToFirestore();
+            renderProgdistTable();
+            updateUnifiedDashboard();
+        };
+
         function updateUnifiedDashboard() {
             const searchDonasi = document.getElementById('tableSearchDonasi')?.value.toLowerCase() || "";
             const combinedMap = {};
@@ -1140,6 +1302,19 @@
             fullDataTransaksi.forEach(t => {
                 if (combinedMap[t.id]) combinedMap[t.id].salur += t.totalDonasi;
                 else combinedMap[t.id] = { id: t.id, campaign: t.programAkad, pic: 'System', transaksi: 0, salur: t.totalDonasi };
+            });
+
+            // Campaign Khusus Progdist: tambahkan baseline capaian (s/d akhir 2025) ke capaian
+            // yang baru saja diunggah lewat "Unggah Donasi" untuk ID Campaign yang sama.
+            progdistCampaigns.forEach(p => {
+                const pid = String(p.id || '').trim();
+                if (!pid) return;
+                const baseline = p.capaian || 0;
+                if (combinedMap[pid]) {
+                    combinedMap[pid].transaksi = (combinedMap[pid].transaksi || 0) + baseline;
+                } else {
+                    combinedMap[pid] = { id: pid, campaign: p.campaign || ('ID Campaign ' + pid), pic: p.namaCRM || 'Progdist', transaksi: baseline, salur: 0 };
+                }
             });
 
             const combinedList = Object.values(combinedMap).filter(item => item.campaign.toLowerCase().includes(searchDonasi) || item.id.toLowerCase().includes(searchDonasi));
