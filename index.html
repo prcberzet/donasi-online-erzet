@@ -200,10 +200,16 @@
                 <h2 class="text-xl font-semibold text-slate-800">Daftar Campaign Aktif</h2>
                 <p class="text-slate-500 text-sm mt-1">Klik pada kartu campaign untuk melihat detail lengkap, status dokumen, dan riwayat pencairan dana.</p>
             </div>
-            <button onclick="openAddModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Tambah Campaign
-            </button>
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div class="relative flex-1 sm:flex-initial">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    <input type="text" id="searchCampaign" oninput="renderCampaigns()" placeholder="Cari campaign..." class="text-sm pl-9 pr-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64 transition-all" />
+                </div>
+                <button onclick="openAddModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Tambah Campaign
+                </button>
+            </div>
         </div>
 
         <div class="mb-6 text-sm bg-indigo-50 border border-indigo-100 text-indigo-800 p-4 rounded-xl flex items-start gap-3">
@@ -212,13 +218,6 @@
                  <p class="font-semibold mb-1">Catatan Integrasi</p>
                  <p class="text-indigo-700/80">Menu "Daftar Campaign Aktif" ini berfungsi sebagai basis data visual mandiri. Donasi Masuk dan Total Cair di menu ini sekarang terhubung otomatis dengan data "Unggah Transaksi" & "Donasi" menggunakan VLOOKUP ID Campaign.</p>
              </div>
-        </div>
-
-        <div class="mb-6">
-            <div class="relative max-w-md">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
-                <input type="text" id="searchCampaign" oninput="renderCampaigns()" placeholder="Cari ID Campaign atau Nama Campaign..." class="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-            </div>
         </div>
 
         <!-- Grid Container -->
