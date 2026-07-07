@@ -66,13 +66,6 @@
             </h1>
             
             <div class="flex items-center space-x-3">
-                <button onclick="toggleMasterModal()" class="flex items-center space-x-1 text-[11px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-1.5 rounded-full transition-all font-bold uppercase tracking-wider">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M3 12v3c0 1.1.9 2 2 2h10a2 2 0 002-2v-3a2 2 0 00-2-2H5a2 2 0 00-2 2zm2-1h10a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3a1 1 0 011-1zm2-6a2 2 0 012-2h2a2 2 0 012 2v3a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm2-1h2a1 1 0 011 1v3a1 1 0 01-1 1h-2a1 1 0 01-1-1V5a1 1 0 011-1z" />
-                    </svg>
-                    <span>Database Master</span>
-                </button>
-                <button onclick="clearStoredData()" class="text-[11px] bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-1.5 rounded-full transition-colors font-bold uppercase tracking-wider">Hapus Data</button>
                 <div id="lastUpdate" class="text-xs text-slate-500 font-medium px-2 py-1 rounded-md transition-colors duration-300">Menyambungkan ke Server...</div>
             </div>
         </div>
@@ -219,6 +212,13 @@
                  <p class="font-semibold mb-1">Catatan Integrasi</p>
                  <p class="text-indigo-700/80">Menu "Daftar Campaign Aktif" ini berfungsi sebagai basis data visual mandiri. Donasi Masuk dan Total Cair di menu ini sekarang terhubung otomatis dengan data "Unggah Transaksi" & "Donasi" menggunakan VLOOKUP ID Campaign.</p>
              </div>
+        </div>
+
+        <div class="mb-6">
+            <div class="relative max-w-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
+                <input type="text" id="searchCampaign" oninput="renderCampaigns()" placeholder="Cari ID Campaign atau Nama Campaign..." class="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            </div>
         </div>
 
         <!-- Grid Container -->
@@ -743,53 +743,6 @@
         </div>
     </div>
 
-    <!-- Modal Database Master -->
-    <div id="masterModal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-            <div class="p-5 bg-indigo-700 text-white flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-lg">Database Master Campaign</h3>
-                    <p class="text-[10px] opacity-70">Gunakan sebagai acuan ID & Nama Campaign</p>
-                </div>
-                <button onclick="toggleMasterModal()" class="text-white hover:text-red-200 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-            </div>
-            
-            <div class="p-4 border-b bg-slate-50 flex items-center justify-between gap-4">
-                <input type="text" id="searchMaster" oninput="renderMasterTable()" placeholder="Cari di database..." class="flex-1 text-sm border border-slate-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-indigo-500">
-                <div class="relative">
-                    <input type="file" id="fileInputMaster" class="hidden" accept=".xlsx, .xls, .csv" />
-                    <label for="fileInputMaster" class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center space-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" /></svg>
-                        <span>Impor Master</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="flex-1 overflow-y-auto p-0">
-                <table class="w-full text-left">
-                    <thead class="bg-slate-100 text-[10px] uppercase text-slate-500 sticky top-0">
-                        <tr>
-                            <th class="px-6 py-3">ID Campaign</th>
-                            <th class="px-6 py-3">Nama Campaign (VLOOKUP Ref)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="masterTableBody" class="divide-y text-sm">
-                        <tr>
-                            <td colspan="2" class="px-6 py-12 text-center text-slate-400 italic">Belum ada data master terunggah.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="p-4 bg-slate-50 border-t flex justify-between items-center text-[10px] text-slate-400 rounded-b-2xl">
-                <span id="masterStats">Total: 0 Data</span>
-                <span>Data tersinkronisasi secara Real-Time dengan Firebase.</span>
-            </div>
-        </div>
-    </div>
-
     <!-- Script menggunakan ES Module agar bisa mengimpor Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -921,7 +874,6 @@
                     if (updateEl) updateEl.innerText = "Terhubung (Database Kosong)";
                 }
                 updateUnifiedDashboard();
-                renderMasterTable();
                 renderProgdistTable();
                 renderCampaigns(); // Render ulang kartu agar sinkron data Excel VLOOKUP
             }, (err) => {
@@ -1086,12 +1038,6 @@
             reader.readAsArrayBuffer(file);
         }
 
-        window.toggleMasterModal = function() {
-            const modal = document.getElementById('masterModal');
-            modal.classList.toggle('hidden');
-            if(!modal.classList.contains('hidden')) window.renderMasterTable();
-        };
-
         function processMaster(sheet) {
             const mappings = { id: [/(id\s*campaign|id_campaign|campaign\s*id|id\s*camp|^id$|kode)/i], name: [/(nama\s*campaign|^campaign$|program|nama\s*program)/i] };
             masterCampaigns = scanSheet(sheet, mappings).map(item => ({ id: String(item.id || '').trim(), name: String(item.name || '').trim() })).filter(i => i.id !== "");
@@ -1195,23 +1141,6 @@
             fullDataDonasi = Object.values(aggregated);
         }
 
-        window.renderMasterTable = function() {
-            const query = document.getElementById('searchMaster')?.value.toLowerCase() || "";
-            const tbody = document.getElementById('masterTableBody');
-            if (!tbody) return;
-
-            const filtered = masterCampaigns.filter(m => m.id.includes(query) || m.name.toLowerCase().includes(query));
-            tbody.innerHTML = filtered.length ? '' : '<tr><td colspan="2" class="p-8 text-center text-slate-400">Data tidak ditemukan</td></tr>';
-            filtered.forEach(m => {
-                const row = document.createElement('tr');
-                row.className = "hover:bg-indigo-50 transition-colors";
-                row.innerHTML = `<td class="px-6 py-3 font-mono font-bold text-indigo-600">${m.id}</td><td class="px-6 py-3 text-slate-700">${m.name}</td>`;
-                tbody.appendChild(row);
-            });
-            const stats = document.getElementById('masterStats');
-            if(stats) stats.innerText = `Total: ${filtered.length} Data`;
-        }
-
         // ==========================================
         // CAMPAIGN KHUSUS PROGDIST
         // ==========================================
@@ -1278,6 +1207,7 @@
             await saveTab1ToFirestore();
             renderProgdistTable();
             updateUnifiedDashboard();
+            renderCampaigns();
         };
 
         function updateUnifiedDashboard() {
@@ -1370,6 +1300,13 @@
             return `<span class="px-2.5 py-1 text-xs font-semibold rounded-full border ${color}">${status}</span>`;
         };
 
+        // Baseline capaian Campaign Khusus Progdist untuk suatu ID Campaign (dipakai bersama
+        // oleh tabel Ringkasan Donasi maupun kartu/modal Monitoring Campaign agar nominalnya konsisten).
+        function getProgdistBaseline(id) {
+            const p = progdistCampaigns.find(pc => String(pc.id).trim() === String(id).trim());
+            return p ? (p.capaian || 0) : 0;
+        }
+
         function renderCampaigns() {
             const gridContainer = document.getElementById('campaign-grid');
             if(!gridContainer) return;
@@ -1377,10 +1314,20 @@
             
             campaigns.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
 
-            campaigns.forEach(campaign => {
+            const searchQuery = (document.getElementById('searchCampaign')?.value || '').toLowerCase().trim();
+            const filteredCampaigns = searchQuery
+                ? campaigns.filter(c => String(c.id).toLowerCase().includes(searchQuery) || String(c.name || '').toLowerCase().includes(searchQuery))
+                : campaigns;
+
+            if (!filteredCampaigns.length) {
+                gridContainer.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 italic">Campaign tidak ditemukan.</div>';
+                return;
+            }
+
+            filteredCampaigns.forEach(campaign => {
                 const donasiMasukVlookup = fullDataDonasi
                     .filter(d => String(d.id).trim() === String(campaign.id).trim())
-                    .reduce((sum, d) => sum + d.transaksi, 0);
+                    .reduce((sum, d) => sum + d.transaksi, 0) + getProgdistBaseline(campaign.id);
                 
                 const currentDonasiMasuk = donasiMasukVlookup > 0 ? donasiMasukVlookup : (campaign.donasiMasuk || 0);
 
@@ -1416,6 +1363,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                             Rilis: ${formatDate(campaign.releaseDate)}
                         </div>
+                        <span class="inline-block w-fit text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded mb-2">ID: ${campaign.id}</span>
                         <h3 class="font-bold text-slate-800 text-lg leading-tight mb-3 line-clamp-2">${campaign.name}</h3>
                         <div class="mt-auto space-y-2 mb-4 bg-slate-50 p-3 rounded-lg border border-slate-100">
                             <div class="flex justify-between items-center text-xs">
@@ -1492,10 +1440,10 @@
             document.querySelector('#modal-location span').innerText = campaign.location;
             document.getElementById('modal-address').innerText = campaign.address;
 
-            // VLOOKUP Data
+            // VLOOKUP Data (termasuk baseline Campaign Khusus Progdist)
             const donasiMasukVlookup = fullDataDonasi
                 .filter(d => String(d.id).trim() === String(campaign.id).trim())
-                .reduce((sum, d) => sum + d.transaksi, 0);
+                .reduce((sum, d) => sum + d.transaksi, 0) + getProgdistBaseline(campaign.id);
             const currentDonasiMasuk = donasiMasukVlookup > 0 ? donasiMasukVlookup : (campaign.donasiMasuk || 0);
 
             const totalCair = fullDataTransaksi
@@ -1682,27 +1630,37 @@
             setTimeout(() => window.openModalAnimation('edit-modal', 'edit-modal-box'), 300);
         };
 
-        window.clearStoredData = async function() {
-            if(!currentUser || !dashboardRef) return;
-            if(confirm('Yakin ingin menghapus seluruh data pada Server Firebase?')) {
-                fullDataDonasi = [];
-                fullDataTransaksi = [];
-                masterCampaigns = [];
-                donasiPeriodText = "";
-                campaigns = [...defaultCampaigns];
-                
-                await saveTab1ToFirestore();
-                await saveCampaignsToFirestore();
-                alert('Semua data berhasil dibersihkan dari server.');
-            }
-        };
-
         // DOM Listeners
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('fileInputDonasi')?.addEventListener('change', (e) => handleExcel(e, 'donasi'));
             document.getElementById('fileInputTransaksi')?.addEventListener('change', (e) => handleExcel(e, 'transaksi'));
-            document.getElementById('fileInputMaster')?.addEventListener('change', (e) => handleExcel(e, 'master'));
             document.getElementById('tableSearchDonasi')?.addEventListener('input', updateUnifiedDashboard);
+
+            document.getElementById('progdist-form')?.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const id = document.getElementById('progdist-id').value.trim();
+                if (!id) { alert('ID Campaign wajib diisi.'); return; }
+                const entry = {
+                    id: id,
+                    campaign: document.getElementById('progdist-campaign').value.trim(),
+                    program: document.getElementById('progdist-program').value.trim(),
+                    kantor: document.getElementById('progdist-kantor').value.trim(),
+                    status: document.getElementById('progdist-status').value.trim(),
+                    namaCRM: document.getElementById('progdist-crm').value.trim(),
+                    link: document.getElementById('progdist-link').value.trim(),
+                    capaian: parseFloat(document.getElementById('progdist-capaian').value) || 0,
+                    periodeStart: document.getElementById('progdist-start').value,
+                    periodeEnd: document.getElementById('progdist-end').value
+                };
+                const idx = progdistCampaigns.findIndex(p => String(p.id) === String(editingProgdistId || id));
+                if (idx !== -1) progdistCampaigns[idx] = entry; else progdistCampaigns.push(entry);
+                await saveTab1ToFirestore();
+                renderProgdistTable();
+                updateUnifiedDashboard();
+                renderCampaigns();
+                resetProgdistForm();
+                alert('Data Campaign Khusus Progdist berhasil disimpan.');
+            });
 
             document.getElementById('add-status')?.addEventListener('change', function(e) {
                 const isPer = e.target.value.toLowerCase() === 'perorangan';
@@ -1818,29 +1776,21 @@
         });
 
         window.addEventListener('click', function(e) {
-            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-disbursement-modal', 'edit-disbursement-modal', 'delete-modal', 'upload-donasi-modal', 'masterModal'];
+            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-disbursement-modal', 'edit-disbursement-modal', 'delete-modal', 'upload-donasi-modal', 'progdist-modal'];
             modals.forEach(id => { 
                 if (e.target === document.getElementById(id)) {
-                    if (id === 'masterModal') {
-                        document.getElementById('masterModal').classList.add('hidden');
-                    } else {
-                        window.closeModal(id, id.replace('modal', 'box').replace('detail-', 'modal-').replace('upload-donasi-', 'upload-donasi-')); 
-                    }
+                    window.closeModal(id, id.replace('modal', 'box').replace('detail-', 'modal-').replace('upload-donasi-', 'upload-donasi-')); 
                 }
             });
         });
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                const arr = ['delete-modal', 'edit-disbursement-modal', 'add-disbursement-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'masterModal'];
+                const arr = ['delete-modal', 'edit-disbursement-modal', 'add-disbursement-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'progdist-modal'];
                 for (const id of arr) { 
                     const el = document.getElementById(id); 
                     if (el && !el.classList.contains('hidden')) { 
-                        if (id === 'masterModal') {
-                            el.classList.add('hidden');
-                        } else {
-                            window.closeModal(id, id.replace('modal', 'box').replace('detail-', 'modal-')); 
-                        }
+                        window.closeModal(id, id.replace('modal', 'box').replace('detail-', 'modal-')); 
                         break; 
                     } 
                 }
