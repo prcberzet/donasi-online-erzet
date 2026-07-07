@@ -197,13 +197,16 @@
     <div id="view-monitoring" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
             <div>
-                <h2 class="text-xl font-semibold text-slate-800">Daftar Campaign Aktif</h2>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <h2 class="text-xl font-semibold text-slate-800">Daftar Campaign Aktif</h2>
+                    <span id="totalCampaignActive" class="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-full">0 Campaign</span>
+                </div>
                 <p class="text-slate-500 text-sm mt-1">Klik pada kartu campaign untuk melihat detail lengkap, status dokumen, dan riwayat pencairan dana.</p>
             </div>
             <div class="flex items-center gap-3 w-full sm:w-auto">
                 <div class="relative flex-1 sm:flex-initial">
                     <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                    <input type="text" id="searchCampaign" oninput="renderCampaigns()" placeholder="Cari campaign..." class="text-sm pl-9 pr-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64 transition-all" />
+                    <input type="text" id="searchCampaign" placeholder="Cari campaign..." class="text-sm pl-9 pr-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64 transition-all" />
                 </div>
                 <button onclick="openAddModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -212,13 +215,6 @@
             </div>
         </div>
 
-        <div class="mb-6 text-sm bg-indigo-50 border border-indigo-100 text-indigo-800 p-4 rounded-xl flex items-start gap-3">
-             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-             <div>
-                 <p class="font-semibold mb-1">Catatan Integrasi</p>
-                 <p class="text-indigo-700/80">Menu "Daftar Campaign Aktif" ini berfungsi sebagai basis data visual mandiri. Donasi Masuk dan Total Cair di menu ini sekarang terhubung otomatis dengan data "Unggah Transaksi" & "Donasi" menggunakan VLOOKUP ID Campaign.</p>
-             </div>
-        </div>
 
         <!-- Grid Container -->
         <div id="campaign-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -1313,6 +1309,9 @@
             
             campaigns.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
 
+            const totalBadge = document.getElementById('totalCampaignActive');
+            if (totalBadge) totalBadge.innerText = `${campaigns.length} Campaign`;
+
             const searchQuery = (document.getElementById('searchCampaign')?.value || '').toLowerCase().trim();
             const filteredCampaigns = searchQuery
                 ? campaigns.filter(c => String(c.id).toLowerCase().includes(searchQuery) || String(c.name || '').toLowerCase().includes(searchQuery))
@@ -1634,6 +1633,7 @@
             document.getElementById('fileInputDonasi')?.addEventListener('change', (e) => handleExcel(e, 'donasi'));
             document.getElementById('fileInputTransaksi')?.addEventListener('change', (e) => handleExcel(e, 'transaksi'));
             document.getElementById('tableSearchDonasi')?.addEventListener('input', updateUnifiedDashboard);
+            document.getElementById('searchCampaign')?.addEventListener('input', renderCampaigns);
 
             document.getElementById('progdist-form')?.addEventListener('submit', async function(e) {
                 e.preventDefault();
