@@ -129,66 +129,44 @@
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Saldo Donasi</p>
                 <h2 id="saldoDonasi" class="text-2xl font-bold text-amber-600 mt-1">Rp 0</h2>
             </div>
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-purple-500">
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Efektivitas Serapan</p>
-                <h2 id="serapanPersen" class="text-2xl font-bold text-slate-800 mt-1">0%</h2>
+            <div class="bg-indigo-600 p-5 rounded-2xl shadow-sm border border-indigo-700 border-l-4 border-l-indigo-300">
+                <p class="text-xs font-bold text-indigo-200 uppercase tracking-wider flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                    Ringkasan Data
+                </p>
+                <p class="text-[10px] font-semibold text-indigo-200/80 normal-case tracking-wide -mt-0.5">Total Campaign Terdaftar</p>
+                <h2 id="ringkasanDataCount" class="text-2xl font-bold text-white mt-1">0</h2>
             </div>
         </div>
 
         <!-- Tables Area -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div class="lg:col-span-4 space-y-6">
-                <!-- Ringkasan Data Card -->
-                <div class="bg-indigo-600 p-6 rounded-2xl shadow-md text-white">
-                    <h3 class="font-bold mb-4 flex items-center text-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                        Ringkasan Data
-                    </h3>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center text-sm p-4 bg-indigo-700/50 rounded-xl border border-indigo-500/30">
-                            <span class="text-indigo-100 font-medium">Total Campaign</span>
-                            <span id="countCampaign" class="font-bold text-2xl text-white">0</span>
-                        </div>
-                    </div>
-                    <div class="mt-6 text-xs text-indigo-200/80 leading-relaxed border-t border-indigo-500/50 pt-4">
-                        <p>Data "Salur" dihitung otomatis dari file <strong>Unggah Transaksi</strong> berdasarkan kesesuaian ID Campaign dengan Database Master / Data Donasi.</p>
-                        <p class="mt-2 text-emerald-300 flex items-center gap-1 font-semibold">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg> Realtime Sync Aktif
-                        </p>
+        <div>
+            <!-- Combined Monitoring Table -->
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200 border-t-4 border-t-indigo-500">
+                <div class="p-5 bg-slate-50 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4">
+                    <h3 class="font-bold text-slate-800">Monitoring Capaian & Saldo per Campaign</h3>
+                    <div class="relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        <input type="text" id="tableSearchDonasi" placeholder="Cari campaign..." class="text-sm pl-9 pr-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64 transition-all" />
                     </div>
                 </div>
-            </div>
-
-            <div class="lg:col-span-8 space-y-8">
-                <!-- Combined Monitoring Table -->
-                <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200 border-t-4 border-t-indigo-500">
-                    <div class="p-5 bg-slate-50 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4">
-                        <h3 class="font-bold text-slate-800">Monitoring Capaian & Saldo per Campaign</h3>
-                        <div class="relative">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                            <input type="text" id="tableSearchDonasi" placeholder="Cari campaign..." class="text-sm pl-9 pr-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64 transition-all" />
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-100 text-slate-600 text-xs uppercase sticky top-0 shadow-sm z-10">
-                                <tr>
-                                    <th class="px-5 py-4 font-semibold tracking-wider">ID</th>
-                                    <th class="px-5 py-4 font-semibold tracking-wider">Campaign</th>
-                                    <th class="px-5 py-4 text-right font-semibold tracking-wider">Donasi</th>
-                                    <th class="px-5 py-4 text-right font-semibold tracking-wider">Salur (Transaksi)</th>
-                                    <th class="px-5 py-4 text-right font-semibold tracking-wider">Saldo</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dataTableBodyCombined" class="divide-y divide-slate-100 text-sm">
-                                <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center text-slate-400 italic">Memuat data secara realtime...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-100 text-slate-600 text-xs uppercase sticky top-0 shadow-sm z-10">
+                            <tr>
+                                <th class="px-5 py-4 font-semibold tracking-wider">ID</th>
+                                <th class="px-5 py-4 font-semibold tracking-wider">Campaign</th>
+                                <th class="px-5 py-4 text-right font-semibold tracking-wider">Donasi</th>
+                                <th class="px-5 py-4 text-right font-semibold tracking-wider">Salur (Transaksi)</th>
+                                <th class="px-5 py-4 text-right font-semibold tracking-wider">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBodyCombined" class="divide-y divide-slate-100 text-sm">
+                            <tr>
+                                <td colspan="5" class="px-6 py-12 text-center text-slate-400 italic">Memuat data secara realtime...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -209,6 +187,10 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                     <input type="text" id="searchCampaign" placeholder="Cari campaign..." class="text-sm pl-9 pr-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64 transition-all" />
                 </div>
+                <button onclick="exportCampaignsToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Export Data
+                </button>
                 <button onclick="openAddModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     Tambah Campaign
@@ -1217,9 +1199,6 @@
             const searchDonasi = document.getElementById('tableSearchDonasi')?.value.toLowerCase() || "";
             const combinedMap = {};
             
-            const countEl = document.getElementById('countCampaign');
-            if(countEl) countEl.innerText = fullDataDonasi.length;
-
             const periodBadge = document.getElementById('donasi-period-display');
             if (periodBadge) {
                 if (donasiPeriodText) {
@@ -1252,28 +1231,25 @@
 
             const combinedList = Object.values(combinedMap).filter(item => item.campaign.toLowerCase().includes(searchDonasi) || item.id.toLowerCase().includes(searchDonasi));
 
-            const totalIn = Object.values(combinedMap).reduce((s, i) => s + i.transaksi, 0);
-            const totalOut = Object.values(combinedMap).reduce((s, i) => s + i.salur, 0);
-
-            // "Total Donasi Masuk" di kartu KPI ini sengaja dibatasi hanya untuk ID Campaign yang
-            // sudah terdaftar sebagai Campaign di menu Monitoring Campaign (bukan seluruh ID yang
-            // muncul di file unggahan/Campaign Khusus Progdist).
+            // "Total Donasi Masuk" & "Total Transaksi (Salur)" di kartu KPI ini sengaja dibatasi
+            // hanya untuk ID Campaign yang sudah terdaftar sebagai Campaign di menu Monitoring
+            // Campaign (bukan seluruh ID yang muncul di file unggahan/Campaign Khusus Progdist).
             const registeredCampaignIds = new Set(campaigns.map(c => String(c.id).trim()));
-            const totalInRegistered = Object.values(combinedMap)
-                .filter(i => registeredCampaignIds.has(String(i.id).trim()))
-                .reduce((s, i) => s + i.transaksi, 0);
+            const registeredEntries = Object.values(combinedMap).filter(i => registeredCampaignIds.has(String(i.id).trim()));
+            const totalInRegistered = registeredEntries.reduce((s, i) => s + i.transaksi, 0);
+            const totalOutRegistered = registeredEntries.reduce((s, i) => s + i.salur, 0);
 
             const elDonasi = document.getElementById('totalDonasi');
             if(elDonasi) elDonasi.innerText = formatter.format(totalInRegistered);
             
             const elPenyaluran = document.getElementById('totalPenyaluran');
-            if(elPenyaluran) elPenyaluran.innerText = formatter.format(totalOut);
+            if(elPenyaluran) elPenyaluran.innerText = formatter.format(totalOutRegistered);
             
             const elSaldo = document.getElementById('saldoDonasi');
-            if(elSaldo) elSaldo.innerText = formatter.format(totalIn - totalOut);
+            if(elSaldo) elSaldo.innerText = formatter.format(totalInRegistered - totalOutRegistered);
             
-            const elSerapan = document.getElementById('serapanPersen');
-            if(elSerapan) elSerapan.innerText = (totalIn > 0 ? (totalOut/totalIn)*100 : 0).toFixed(1) + "%";
+            const elRingkasan = document.getElementById('ringkasanDataCount');
+            if(elRingkasan) elRingkasan.innerText = campaigns.length;
             
             const tbCombined = document.getElementById('dataTableBodyCombined');
             if(tbCombined) {
@@ -1373,11 +1349,13 @@
                         <div class="absolute top-3 right-3">${getStatusBadge(campaign.partnershipStatus)}</div>
                     </div>
                     <div class="p-5 flex flex-col flex-grow">
-                        <div class="text-xs text-slate-400 mb-2 flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                            Rilis: ${formatDate(campaign.releaseDate)}
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <div class="text-xs text-slate-400 flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                Rilis: ${formatDate(campaign.releaseDate)}
+                            </div>
+                            <span class="inline-block w-fit text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded shrink-0">ID: ${campaign.id}</span>
                         </div>
-                        <span class="inline-block w-fit text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded mb-2">ID: ${campaign.id}</span>
                         <h3 class="font-bold text-slate-800 text-lg leading-tight mb-3 line-clamp-2">${campaign.name}</h3>
                         <div class="mt-auto space-y-2 mb-4 bg-slate-50 p-3 rounded-lg border border-slate-100">
                             <div class="flex justify-between items-center text-xs">
@@ -1410,6 +1388,64 @@
         }
 
         window.handleLinkClick = function(event, url) { event.stopPropagation(); window.open(url, '_blank'); };
+
+        // Export daftar Campaign (sesuai hasil pencarian yang sedang ditampilkan) ke file .xlsx,
+        // menggunakan perhitungan Donasi Masuk/Total Cair/Saldo yang sama persis dengan kartu.
+        window.exportCampaignsToExcel = function() {
+            const searchQuery = (document.getElementById('searchCampaign')?.value || '').toLowerCase().trim();
+            const dataToExport = searchQuery
+                ? campaigns.filter(c => String(c.id).toLowerCase().includes(searchQuery) || String(c.name || '').toLowerCase().includes(searchQuery))
+                : campaigns;
+
+            if (!dataToExport.length) {
+                alert('Tidak ada data campaign untuk diekspor.');
+                return;
+            }
+
+            const rows = dataToExport.map(campaign => {
+                const donasiMasukVlookup = fullDataDonasi
+                    .filter(d => String(d.id).trim() === String(campaign.id).trim())
+                    .reduce((sum, d) => sum + d.transaksi, 0) + getProgdistBaseline(campaign.id);
+                const currentDonasiMasuk = donasiMasukVlookup > 0 ? donasiMasukVlookup : (campaign.donasiMasuk || 0);
+
+                const totalCair = fullDataTransaksi
+                    .filter(t => String(t.id).trim() === String(campaign.id).trim())
+                    .reduce((sum, t) => sum + t.totalDonasi, 0);
+
+                const currentSaldo = currentDonasiMasuk - totalCair;
+                const docs = campaign.documents || {};
+
+                return {
+                    'ID Campaign': campaign.id,
+                    'Nama Campaign': campaign.name,
+                    'Status Kemitraan': campaign.partnershipStatus || '',
+                    'Tanggal Rilis': campaign.releaseDate || '',
+                    'Lokasi': campaign.location || '',
+                    'Alamat': campaign.address || '',
+                    'PIC': campaign.pic || '',
+                    'Donasi Masuk': currentDonasiMasuk,
+                    'Total Cair': totalCair,
+                    'Saldo': currentSaldo,
+                    'MoU': docs.mou ? 'Ya' : 'Tidak',
+                    'Consent Letter': docs.consentLetter ? 'Ya' : 'Tidak',
+                    'Proposal': docs.proposal ? 'Ya' : 'Tidak',
+                    'Link Donasi': campaign.link || '',
+                    'Link Dokumen': campaign.docLink || ''
+                };
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(rows);
+            worksheet['!cols'] = [
+                { wch: 12 }, { wch: 30 }, { wch: 16 }, { wch: 14 }, { wch: 16 }, { wch: 24 },
+                { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 8 }, { wch: 14 },
+                { wch: 10 }, { wch: 30 }, { wch: 30 }
+            ];
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Monitoring Campaign');
+
+            const today = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(workbook, `Monitoring_Campaign_${today}.xlsx`);
+        };
 
         function getCheckUI(isComplete, label) {
             const icon = isComplete 
