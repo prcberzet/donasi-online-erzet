@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Donation Monitor V20.4.26</title>
+    <script type="text/javascript">
+      // Single Page Apps for GitHub Pages - bagian kedua dari trik di 404.html.
+      // Mengembalikan URL asli (misal /donasi-online-erzet/1795) dari query string
+      // sebelum aplikasi mulai berjalan, sehingga URL yang tampil di address bar tetap bersih.
+      (function(l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&');
+          }).join('?');
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+        }
+      }(window.location));
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -884,6 +897,13 @@
                 }
                 renderCampaigns();
                 updateUnifiedDashboard(); // "Total Donasi Masuk" bergantung pada daftar campaign terdaftar
+
+                campaignsDataReady = true;
+                if (pendingCampaignRoute) {
+                    const routeToOpen = pendingCampaignRoute;
+                    pendingCampaignRoute = null;
+                    openCampaignFromRoute(routeToOpen);
+                }
             }, (err) => console.error(err));
         }
 
@@ -929,11 +949,69 @@
         // ==========================================
         // UI & LOGIC HELPERS
         // ==========================================
-        window.switchTab = function(tabId) {
+
+        // ==========================================
+        // URL ROUTING (shareable link per menu / per campaign)
+        // ==========================================
+        // Sesuaikan nilai ini kalau nama repo/folder deploy GitHub Pages berubah.
+        const BASE_PATH = '/donasi-online-erzet/';
+        let campaignsDataReady = false;
+        let pendingCampaignRoute = null;
+
+        function getRouteFromPath() {
+            let path = window.location.pathname;
+            if (path.startsWith(BASE_PATH)) {
+                path = path.slice(BASE_PATH.length);
+            } else {
+                return ''; // bukan di environment GitHub Pages yang diharapkan -> default ke dashboard
+            }
+            return path.replace(/^\/+|\/+$/g, '');
+        }
+
+        // mode: 'push' (navigasi baru, masuk ke history/back-button), 'replace' (perbaiki URL
+        // tanpa menambah entri history), atau tidak dipanggil sama sekali untuk skip.
+        function navigateToRoute(route, mode) {
+            const url = BASE_PATH + route;
+            if (window.location.pathname + window.location.search === url) return;
+            if (mode === 'replace') window.history.replaceState({ route }, '', url);
+            else window.history.pushState({ route }, '', url);
+        }
+
+        function applyRoute() {
+            const route = getRouteFromPath();
+            if (!route || route === 'monitoring-campaign') {
+                window.switchTab(route === 'monitoring-campaign' ? 'monitoring' : 'ringkasan', 'skip');
+                const detailModal = document.getElementById('detail-modal');
+                if (detailModal && !detailModal.classList.contains('hidden')) window.closeModal('detail-modal', 'modal-box');
+                return;
+            }
+            // Selain itu, dianggap sebagai ID Campaign
+            window.switchTab('monitoring', 'skip');
+            if (campaignsDataReady) {
+                openCampaignFromRoute(route);
+            } else {
+                pendingCampaignRoute = route; // tunggu data campaign selesai dimuat dari server
+            }
+        }
+
+        function openCampaignFromRoute(id) {
+            const exists = campaigns.some(c => String(c.id) === String(id));
+            if (exists) {
+                window.openModal(id, 'skip');
+            } else {
+                alert(`Campaign dengan ID "${id}" tidak ditemukan. Menampilkan Daftar Campaign Aktif.`);
+                navigateToRoute('monitoring-campaign', 'replace');
+            }
+        }
+
+        window.addEventListener('popstate', applyRoute);
+
+        window.switchTab = function(tabId, urlMode) {
             document.getElementById('tab-ringkasan').className = tabId === 'ringkasan' ? 'tab-btn active' : 'tab-btn';
             document.getElementById('tab-monitoring').className = tabId === 'monitoring' ? 'tab-btn active' : 'tab-btn';
             document.getElementById('view-ringkasan').style.display = tabId === 'ringkasan' ? 'block' : 'none';
             document.getElementById('view-monitoring').style.display = tabId === 'monitoring' ? 'block' : 'none';
+            if (urlMode !== 'skip') navigateToRoute(tabId === 'ringkasan' ? '' : 'monitoring-campaign', urlMode === 'replace' ? 'replace' : 'push');
         }
 
         function parseNominal(val) {
@@ -1484,12 +1562,18 @@
                     if (document.querySelectorAll('.fixed.inset-0:not(.hidden)').length <= 1) document.body.style.overflow = '';
                 }, 300);
             }
+            if (modalId === 'detail-modal') navigateToRoute('monitoring-campaign', 'replace');
         };
 
-        window.openModal = function(campaignId) {
+        // urlMode: 'push' (default, navigasi baru/tombol back berfungsi), 'replace' (perbaiki URL
+        // tanpa entri history baru - dipakai saat ID campaign berubah lewat Edit), atau 'skip'
+        // (jangan ubah URL sama sekali - dipakai untuk refresh tampilan setelah simpan/hapus data).
+        window.openModal = function(campaignId, urlMode) {
             currentCampaignId = campaignId;
             const campaign = campaigns.find(c => String(c.id) === String(campaignId));
             if (!campaign) return;
+
+            if (urlMode !== 'skip') navigateToRoute(String(campaign.id), urlMode === 'replace' ? 'replace' : 'push');
 
             document.getElementById('modal-title').innerText = campaign.name;
             document.getElementById('modal-poster').src = campaign.posterUrl;
@@ -1631,7 +1715,7 @@
             const ok = await saveCampaignsToFirestore(candidateList);
             if (!ok) return;
 
-            window.openModal(currentCampaignId);
+            window.openModal(currentCampaignId, 'skip');
         };
 
         // Mengubah berbagai format link "share" Google Drive (yang tidak bisa langsung dipakai
@@ -1697,6 +1781,8 @@
 
         // DOM Listeners
         document.addEventListener('DOMContentLoaded', () => {
+            applyRoute(); // buka menu/campaign sesuai URL saat halaman pertama kali dimuat
+
             document.getElementById('fileInputDonasi')?.addEventListener('change', (e) => handleExcel(e, 'donasi'));
             document.getElementById('fileInputTransaksi')?.addEventListener('change', (e) => handleExcel(e, 'transaksi'));
             document.getElementById('tableSearchDonasi')?.addEventListener('input', updateUnifiedDashboard);
@@ -1760,7 +1846,7 @@
                 const ok = await saveCampaignsToFirestore(candidateList);
                 if (!ok) return;
 
-                window.openModal(currentCampaignId); 
+                window.openModal(currentCampaignId, 'skip'); 
                 window.closeModal('add-activity-modal', 'add-activity-box');
                 this.reset();
             });
@@ -1786,7 +1872,7 @@
                 if (!ok) return;
 
                 currentActivityIndex = null;
-                window.openModal(currentCampaignId); 
+                window.openModal(currentCampaignId, 'skip'); 
                 window.closeModal('edit-activity-modal', 'edit-activity-box');
             });
 
@@ -1868,7 +1954,7 @@
 
                 currentCampaignId = newIdInput;
                 window.closeModal('edit-modal', 'edit-modal-box'); 
-                setTimeout(() => window.openModal(currentCampaignId), 300);
+                setTimeout(() => window.openModal(currentCampaignId, 'replace'), 300);
                 delete this.dataset.donasiMasuk;
             });
         });
