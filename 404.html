@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Donasi Online Rumah Zakat</title>
+    <script type="text/javascript">
+      // Single Page Apps for GitHub Pages
+      // Trik ini dibutuhkan karena GitHub Pages adalah static hosting - tidak ada server-side
+      // routing. Ketika seseorang membuka link langsung seperti .../monitoring-campaign atau
+      // .../1795, GitHub Pages akan menampilkan halaman 404 ini (karena folder itu tidak
+      // benar-benar ada). Script ini mengubah URL tersebut menjadi query string lalu redirect
+      // ke index.html, yang kemudian akan membaca query string itu dan mengembalikan URL asli
+      // (lihat script di bagian atas <head> index.html) sekaligus membuka menu/campaign yang
+      // dimaksud.
+      // Sumber teknik: https://github.com/rafgraph/spa-github-pages
+
+      // Jumlah segmen path yang merupakan bagian dari nama repo GitHub Pages.
+      // Untuk https://prcberzet.github.io/donasi-online-erzet/ -> "donasi-online-erzet" adalah
+      // 1 segmen, jadi nilainya 1. UBAH ANGKA INI jika nama repo/folder deploy berubah.
+      var pathSegmentsToKeep = 1;
+
+      var l = window.location;
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+        l.hash
+      );
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
