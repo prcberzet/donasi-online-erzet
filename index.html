@@ -427,22 +427,23 @@
                 <div class="mt-8">
                     <div class="flex justify-between items-center mb-3 border-b pb-2">
                         <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                            Riwayat Pencairan Dana
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+                            Riwayat Aktivitas / Progress
                         </h4>
-                        <button onclick="openAddDisbursementModal()" class="text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-md border border-indigo-200 transition-colors flex items-center gap-1 font-semibold">
+                        <button onclick="openAddActivityModal()" class="text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-md border border-indigo-200 transition-colors flex items-center gap-1 font-semibold">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            Tambah Manual
+                            +Activity
                         </button>
                     </div>
                     <div class="overflow-x-auto rounded-lg border border-slate-200">
                         <table class="min-w-full divide-y divide-slate-200 text-sm">
                             <thead class="bg-slate-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left font-semibold text-slate-500 uppercase tracking-wider w-1/5">Tanggal</th>
-                                    <th scope="col" class="px-6 py-3 text-left font-semibold text-slate-500 uppercase tracking-wider w-1/5">Nominal</th>
-                                    <th scope="col" class="px-6 py-3 text-left font-semibold text-slate-500 uppercase tracking-wider w-2/5">Peruntukan</th>
-                                    <th scope="col" class="px-6 py-3 text-right font-semibold text-slate-500 uppercase tracking-wider w-1/5">Aksi</th>
+                                    <th scope="col" class="px-6 py-3 text-left font-semibold text-slate-500 uppercase tracking-wider w-1/6">Hari, Tanggal</th>
+                                    <th scope="col" class="px-6 py-3 text-left font-semibold text-slate-500 uppercase tracking-wider w-1/6">Aktivitas</th>
+                                    <th scope="col" class="px-6 py-3 text-left font-semibold text-slate-500 uppercase tracking-wider w-2/6">Deskripsi</th>
+                                    <th scope="col" class="px-6 py-3 text-left font-semibold text-slate-500 uppercase tracking-wider w-1/6">Link Bahan</th>
+                                    <th scope="col" class="px-6 py-3 text-right font-semibold text-slate-500 uppercase tracking-wider w-1/6">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="modal-history-body" class="bg-white divide-y divide-slate-200">
@@ -450,7 +451,7 @@
                             </tbody>
                         </table>
                         <div id="modal-history-empty" class="hidden p-6 text-center text-slate-500 text-sm italic">
-                            Belum ada riwayat pencairan manual untuk campaign ini.
+                            Belum ada aktivitas/progress yang dicatat untuk campaign ini.
                         </div>
                     </div>
                 </div>
@@ -642,64 +643,72 @@
         </div>
     </div>
 
-    <!-- Modal Add Disbursement -->
-    <div id="add-disbursement-modal" class="fixed inset-0 z-[120] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="add-disbursement-box">
+    <!-- Modal Add Activity -->
+    <div id="add-activity-modal" class="fixed inset-0 z-[120] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="add-activity-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
-                <h3 class="text-lg font-bold text-slate-800">Tambah Pencairan Dana</h3>
-                <button onclick="closeModal('add-disbursement-modal', 'add-disbursement-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                <h3 class="text-lg font-bold text-slate-800">Tambah Activity</h3>
+                <button onclick="closeModal('add-activity-modal', 'add-activity-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <form id="add-disbursement-form" class="flex flex-col flex-1 overflow-hidden">
+            <form id="add-activity-form" class="flex flex-col flex-1 overflow-hidden">
                 <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Pencairan *</label>
-                        <input type="date" id="disbursement-date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Hari, Tanggal *</label>
+                        <input type="date" id="activity-date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Nominal (Rp) *</label>
-                        <input type="number" id="disbursement-amount" required min="1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Aktivitas *</label>
+                        <input type="text" id="activity-name" required placeholder="cth. Survei lokasi, Serah terima bantuan" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Peruntukan / Tujuan *</label>
-                        <textarea id="disbursement-purpose" rows="3" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"></textarea>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Deskripsi *</label>
+                        <textarea id="activity-description" rows="4" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Link Bahan <span class="text-slate-400 font-normal">(opsional)</span></label>
+                        <input type="url" id="activity-link" placeholder="https://... (foto, dokumen, laporan, dll)" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                     </div>
                 </div>
                 <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl shrink-0">
-                    <button type="button" onclick="closeModal('add-disbursement-modal', 'add-disbursement-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan Data</button>
+                    <button type="button" onclick="closeModal('add-activity-modal', 'add-activity-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan Activity</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Edit Disbursement -->
-    <div id="edit-disbursement-modal" class="fixed inset-0 z-[120] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="edit-disbursement-box">
+    <!-- Modal Edit Activity -->
+    <div id="edit-activity-modal" class="fixed inset-0 z-[120] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="edit-activity-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
-                <h3 class="text-lg font-bold text-slate-800">Edit Pencairan Dana</h3>
-                <button onclick="closeModal('edit-disbursement-modal', 'edit-disbursement-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                <h3 class="text-lg font-bold text-slate-800">Edit Activity</h3>
+                <button onclick="closeModal('edit-activity-modal', 'edit-activity-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <form id="edit-disbursement-form" class="flex flex-col flex-1 overflow-hidden">
+            <form id="edit-activity-form" class="flex flex-col flex-1 overflow-hidden">
                 <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Pencairan *</label>
-                        <input type="date" id="edit-disbursement-date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Hari, Tanggal *</label>
+                        <input type="date" id="edit-activity-date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Nominal (Rp) *</label>
-                        <input type="number" id="edit-disbursement-amount" required min="1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Aktivitas *</label>
+                        <input type="text" id="edit-activity-name" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Peruntukan / Tujuan *</label>
-                        <textarea id="edit-disbursement-purpose" rows="3" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"></textarea>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Deskripsi *</label>
+                        <textarea id="edit-activity-description" rows="4" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Link Bahan <span class="text-slate-400 font-normal">(opsional)</span></label>
+                        <input type="url" id="edit-activity-link" placeholder="https://... (foto, dokumen, laporan, dll)" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                     </div>
                 </div>
                 <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl shrink-0">
-                    <button type="button" onclick="closeModal('edit-disbursement-modal', 'edit-disbursement-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
+                    <button type="button" onclick="closeModal('edit-activity-modal', 'edit-activity-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
                     <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan Perubahan</button>
                 </div>
             </form>
@@ -756,7 +765,7 @@
         let donasiPeriodText = "";
         
         let currentCampaignId = null;
-        let currentDisbursementIndex = null;
+        let currentActivityIndex = null;
         let campaigns = [];
         let progdistCampaigns = [];
         let editingProgdistId = null;
@@ -775,9 +784,9 @@
                 donasiMasuk: 25000000,
                 documents: { mou: true, consentLetter: true, proposal: true },
                 docLink: "https://drive.google.com/drive/folders/contoh-link-1",
-                disbursements: [
-                    { date: "2023-12-10", amount: 15000000, purpose: "Pembayaran SPP semester ganjil" },
-                    { date: "2023-11-01", amount: 5000000, purpose: "Pembelian paket alat tulis 50 anak" }
+                activities: [
+                    { date: "2023-12-10", activity: "Pencairan dana SPP", description: "Pembayaran SPP semester ganjil untuk seluruh penerima manfaat.", link: "" },
+                    { date: "2023-11-01", activity: "Distribusi alat tulis", description: "Pembelian dan pembagian paket alat tulis untuk 50 anak.", link: "" }
                 ]
             }
         ];
@@ -1278,6 +1287,7 @@
         });
 
         const formatDate = (dateString) => new Date(dateString).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        const formatDateWithDay = (dateString) => new Date(dateString).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
         const getStatusBadge = (status) => {
             let color = "bg-slate-100 text-slate-700 border-slate-200";
@@ -1537,11 +1547,14 @@
             if(historyBody && emptyState) {
                 historyBody.innerHTML = ''; 
                 
-                if (campaign.disbursements && campaign.disbursements.length > 0) {
+                if (campaign.activities && campaign.activities.length > 0) {
                     historyBody.parentElement.classList.remove('hidden'); emptyState.classList.add('hidden');
-                    campaign.disbursements.forEach((item, index) => {
-                        const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 transition-colors";
-                        tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-slate-600">${formatDate(item.date)}</td><td class="px-6 py-4 whitespace-nowrap font-medium text-slate-800">${formatter.format(item.amount)}</td><td class="px-6 py-4 text-slate-600">${item.purpose}</td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button type="button" onclick="window.openEditDisbursementModal(${index})" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button></td>`;
+                    campaign.activities.forEach((item, index) => {
+                        const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 transition-colors align-top";
+                        const linkCell = item.link
+                            ? `<a href="${item.link}" target="_blank" onclick="event.stopPropagation()" class="text-indigo-600 hover:text-indigo-800 hover:underline inline-flex items-center gap-1 font-medium">Buka <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg></a>`
+                            : `<span class="text-slate-300">-</span>`;
+                        tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-slate-600">${formatDateWithDay(item.date)}</td><td class="px-6 py-4 font-medium text-slate-800">${item.activity}</td><td class="px-6 py-4 text-slate-600">${item.description}</td><td class="px-6 py-4 whitespace-nowrap">${linkCell}</td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><div class="flex items-center justify-end gap-3"><button type="button" onclick="window.openEditActivityModal(${index})" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button><button type="button" onclick="window.deleteActivity(${index})" class="text-red-500 hover:text-red-700 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Hapus</button></div></td>`;
                         historyBody.appendChild(tr);
                     });
                 } else { historyBody.parentElement.classList.add('hidden'); emptyState.classList.remove('hidden'); }
@@ -1588,21 +1601,37 @@
             window.closeModal('delete-modal', 'delete-modal-box'); window.closeModal('detail-modal', 'modal-box');
         };
 
-        window.openAddDisbursementModal = function() {
+        window.openAddActivityModal = function() {
             if (!currentCampaignId) return;
-            const form = document.getElementById('add-disbursement-form');
+            const form = document.getElementById('add-activity-form');
             if(form) form.reset();
-            window.openModalAnimation('add-disbursement-modal', 'add-disbursement-box');
+            window.openModalAnimation('add-activity-modal', 'add-activity-box');
         };
 
-        window.openEditDisbursementModal = function(index) {
-            if (!currentCampaignId) return;
+        window.openEditActivityModal = function(index) {
             const campaign = campaigns.find(c => String(c.id) === String(currentCampaignId));
-            if (!campaign || !campaign.disbursements || !campaign.disbursements[index]) return;
-            currentDisbursementIndex = index;
-            const item = campaign.disbursements[index];
-            document.getElementById('edit-disbursement-date').value = item.date; document.getElementById('edit-disbursement-amount').value = item.amount; document.getElementById('edit-disbursement-purpose').value = item.purpose;
-            window.openModalAnimation('edit-disbursement-modal', 'edit-disbursement-box');
+            if (!campaign || !campaign.activities || !campaign.activities[index]) return;
+            currentActivityIndex = index;
+            const item = campaign.activities[index];
+            document.getElementById('edit-activity-date').value = item.date || '';
+            document.getElementById('edit-activity-name').value = item.activity || '';
+            document.getElementById('edit-activity-description').value = item.description || '';
+            document.getElementById('edit-activity-link').value = item.link || '';
+            window.openModalAnimation('edit-activity-modal', 'edit-activity-box');
+        };
+
+        window.deleteActivity = async function(index) {
+            const idx = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
+            if (idx === -1 || !campaigns[idx].activities || !campaigns[idx].activities[index]) return;
+            if (!confirm('Hapus aktivitas ini?')) return;
+
+            const updatedActivities = campaigns[idx].activities.filter((_, i) => i !== index);
+            const updatedCamp = { ...campaigns[idx], activities: updatedActivities };
+            const candidateList = campaigns.map((c, i) => i === idx ? updatedCamp : c);
+            const ok = await saveCampaignsToFirestore(candidateList);
+            if (!ok) return;
+
+            window.openModal(currentCampaignId);
         };
 
         // Mengubah berbagai format link "share" Google Drive (yang tidak bisa langsung dipakai
@@ -1711,30 +1740,54 @@
                 document.getElementById('edit-proposal-wrapper').style.display = isPer ? 'none' : '';
             });
 
-            document.getElementById('add-disbursement-form')?.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const index = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
-                if (index === -1) return;
-                const newDisb = { date: document.getElementById('disbursement-date').value, amount: parseFloat(document.getElementById('disbursement-amount').value), purpose: document.getElementById('disbursement-purpose').value };
-                if (!campaigns[index].disbursements) campaigns[index].disbursements = [];
-                campaigns[index].disbursements.push(newDisb);
-                campaigns[index].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                await saveCampaignsToFirestore(); 
-                window.openModal(currentCampaignId); 
-                window.closeModal('add-disbursement-modal', 'add-disbursement-box');
-            });
-
-            document.getElementById('edit-disbursement-form')?.addEventListener('submit', async function(e) {
+            document.getElementById('add-activity-form')?.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const idx = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
-                if (idx === -1 || currentDisbursementIndex === null) return;
-                campaigns[idx].disbursements[currentDisbursementIndex] = { date: document.getElementById('edit-disbursement-date').value, amount: parseFloat(document.getElementById('edit-disbursement-amount').value), purpose: document.getElementById('edit-disbursement-purpose').value };
-                campaigns[idx].disbursements.sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                await saveCampaignsToFirestore(); 
+                if (idx === -1) return;
+
+                const newActivity = {
+                    date: document.getElementById('activity-date').value,
+                    activity: document.getElementById('activity-name').value.trim(),
+                    description: document.getElementById('activity-description').value.trim(),
+                    link: document.getElementById('activity-link').value.trim()
+                };
+
+                const updatedActivities = [...(campaigns[idx].activities || []), newActivity];
+                updatedActivities.sort((a, b) => new Date(b.date) - new Date(a.date));
+                const updatedCamp = { ...campaigns[idx], activities: updatedActivities };
+                const candidateList = campaigns.map((c, i) => i === idx ? updatedCamp : c);
+
+                const ok = await saveCampaignsToFirestore(candidateList);
+                if (!ok) return;
+
                 window.openModal(currentCampaignId); 
-                window.closeModal('edit-disbursement-modal', 'edit-disbursement-box');
+                window.closeModal('add-activity-modal', 'add-activity-box');
+                this.reset();
+            });
+
+            document.getElementById('edit-activity-form')?.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const idx = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
+                if (idx === -1 || currentActivityIndex === null || !campaigns[idx].activities || !campaigns[idx].activities[currentActivityIndex]) return;
+
+                const updatedActivity = {
+                    date: document.getElementById('edit-activity-date').value,
+                    activity: document.getElementById('edit-activity-name').value.trim(),
+                    description: document.getElementById('edit-activity-description').value.trim(),
+                    link: document.getElementById('edit-activity-link').value.trim()
+                };
+
+                const updatedActivities = campaigns[idx].activities.map((a, i) => i === currentActivityIndex ? updatedActivity : a);
+                updatedActivities.sort((a, b) => new Date(b.date) - new Date(a.date));
+                const updatedCamp = { ...campaigns[idx], activities: updatedActivities };
+                const candidateList = campaigns.map((c, i) => i === idx ? updatedCamp : c);
+
+                const ok = await saveCampaignsToFirestore(candidateList);
+                if (!ok) return;
+
+                currentActivityIndex = null;
+                window.openModal(currentCampaignId); 
+                window.closeModal('edit-activity-modal', 'edit-activity-box');
             });
 
             document.getElementById('add-campaign-form')?.addEventListener('submit', async function(e) {
@@ -1760,7 +1813,7 @@
                     address: document.getElementById('add-address').value, 
                     pic: document.getElementById('add-pic').value, 
                     docLink: document.getElementById('add-doclink').value, 
-                    disbursements: [],
+                    activities: [],
                     donasiMasuk: donasiMasuk,
                     documents: { mou: document.getElementById('add-mou-check').checked, consentLetter: document.getElementById('add-consent-check').checked, proposal: document.getElementById('add-proposal-check').checked }
                 };
@@ -1821,7 +1874,7 @@
         });
 
         window.addEventListener('click', function(e) {
-            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-disbursement-modal', 'edit-disbursement-modal', 'delete-modal', 'upload-donasi-modal', 'progdist-modal'];
+            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-activity-modal', 'edit-activity-modal', 'delete-modal', 'upload-donasi-modal', 'progdist-modal'];
             modals.forEach(id => { 
                 if (e.target === document.getElementById(id)) {
                     window.closeModal(id, id.replace('modal', 'box').replace('detail-', 'modal-').replace('upload-donasi-', 'upload-donasi-')); 
@@ -1831,7 +1884,7 @@
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                const arr = ['delete-modal', 'edit-disbursement-modal', 'add-disbursement-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'progdist-modal'];
+                const arr = ['delete-modal', 'add-activity-modal', 'edit-activity-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'progdist-modal'];
                 for (const id of arr) { 
                     const el = document.getElementById(id); 
                     if (el && !el.classList.contains('hidden')) { 
