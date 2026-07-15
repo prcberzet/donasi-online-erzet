@@ -338,7 +338,10 @@
     <div id="detail-modal" class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="modal-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
-                <h3 class="text-lg font-bold text-slate-800" id="modal-title">Detail Campaign</h3>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800" id="modal-title">Detail Campaign</h3>
+                    <p id="modal-id-display" class="text-xs font-mono font-semibold text-slate-400 mt-0.5">ID: -</p>
+                </div>
                 <div class="flex items-center gap-2">
                     <div id="campaign-admin-actions" class="hidden items-center gap-2">
                         <button onclick="openDeleteConfirmModal()" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors" title="Hapus Campaign">
@@ -378,11 +381,34 @@
                     </div>
 
                     <div class="w-full md:w-2/3 space-y-6">
+                        <!-- Data Realtime VLOOKUP -->
+                        <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wider flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Donasi Masuk</p>
+                                <p id="modal-donasi-masuk" class="text-slate-800 font-bold mt-1 text-lg">Rp 0</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wider flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Total Cair</p>
+                                <p id="modal-total-cair" class="text-slate-800 font-bold mt-1 text-lg">Rp 0</p>
+                            </div>
+                            <div class="sm:col-span-2 pt-3 border-t border-indigo-200">
+                                <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wider flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Saldo Campaign</p>
+                                <p id="modal-saldo" class="text-slate-800 font-bold mt-1 text-xl">Rp 0</p>
+                            </div>
+                        </div>
+
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Penanggung Jawab (PIC)</p>
                                 <p id="modal-pic" class="text-slate-800 font-medium mt-1 flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                    <span></span>
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Contact Person</p>
+                                <p id="modal-contact" class="text-slate-800 font-medium mt-1 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg>
                                     <span></span>
                                 </p>
                             </div>
@@ -415,22 +441,6 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                                     Lihat Arsip Dokumentasi
                                 </a>
-                            </div>
-                        </div>
-
-                        <!-- Data Realtime VLOOKUP -->
-                        <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wider flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Donasi Masuk</p>
-                                <p id="modal-donasi-masuk" class="text-slate-800 font-bold mt-1 text-lg">Rp 0</p>
-                            </div>
-                            <div>
-                                <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wider flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Total Cair</p>
-                                <p id="modal-total-cair" class="text-slate-800 font-bold mt-1 text-lg">Rp 0</p>
-                            </div>
-                            <div class="sm:col-span-2 pt-3 border-t border-indigo-200">
-                                <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wider flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Saldo Campaign</p>
-                                <p id="modal-saldo" class="text-slate-800 font-bold mt-1 text-xl">Rp 0</p>
                             </div>
                         </div>
 
@@ -526,6 +536,10 @@
                             <input type="text" id="add-pic" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                         </div>
                         <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Contact Person <span class="text-slate-400 font-normal">(opsional)</span></label>
+                            <input type="text" id="add-contact" placeholder="No. HP / WhatsApp / Email" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Lokasi Project *</label>
                             <input type="text" id="add-location" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                         </div>
@@ -614,6 +628,10 @@
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">PIC *</label>
                             <input type="text" id="edit-pic" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Contact Person <span class="text-slate-400 font-normal">(opsional)</span></label>
+                            <input type="text" id="edit-contact" placeholder="No. HP / WhatsApp / Email" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Lokasi Project *</label>
@@ -1667,6 +1685,7 @@
                     'Lokasi': campaign.location || '',
                     'Alamat': campaign.address || '',
                     'PIC': campaign.pic || '',
+                    'Contact Person': campaign.contactPerson || '',
                     'Donasi Masuk': currentDonasiMasuk,
                     'Total Cair': totalCair,
                     'Saldo': currentSaldo,
@@ -1681,7 +1700,7 @@
             const worksheet = XLSX.utils.json_to_sheet(rows);
             worksheet['!cols'] = [
                 { wch: 12 }, { wch: 30 }, { wch: 16 }, { wch: 14 }, { wch: 16 }, { wch: 24 },
-                { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 8 }, { wch: 14 },
+                { wch: 16 }, { wch: 18 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 8 }, { wch: 14 },
                 { wch: 10 }, { wch: 30 }, { wch: 30 }
             ];
             const workbook = XLSX.utils.book_new();
@@ -1732,11 +1751,13 @@
             if (urlMode !== 'skip') navigateToRoute(String(campaign.id), urlMode === 'replace' ? 'replace' : 'push');
 
             document.getElementById('modal-title').innerText = campaign.name;
+            document.getElementById('modal-id-display').innerText = 'ID: ' + campaign.id;
             document.getElementById('modal-poster').src = campaign.posterUrl;
             document.getElementById('modal-status').innerHTML = getStatusBadge(campaign.partnershipStatus);
             document.getElementById('modal-date').innerText = formatDate(campaign.releaseDate);
             document.getElementById('modal-link').href = campaign.link;
             document.querySelector('#modal-pic span').innerText = campaign.pic;
+            document.querySelector('#modal-contact span').innerText = campaign.contactPerson || '-';
             document.querySelector('#modal-location span').innerText = campaign.location;
             document.getElementById('modal-address').innerText = campaign.address;
 
@@ -1953,7 +1974,7 @@
             if(form) form.reset(); 
             document.getElementById('edit-id').value = camp.id;
             document.getElementById('edit-poster').value = camp.posterUrl || "";
-            document.getElementById('edit-name').value = camp.name; document.getElementById('edit-link').value = camp.link; document.getElementById('edit-date').value = camp.releaseDate; document.getElementById('edit-status').value = camp.partnershipStatus; document.getElementById('edit-pic').value = camp.pic; document.getElementById('edit-location').value = camp.location; document.getElementById('edit-address').value = camp.address;
+            document.getElementById('edit-name').value = camp.name; document.getElementById('edit-link').value = camp.link; document.getElementById('edit-date').value = camp.releaseDate; document.getElementById('edit-status').value = camp.partnershipStatus; document.getElementById('edit-pic').value = camp.pic; document.getElementById('edit-contact').value = camp.contactPerson || ''; document.getElementById('edit-location').value = camp.location; document.getElementById('edit-address').value = camp.address;
             const isPer = camp.partnershipStatus.toLowerCase() === 'perorangan';
             document.getElementById('edit-mou-wrapper').style.display = isPer ? 'none' : ''; document.getElementById('edit-proposal-wrapper').style.display = isPer ? 'none' : '';
             document.getElementById('edit-mou-check').checked = camp.documents.mou; document.getElementById('edit-consent-check').checked = camp.documents.consentLetter; document.getElementById('edit-proposal-check').checked = camp.documents.proposal;
@@ -2118,6 +2139,7 @@
                     location: document.getElementById('add-location').value, 
                     address: document.getElementById('add-address').value, 
                     pic: document.getElementById('add-pic').value, 
+                    contactPerson: document.getElementById('add-contact').value.trim(),
                     docLink: document.getElementById('add-doclink').value, 
                     activities: [],
                     donasiMasuk: donasiMasuk,
@@ -2161,6 +2183,7 @@
                     location: document.getElementById('edit-location').value, 
                     address: document.getElementById('edit-address').value, 
                     pic: document.getElementById('edit-pic').value, 
+                    contactPerson: document.getElementById('edit-contact').value.trim(),
                     docLink: document.getElementById('edit-doclink').value, 
                     donasiMasuk: donasiMasukBaru || 0,
                     documents: { mou: document.getElementById('edit-mou-check').checked, consentLetter: document.getElementById('edit-consent-check').checked, proposal: document.getElementById('edit-proposal-check').checked } 
