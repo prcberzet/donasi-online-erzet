@@ -93,6 +93,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-2 flex border-b border-slate-100">
             <button onclick="switchTab('ringkasan')" id="tab-ringkasan" class="tab-btn active">Ringkasan Donasi</button>
             <button onclick="switchTab('monitoring')" id="tab-monitoring" class="tab-btn">Monitoring Campaign</button>
+            <button onclick="switchTab('logactivity')" id="tab-logactivity" class="tab-btn">Log Activity</button>
         </div>
     </header>
 
@@ -223,6 +224,52 @@
             <!-- Cards will be injected here by JS -->
         </div>
     </div> <!-- END OF TAB 2 -->
+
+    <!-- TAB 3: LOG ACTIVITY -->
+    <div id="view-logactivity" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-12">
+        <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+            <div>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <h2 class="text-xl font-semibold text-slate-800">Log Activity</h2>
+                    <span id="totalLogActivity" class="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-full">0 Aktivitas</span>
+                </div>
+                <p class="text-slate-500 text-sm mt-1">Rekap seluruh aktivitas/progress dari semua campaign dalam satu tampilan. Klik satu baris untuk melihat detail lengkap.</p>
+            </div>
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div class="relative flex-1 sm:flex-initial">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    <input type="text" id="searchLogActivity" placeholder="Cari ID, campaign, atau aktivitas..." class="text-sm pl-9 pr-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-72 transition-all" />
+                </div>
+                <button onclick="exportLogActivityToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Export Data
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200">
+            <div class="overflow-x-auto max-h-[650px] overflow-y-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-100 text-slate-600 text-xs uppercase sticky top-0 shadow-sm z-10">
+                        <tr>
+                            <th class="px-5 py-4 font-semibold tracking-wider whitespace-nowrap">Hari, Tanggal</th>
+                            <th class="px-5 py-4 font-semibold tracking-wider whitespace-nowrap">ID Campaign</th>
+                            <th class="px-5 py-4 font-semibold tracking-wider">Nama Campaign</th>
+                            <th class="px-5 py-4 font-semibold tracking-wider">Aktivitas</th>
+                            <th class="px-5 py-4 font-semibold tracking-wider">Deskripsi</th>
+                            <th class="px-5 py-4 font-semibold tracking-wider whitespace-nowrap">Link Bahan</th>
+                            <th class="px-5 py-4 text-right font-semibold tracking-wider whitespace-nowrap">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logActivityTableBody" class="divide-y divide-slate-100 text-sm">
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center text-slate-400 italic">Memuat data secara realtime...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> <!-- END OF TAB 3 -->
 
     <!-- Modal Campaign Khusus Progdist -->
     <div id="progdist-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
@@ -900,7 +947,7 @@
         let currentCampaignId = null;
         let isAdminMode = false;
         let appPin = '123123'; // PIN default, bisa diganti admin lewat menu "Ganti PIN"
-        let currentActivityIndex = null;
+        let activityEditContext = null; // { campaignId, index, fromLog } - dipakai bersama oleh kartu campaign & Log Activity
         let campaigns = [];
         let progdistCampaigns = [];
         let editingProgdistId = null;
@@ -1020,6 +1067,7 @@
                 }
                 renderCampaigns();
                 updateUnifiedDashboard(); // "Total Donasi Masuk" bergantung pada daftar campaign terdaftar
+                renderLogActivity();
 
                 campaignsDataReady = true;
                 if (pendingCampaignRoute) {
@@ -1103,8 +1151,11 @@
 
         function applyRoute() {
             const route = getRouteFromPath();
-            if (!route || route === 'monitoring-campaign') {
-                window.switchTab(route === 'monitoring-campaign' ? 'monitoring' : 'ringkasan', 'skip');
+            if (!route || route === 'monitoring-campaign' || route === 'log-activity') {
+                let tabId = 'ringkasan';
+                if (route === 'monitoring-campaign') tabId = 'monitoring';
+                else if (route === 'log-activity') tabId = 'logactivity';
+                window.switchTab(tabId, 'skip');
                 const detailModal = document.getElementById('detail-modal');
                 if (detailModal && !detailModal.classList.contains('hidden')) window.closeModal('detail-modal', 'modal-box');
                 return;
@@ -1154,6 +1205,7 @@
             // Refresh tampilan yang memuat tombol Edit/Hapus
             renderCampaigns();
             renderProgdistTable();
+            renderLogActivity();
             const detailModal = document.getElementById('detail-modal');
             const editIcons = document.getElementById('campaign-admin-actions');
             if (editIcons) {
@@ -1195,9 +1247,15 @@
         window.switchTab = function(tabId, urlMode) {
             document.getElementById('tab-ringkasan').className = tabId === 'ringkasan' ? 'tab-btn active' : 'tab-btn';
             document.getElementById('tab-monitoring').className = tabId === 'monitoring' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('tab-logactivity').className = tabId === 'logactivity' ? 'tab-btn active' : 'tab-btn';
             document.getElementById('view-ringkasan').style.display = tabId === 'ringkasan' ? 'block' : 'none';
             document.getElementById('view-monitoring').style.display = tabId === 'monitoring' ? 'block' : 'none';
-            if (urlMode !== 'skip') navigateToRoute(tabId === 'ringkasan' ? '' : 'monitoring-campaign', urlMode === 'replace' ? 'replace' : 'push');
+            document.getElementById('view-logactivity').style.display = tabId === 'logactivity' ? 'block' : 'none';
+            if (tabId === 'logactivity') renderLogActivity();
+            let route = '';
+            if (tabId === 'monitoring') route = 'monitoring-campaign';
+            else if (tabId === 'logactivity') route = 'log-activity';
+            if (urlMode !== 'skip') navigateToRoute(route, urlMode === 'replace' ? 'replace' : 'push');
         }
 
         function parseNominal(val) {
@@ -1730,6 +1788,112 @@
             XLSX.writeFile(workbook, `Monitoring_Campaign_${today}.xlsx`);
         };
 
+        // ==========================================
+        // LOG ACTIVITY (rekap seluruh aktivitas semua campaign)
+        // ==========================================
+        function getAllActivitiesFlat() {
+            const flat = [];
+            campaigns.forEach(c => {
+                (c.activities || []).forEach((a, idx) => {
+                    flat.push({
+                        campaignId: c.id,
+                        campaignName: c.name,
+                        index: idx,
+                        date: a.date,
+                        activity: a.activity,
+                        description: a.description,
+                        link: a.link
+                    });
+                });
+            });
+            return flat;
+        }
+
+        function getFilteredLogActivities() {
+            const query = (document.getElementById('searchLogActivity')?.value || '').toLowerCase().trim();
+            let flat = getAllActivitiesFlat();
+            if (query) {
+                flat = flat.filter(a =>
+                    String(a.campaignId).toLowerCase().includes(query) ||
+                    String(a.campaignName || '').toLowerCase().includes(query) ||
+                    String(a.activity || '').toLowerCase().includes(query) ||
+                    String(a.description || '').toLowerCase().includes(query)
+                );
+            }
+            flat.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            return flat;
+        }
+
+        window.renderLogActivity = function() {
+            const tbody = document.getElementById('logActivityTableBody');
+            if (!tbody) return;
+            const flat = getFilteredLogActivities();
+            const query = (document.getElementById('searchLogActivity')?.value || '').trim();
+
+            const totalBadge = document.getElementById('totalLogActivity');
+            if (totalBadge) totalBadge.innerText = `${flat.length} Aktivitas`;
+
+            if (!flat.length) {
+                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-slate-400 italic">${query ? 'Aktivitas tidak ditemukan.' : 'Belum ada aktivitas yang tercatat di campaign manapun.'}</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            flat.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-indigo-50/60 transition-colors align-top cursor-pointer";
+                tr.onclick = () => window.viewActivityDetail(item.index, item.campaignId);
+
+                const linkCell = item.link
+                    ? `<a href="${item.link}" target="_blank" onclick="event.stopPropagation()" class="text-indigo-600 hover:text-indigo-800 hover:underline inline-flex items-center gap-1 font-medium">Buka <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg></a>`
+                    : `<span class="text-slate-300">-</span>`;
+
+                const actionCell = isAdminMode
+                    ? `<div class="flex items-center justify-end gap-3" onclick="event.stopPropagation()">
+                         <button type="button" onclick="window.openEditActivityModal(${item.index}, '${item.campaignId}')" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button>
+                         <button type="button" onclick="window.deleteActivity(${item.index}, '${item.campaignId}')" class="text-red-500 hover:text-red-700 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Hapus</button>
+                       </div>`
+                    : `<span class="text-slate-300 text-xs">-</span>`;
+
+                tr.innerHTML = `
+                    <td class="px-5 py-4 whitespace-nowrap text-slate-600">${formatDateWithDay(item.date)}</td>
+                    <td class="px-5 py-4 font-mono text-xs font-bold text-indigo-600 whitespace-nowrap">${item.campaignId}</td>
+                    <td class="px-5 py-4 text-slate-800 font-medium max-w-[220px]"><span class="line-clamp-2">${item.campaignName || '-'}</span></td>
+                    <td class="px-5 py-4 text-slate-800 max-w-[200px]"><span class="line-clamp-2">${item.activity || '-'}</span></td>
+                    <td class="px-5 py-4 text-slate-600 max-w-sm"><span class="line-clamp-2">${item.description || '-'}</span></td>
+                    <td class="px-5 py-4 whitespace-nowrap">${linkCell}</td>
+                    <td class="px-5 py-4 whitespace-nowrap text-right">${actionCell}</td>`;
+                tbody.appendChild(tr);
+            });
+        };
+
+        window.exportLogActivityToExcel = function() {
+            const flat = getFilteredLogActivities();
+            if (!flat.length) {
+                alert('Tidak ada data aktivitas untuk diekspor.');
+                return;
+            }
+
+            const rows = flat.map(item => ({
+                'Hari, Tanggal': item.date ? formatDateWithDay(item.date) : '',
+                'ID Campaign': item.campaignId,
+                'Nama Campaign': item.campaignName || '',
+                'Aktivitas': item.activity || '',
+                'Deskripsi': item.description || '',
+                'Link Bahan': item.link || ''
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(rows);
+            worksheet['!cols'] = [
+                { wch: 26 }, { wch: 12 }, { wch: 30 }, { wch: 24 }, { wch: 50 }, { wch: 30 }
+            ];
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Log Activity');
+
+            const today = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(workbook, `Log_Activity_${today}.xlsx`);
+        };
+
         function getCheckUI(isComplete, label) {
             const icon = isComplete 
                 ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-emerald-500"><path d="M20 6 9 17l-5-5"/></svg>`
@@ -1895,11 +2059,12 @@
             window.openModalAnimation('add-activity-modal', 'add-activity-box');
         };
 
-        window.openEditActivityModal = function(index) {
-            if (!isAdminMode) { requireAdmin(() => window.openEditActivityModal(index)); return; }
-            const campaign = campaigns.find(c => String(c.id) === String(currentCampaignId));
+        window.openEditActivityModal = function(index, campaignIdOverride) {
+            if (!isAdminMode) { requireAdmin(() => window.openEditActivityModal(index, campaignIdOverride)); return; }
+            const cid = campaignIdOverride || currentCampaignId;
+            const campaign = campaigns.find(c => String(c.id) === String(cid));
             if (!campaign || !campaign.activities || !campaign.activities[index]) return;
-            currentActivityIndex = index;
+            activityEditContext = { campaignId: cid, index, fromLog: !!campaignIdOverride };
             const item = campaign.activities[index];
             document.getElementById('edit-activity-date').value = item.date || '';
             document.getElementById('edit-activity-name').value = item.activity || '';
@@ -1908,8 +2073,9 @@
             window.openModalAnimation('edit-activity-modal', 'edit-activity-box');
         };
 
-        window.viewActivityDetail = function(index) {
-            const campaign = campaigns.find(c => String(c.id) === String(currentCampaignId));
+        window.viewActivityDetail = function(index, campaignIdOverride) {
+            const cid = campaignIdOverride || currentCampaignId;
+            const campaign = campaigns.find(c => String(c.id) === String(cid));
             if (!campaign || !campaign.activities || !campaign.activities[index]) return;
             const item = campaign.activities[index];
             document.getElementById('view-activity-date').innerText = formatDateWithDay(item.date);
@@ -1926,9 +2092,10 @@
             window.openModalAnimation('view-activity-modal', 'view-activity-box');
         };
 
-        window.deleteActivity = async function(index) {
-            if (!isAdminMode) { requireAdmin(() => window.deleteActivity(index)); return; }
-            const idx = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
+        window.deleteActivity = async function(index, campaignIdOverride) {
+            if (!isAdminMode) { requireAdmin(() => window.deleteActivity(index, campaignIdOverride)); return; }
+            const cid = campaignIdOverride || currentCampaignId;
+            const idx = campaigns.findIndex(c => String(c.id) === String(cid));
             if (idx === -1 || !campaigns[idx].activities || !campaigns[idx].activities[index]) return;
             if (!confirm('Hapus aktivitas ini?')) return;
 
@@ -1938,7 +2105,11 @@
             const ok = await saveCampaignsToFirestore(candidateList);
             if (!ok) return;
 
-            window.openModal(currentCampaignId, 'skip');
+            if (campaignIdOverride) {
+                renderLogActivity();
+            } else {
+                window.openModal(cid, 'skip');
+            }
         };
 
         // Mengubah berbagai format link "share" Google Drive (yang tidak bisa langsung dipakai
@@ -2049,6 +2220,7 @@
             document.getElementById('tableSearchDonasi')?.addEventListener('input', updateUnifiedDashboard);
             document.getElementById('searchCampaign')?.addEventListener('input', renderCampaigns);
             document.getElementById('searchProgdist')?.addEventListener('input', renderProgdistTable);
+            document.getElementById('searchLogActivity')?.addEventListener('input', renderLogActivity);
 
             document.getElementById('progdist-form')?.addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -2115,8 +2287,10 @@
 
             document.getElementById('edit-activity-form')?.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                const idx = campaigns.findIndex(c => String(c.id) === String(currentCampaignId));
-                if (idx === -1 || currentActivityIndex === null || !campaigns[idx].activities || !campaigns[idx].activities[currentActivityIndex]) return;
+                if (!activityEditContext) return;
+                const { campaignId, index, fromLog } = activityEditContext;
+                const idx = campaigns.findIndex(c => String(c.id) === String(campaignId));
+                if (idx === -1 || !campaigns[idx].activities || !campaigns[idx].activities[index]) return;
 
                 const updatedActivity = {
                     date: document.getElementById('edit-activity-date').value,
@@ -2125,7 +2299,7 @@
                     link: document.getElementById('edit-activity-link').value.trim()
                 };
 
-                const updatedActivities = campaigns[idx].activities.map((a, i) => i === currentActivityIndex ? updatedActivity : a);
+                const updatedActivities = campaigns[idx].activities.map((a, i) => i === index ? updatedActivity : a);
                 updatedActivities.sort((a, b) => new Date(b.date) - new Date(a.date));
                 const updatedCamp = { ...campaigns[idx], activities: updatedActivities };
                 const candidateList = campaigns.map((c, i) => i === idx ? updatedCamp : c);
@@ -2133,9 +2307,13 @@
                 const ok = await saveCampaignsToFirestore(candidateList);
                 if (!ok) return;
 
-                currentActivityIndex = null;
-                window.openModal(currentCampaignId, 'skip'); 
+                activityEditContext = null;
                 window.closeModal('edit-activity-modal', 'edit-activity-box');
+                if (fromLog) {
+                    renderLogActivity();
+                } else {
+                    window.openModal(campaignId, 'skip');
+                }
             });
 
             document.getElementById('add-campaign-form')?.addEventListener('submit', async function(e) {
