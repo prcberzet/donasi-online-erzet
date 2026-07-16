@@ -240,6 +240,10 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                     <input type="text" id="searchLogActivity" placeholder="Cari ID, campaign, atau aktivitas..." class="text-sm pl-9 pr-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-72 transition-all" />
                 </div>
+                <button onclick="openAddOtherActivityModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Add Activity (Campaign Lain)
+                </button>
                 <button onclick="exportLogActivityToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Export Data
@@ -816,6 +820,52 @@
         </div>
     </div>
 
+    <!-- Modal Add/Edit Activity (Campaign Lain / Non Monitoring Campaign) -->
+    <div id="add-other-activity-modal" class="fixed inset-0 z-[120] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="add-other-activity-box">
+            <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
+                <h3 class="text-lg font-bold text-slate-800" id="other-activity-modal-title">Tambah Activity (Campaign Lain)</h3>
+                <button onclick="closeModal('add-other-activity-modal', 'add-other-activity-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <form id="add-other-activity-form" class="flex flex-col flex-1 overflow-hidden">
+                <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
+                    <p class="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-3">Khusus untuk mencatat aktivitas ID Campaign yang <strong>belum/tidak terdaftar</strong> di menu Monitoring Campaign (misalnya campaign yang hanya diinput lewat "Campaign Khusus Progdist").</p>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Hari, Tanggal *</label>
+                        <input type="date" id="other-activity-date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">ID Campaign *</label>
+                        <input type="text" id="other-activity-id" oninput="handleOtherActivityIdInput()" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        <p id="other-activity-id-error" class="hidden text-xs text-red-600 font-medium mt-1">Input di Kartu Campaign Progdist</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Nama Campaign *</label>
+                        <input type="text" id="other-activity-campaign-name" required placeholder="Otomatis terisi jika ID ditemukan di Campaign Khusus Progdist" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Aktivitas *</label>
+                        <input type="text" id="other-activity-name" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Deskripsi *</label>
+                        <textarea id="other-activity-description" rows="4" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Link Bahan <span class="text-slate-400 font-normal">(opsional)</span></label>
+                        <input type="url" id="other-activity-link" placeholder="https://... (foto, dokumen, laporan, dll)" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                </div>
+                <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl shrink-0">
+                    <button type="button" onclick="closeModal('add-other-activity-modal', 'add-other-activity-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
+                    <button type="submit" id="other-activity-submit-btn" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal View Activity Detail -->
     <div id="view-activity-modal" class="fixed inset-0 z-[120] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="view-activity-box">
@@ -963,6 +1013,8 @@
         let campaigns = [];
         let progdistCampaigns = [];
         let editingProgdistId = null;
+        let otherActivities = []; // Aktivitas untuk ID Campaign yang TIDAK terdaftar di Monitoring Campaign
+        let editingOtherActivityIndex = null; // null = mode tambah, angka = mode edit
 
         const defaultCampaigns = [
             {
@@ -1043,6 +1095,7 @@
                     fullDataTransaksi = data.fullDataTransaksi || [];
                     masterCampaigns = data.masterCampaigns || [];
                     progdistCampaigns = data.progdistCampaigns || [];
+                    otherActivities = data.otherActivities || [];
                     donasiPeriodText = data.donasiPeriodText || "";
                     appPin = data.pin || '123123';
                     
@@ -1060,6 +1113,7 @@
                 updateUnifiedDashboard();
                 renderProgdistTable();
                 renderCampaigns(); // Render ulang kartu agar sinkron data Excel VLOOKUP
+                renderLogActivity();
             }, (err) => {
                 console.error(err);
                 const updateEl = document.getElementById('lastUpdate');
@@ -1100,6 +1154,7 @@
                     fullDataTransaksi,
                     masterCampaigns,
                     progdistCampaigns,
+                    otherActivities,
                     donasiPeriodText,
                     pin: appPin,
                     lastUpdate: new Date().toISOString()
@@ -1820,8 +1875,21 @@
                         date: a.date,
                         activity: a.activity,
                         description: a.description,
-                        link: a.link
+                        link: a.link,
+                        isOther: false
                     });
+                });
+            });
+            otherActivities.forEach((a, idx) => {
+                flat.push({
+                    campaignId: a.campaignId,
+                    campaignName: a.campaignName,
+                    index: idx,
+                    date: a.date,
+                    activity: a.activity,
+                    description: a.description,
+                    link: a.link,
+                    isOther: true
                 });
             });
             return flat;
@@ -1865,22 +1933,26 @@
             flat.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-indigo-50/60 transition-colors align-top cursor-pointer";
-                tr.onclick = () => window.viewActivityDetail(item.index, item.campaignId);
+                tr.onclick = item.isOther
+                    ? () => window.viewOtherActivityDetail(item.index)
+                    : () => window.viewActivityDetail(item.index, item.campaignId);
 
                 const linkCell = item.link
                     ? `<a href="${item.link}" target="_blank" onclick="event.stopPropagation()" class="text-indigo-600 hover:text-indigo-800 hover:underline inline-flex items-center gap-1 font-medium">Buka <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg></a>`
                     : `<span class="text-slate-300">-</span>`;
 
+                const editHandler = item.isOther ? `window.editOtherActivity(${item.index})` : `window.openEditActivityModal(${item.index}, '${item.campaignId}')`;
+                const deleteHandler = item.isOther ? `window.deleteOtherActivity(${item.index})` : `window.deleteActivity(${item.index}, '${item.campaignId}')`;
                 const actionCell = isAdminMode
                     ? `<div class="flex items-center justify-end gap-3" onclick="event.stopPropagation()">
-                         <button type="button" onclick="window.openEditActivityModal(${item.index}, '${item.campaignId}')" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button>
-                         <button type="button" onclick="window.deleteActivity(${item.index}, '${item.campaignId}')" class="text-red-500 hover:text-red-700 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Hapus</button>
+                         <button type="button" onclick="${editHandler}" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button>
+                         <button type="button" onclick="${deleteHandler}" class="text-red-500 hover:text-red-700 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Hapus</button>
                        </div>`
                     : `<span class="text-slate-300 text-xs">-</span>`;
 
                 tr.innerHTML = `
                     <td class="px-5 py-4 whitespace-nowrap text-slate-600">${formatDateWithDay(item.date)}</td>
-                    <td class="px-5 py-4 font-mono text-xs font-bold text-indigo-600 whitespace-nowrap">${item.campaignId}</td>
+                    <td class="px-5 py-4 font-mono text-xs font-bold text-indigo-600 whitespace-nowrap">${item.campaignId}${item.isOther ? ' <span class=\'inline-block ml-1 text-[9px] font-sans font-bold uppercase tracking-wide text-amber-600 bg-amber-50 border border-amber-200 rounded px-1 py-0.5 align-middle\'>Non-MC</span>' : ''}</td>
                     <td class="px-5 py-4 text-slate-800 font-medium max-w-[220px]"><span class="line-clamp-2">${item.campaignName || '-'}</span></td>
                     <td class="px-5 py-4 text-slate-800 max-w-[200px]"><span class="line-clamp-2">${item.activity || '-'}</span></td>
                     <td class="px-5 py-4 text-slate-600 max-w-sm"><span class="line-clamp-2">${item.description || '-'}</span></td>
@@ -1901,6 +1973,7 @@
                 'Hari, Tanggal': item.date ? formatDateWithDay(item.date) : '',
                 'ID Campaign': item.campaignId,
                 'Nama Campaign': item.campaignName || '',
+                'Sumber': item.isOther ? 'Campaign Lain (Non Monitoring)' : 'Monitoring Campaign',
                 'Aktivitas': item.activity || '',
                 'Deskripsi': item.description || '',
                 'Link Bahan': item.link || ''
@@ -1908,7 +1981,7 @@
 
             const worksheet = XLSX.utils.json_to_sheet(rows);
             worksheet['!cols'] = [
-                { wch: 26 }, { wch: 12 }, { wch: 30 }, { wch: 24 }, { wch: 50 }, { wch: 30 }
+                { wch: 26 }, { wch: 12 }, { wch: 30 }, { wch: 24 }, { wch: 24 }, { wch: 50 }, { wch: 30 }
             ];
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Log Activity');
@@ -2135,6 +2208,90 @@
             }
         };
 
+        // ==========================================
+        // ACTIVITY (CAMPAIGN LAIN) - untuk ID Campaign yang TIDAK terdaftar di Monitoring Campaign
+        // ==========================================
+        let editingOtherActivityIndex = null;
+
+        // Cek apakah ID sudah dipakai sebagai Campaign resmi di Monitoring Campaign, lalu
+        // otomatis isi Nama Campaign kalau ID-nya cocok dengan salah satu Campaign Khusus Progdist.
+        window.handleOtherActivityIdInput = function() {
+            const idVal = document.getElementById('other-activity-id').value.trim();
+            const nameField = document.getElementById('other-activity-campaign-name');
+            const errorEl = document.getElementById('other-activity-id-error');
+            const submitBtn = document.getElementById('other-activity-submit-btn');
+            if (!idVal) { errorEl.classList.add('hidden'); if(submitBtn) submitBtn.disabled = false; return; }
+
+            const isRegistered = campaigns.some(c => String(c.id).trim() === idVal);
+            if (isRegistered) {
+                errorEl.classList.remove('hidden');
+                if (submitBtn) submitBtn.disabled = true;
+                return;
+            }
+            errorEl.classList.add('hidden');
+            if (submitBtn) submitBtn.disabled = false;
+
+            const pd = progdistCampaigns.find(p => String(p.id).trim() === idVal);
+            if (pd) nameField.value = pd.campaign || '';
+        };
+
+        window.openAddOtherActivityModal = function() {
+            editingOtherActivityIndex = null;
+            const form = document.getElementById('add-other-activity-form');
+            if (form) form.reset();
+            document.getElementById('other-activity-id-error').classList.add('hidden');
+            document.getElementById('other-activity-id').removeAttribute('disabled');
+            document.getElementById('other-activity-submit-btn').disabled = false;
+            document.getElementById('other-activity-modal-title').innerText = 'Tambah Activity (Campaign Lain)';
+            document.getElementById('other-activity-submit-btn').innerText = 'Simpan';
+            window.openModalAnimation('add-other-activity-modal', 'add-other-activity-box');
+        };
+
+        window.viewOtherActivityDetail = function(index) {
+            const item = otherActivities[index];
+            if (!item) return;
+            document.getElementById('view-activity-date').innerText = formatDateWithDay(item.date);
+            document.getElementById('view-activity-name').innerText = item.activity || '';
+            document.getElementById('view-activity-description').innerText = item.description || '';
+            const linkWrapper = document.getElementById('view-activity-link-wrapper');
+            if (item.link) {
+                linkWrapper.classList.remove('hidden');
+                document.getElementById('view-activity-link').href = item.link;
+                document.getElementById('view-activity-link-text').innerText = item.link;
+            } else {
+                linkWrapper.classList.add('hidden');
+            }
+            window.openModalAnimation('view-activity-modal', 'view-activity-box');
+        };
+
+        window.editOtherActivity = function(index) {
+            if (!isAdminMode) { requireAdmin(() => window.editOtherActivity(index)); return; }
+            const item = otherActivities[index];
+            if (!item) return;
+            editingOtherActivityIndex = index;
+            document.getElementById('other-activity-date').value = item.date || '';
+            document.getElementById('other-activity-id').value = item.campaignId || '';
+            document.getElementById('other-activity-id').setAttribute('disabled', 'disabled'); // ID tidak diubah saat edit
+            document.getElementById('other-activity-campaign-name').value = item.campaignName || '';
+            document.getElementById('other-activity-name').value = item.activity || '';
+            document.getElementById('other-activity-description').value = item.description || '';
+            document.getElementById('other-activity-link').value = item.link || '';
+            document.getElementById('other-activity-id-error').classList.add('hidden');
+            document.getElementById('other-activity-submit-btn').disabled = false;
+            document.getElementById('other-activity-modal-title').innerText = 'Edit Activity (Campaign Lain)';
+            document.getElementById('other-activity-submit-btn').innerText = 'Simpan Perubahan';
+            window.openModalAnimation('add-other-activity-modal', 'add-other-activity-box');
+        };
+
+        window.deleteOtherActivity = async function(index) {
+            if (!isAdminMode) { requireAdmin(() => window.deleteOtherActivity(index)); return; }
+            if (!otherActivities[index]) return;
+            if (!confirm('Hapus aktivitas ini?')) return;
+            otherActivities = otherActivities.filter((_, i) => i !== index);
+            await saveTab1ToFirestore();
+            renderLogActivity();
+        };
+
         // Mengubah berbagai format link "share" Google Drive (yang tidak bisa langsung dipakai
         // sebagai <img src>) menjadi link gambar langsung yang bisa dirender di browser.
         // Contoh input yang didukung:
@@ -2341,6 +2498,41 @@
                 }
             });
 
+            document.getElementById('add-other-activity-form')?.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const idVal = document.getElementById('other-activity-id').value.trim();
+                if (!idVal) { alert('ID Campaign wajib diisi.'); return; }
+
+                // Tolak jika ID ini sudah terdaftar sebagai Campaign resmi di Monitoring Campaign -
+                // aktivitas untuk campaign tersebut harus dicatat lewat kartu campaign-nya sendiri.
+                if (campaigns.some(c => String(c.id).trim() === idVal)) {
+                    document.getElementById('other-activity-id-error').classList.remove('hidden');
+                    return;
+                }
+
+                const entry = {
+                    campaignId: idVal,
+                    campaignName: document.getElementById('other-activity-campaign-name').value.trim(),
+                    date: document.getElementById('other-activity-date').value,
+                    activity: document.getElementById('other-activity-name').value.trim(),
+                    description: document.getElementById('other-activity-description').value.trim(),
+                    link: document.getElementById('other-activity-link').value.trim()
+                };
+
+                if (editingOtherActivityIndex !== null) {
+                    otherActivities[editingOtherActivityIndex] = entry;
+                } else {
+                    otherActivities.push(entry);
+                }
+
+                await saveTab1ToFirestore();
+                editingOtherActivityIndex = null;
+                document.getElementById('other-activity-id').removeAttribute('disabled');
+                window.closeModal('add-other-activity-modal', 'add-other-activity-box');
+                this.reset();
+                renderLogActivity();
+            });
+
             document.getElementById('add-campaign-form')?.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const idInput = document.getElementById('add-id').value.trim();
@@ -2427,7 +2619,7 @@
         });
 
         window.addEventListener('click', function(e) {
-            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'delete-modal', 'upload-donasi-modal', 'progdist-modal', 'admin-pin-modal', 'change-pin-modal'];
+            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'delete-modal', 'upload-donasi-modal', 'progdist-modal', 'admin-pin-modal', 'change-pin-modal'];
             modals.forEach(id => { 
                 if (e.target === document.getElementById(id)) {
                     window.closeModal(id, id.replace('modal', 'box').replace('detail-', 'modal-').replace('upload-donasi-', 'upload-donasi-')); 
@@ -2437,7 +2629,7 @@
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                const arr = ['delete-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'admin-pin-modal', 'change-pin-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'progdist-modal'];
+                const arr = ['delete-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'admin-pin-modal', 'change-pin-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'progdist-modal'];
                 for (const id of arr) { 
                     const el = document.getElementById(id); 
                     if (el && !el.classList.contains('hidden')) { 
