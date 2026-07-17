@@ -1070,6 +1070,21 @@
 
         initAuth();
 
+        // Jika dalam 15 detik koneksi/otentikasi ke Firebase belum juga berhasil (misalnya karena
+        // internet lambat, domain Firebase terblokir ad-blocker/ekstensi, atau konfigurasi project
+        // bermasalah), tampilkan pesan yang jelas alih-alih "Menyambungkan ke Server..." selamanya.
+        setTimeout(() => {
+            if (!isFirebaseInitialized) {
+                const updateEl = document.getElementById('lastUpdate');
+                if (updateEl) {
+                    updateEl.classList.remove('text-slate-500', 'text-emerald-600');
+                    updateEl.classList.add('text-red-500', 'font-bold');
+                    updateEl.innerText = "Gagal terhubung ke Server (Timeout). Cek koneksi internet / nonaktifkan ad-blocker, lalu refresh.";
+                }
+                console.error("Firebase auth timeout: onAuthStateChanged tidak pernah menerima user setelah 15 detik. Cek console untuk error lain, koneksi internet, ad-blocker/ekstensi browser, atau pengaturan Firebase (Anonymous Auth harus aktif).");
+            }
+        }, 15000);
+
         onAuthStateChanged(auth, (user) => {
             if (user && !isFirebaseInitialized) {
                 currentUser = user;
