@@ -164,7 +164,10 @@
             <!-- Combined Monitoring Table -->
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200 border-t-4 border-t-indigo-500">
                 <div class="p-5 bg-slate-50 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4">
-                    <h3 class="font-bold text-slate-800">Monitoring Capaian & Saldo per Campaign</h3>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h3 class="font-bold text-slate-800">Monitoring Capaian & Saldo per Campaign</h3>
+                        <span id="totalCombinedTable" class="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-full">0 Campaign</span>
+                    </div>
                     <div class="flex items-center gap-3 flex-wrap">
                         <div class="relative">
                             <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -182,6 +185,7 @@
                             <tr>
                                 <th class="px-5 py-4 font-semibold tracking-wider">ID</th>
                                 <th class="px-5 py-4 font-semibold tracking-wider">Campaign</th>
+                                <th class="px-5 py-4 font-semibold tracking-wider">Link Campaign</th>
                                 <th class="px-5 py-4 text-right font-semibold tracking-wider">Donasi</th>
                                 <th class="px-5 py-4 text-right font-semibold tracking-wider">Salur (Transaksi)</th>
                                 <th class="px-5 py-4 text-right font-semibold tracking-wider">Saldo</th>
@@ -189,7 +193,7 @@
                         </thead>
                         <tbody id="dataTableBodyCombined" class="divide-y divide-slate-100 text-sm">
                             <tr>
-                                <td colspan="5" class="px-6 py-12 text-center text-slate-400 italic">Memuat data secara realtime...</td>
+                                <td colspan="6" class="px-6 py-12 text-center text-slate-400 italic">Memuat data secara realtime...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1498,25 +1502,27 @@
 
         function processDonasi(sheet) {
             const grid = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: "" });
-            let bestRowIdx = -1, bestScore = 0, idColIdx = -1, transColIdx = -1, picColIdx = -1, nameColIdx = -1;
+            let bestRowIdx = -1, bestScore = 0, idColIdx = -1, transColIdx = -1, picColIdx = -1, nameColIdx = -1, linkColIdx = -1;
             const idRegex = /(id\s*campaign|id_campaign|campaign\s*id|^id$|kode)/i;
             const transRegex = /(transaksi|donasi|capaian|nominal|jumlah|amount|total)/i;
             const picRegex = /(pic|person\s*in\s*charge|pj|penanggung\s*jawab)/i;
             const nameRegex = /(campaign|nama\s*campaign|program|nama\s*program)/i;
+            const linkRegex = /(link|url|tautan)/i;
 
             const scanLimit = Math.min(grid.length, 30);
             for (let r = 0; r < scanLimit; r++) {
                 const row = grid[r];
                 if (!row) continue;
-                let tempIdIdx = -1, tempTransIdx = -1, tempPicIdx = -1, tempNameIdx = -1, score = 0;
+                let tempIdIdx = -1, tempTransIdx = -1, tempPicIdx = -1, tempNameIdx = -1, tempLinkIdx = -1, score = 0;
                 for (let c = 0; c < row.length; c++) {
                     const val = String(row[c]).trim();
                     if (idRegex.test(val) && tempIdIdx === -1) { tempIdIdx = c; score += 2; }
                     if (transRegex.test(val) && tempTransIdx === -1) { tempTransIdx = c; score += 2; }
                     if (picRegex.test(val) && tempPicIdx === -1) { tempPicIdx = c; score += 1; }
                     if (nameRegex.test(val) && tempNameIdx === -1 && !idRegex.test(val)) { tempNameIdx = c; score += 1; }
+                    if (linkRegex.test(val) && tempLinkIdx === -1) { tempLinkIdx = c; score += 1; }
                 }
-                if (score > bestScore) { bestScore = score; bestRowIdx = r; idColIdx = tempIdIdx; transColIdx = tempTransIdx; picColIdx = tempPicIdx; nameColIdx = tempNameIdx; }
+                if (score > bestScore) { bestScore = score; bestRowIdx = r; idColIdx = tempIdIdx; transColIdx = tempTransIdx; picColIdx = tempPicIdx; nameColIdx = tempNameIdx; linkColIdx = tempLinkIdx; }
             }
 
             if (idColIdx === -1) idColIdx = 0; if (transColIdx === -1) transColIdx = 1; if (picColIdx === -1) picColIdx = 2; if (nameColIdx === -1) nameColIdx = 3;
@@ -1533,7 +1539,8 @@
                 if (!aggregated[id]) {
                     let campaignName = row[nameColIdx] ? String(row[nameColIdx]).trim() : '';
                     if (!campaignName || campaignName === '-') campaignName = '-';
-                    aggregated[id] = { id: id, campaign: campaignName, pic: row[picColIdx] ? String(row[picColIdx]).trim() : '-', transaksi: 0 };
+                    const link = (linkColIdx !== -1 && row[linkColIdx]) ? String(row[linkColIdx]).trim() : '';
+                    aggregated[id] = { id: id, campaign: campaignName, pic: row[picColIdx] ? String(row[picColIdx]).trim() : '-', link: link, transaksi: 0 };
                 }
                 aggregated[id].transaksi += nominal;
             }
@@ -1628,11 +1635,11 @@
             const searchDonasi = document.getElementById('tableSearchDonasi')?.value.toLowerCase() || "";
             const combinedMap = {};
 
-            fullDataDonasi.forEach(d => { combinedMap[d.id] = { ...d, salur: 0 }; });
+            fullDataDonasi.forEach(d => { combinedMap[d.id] = { ...d, salur: 0, link: d.link || '' }; });
 
             fullDataTransaksi.forEach(t => {
                 if (combinedMap[t.id]) combinedMap[t.id].salur += t.totalDonasi;
-                else combinedMap[t.id] = { id: t.id, campaign: t.programAkad, pic: 'System', transaksi: 0, salur: t.totalDonasi };
+                else combinedMap[t.id] = { id: t.id, campaign: t.programAkad, pic: 'System', transaksi: 0, salur: t.totalDonasi, link: '' };
             });
 
             // Campaign Khusus Progdist: tambahkan baseline capaian (s/d akhir 2025) ke capaian
@@ -1643,8 +1650,9 @@
                 const baseline = p.capaian || 0;
                 if (combinedMap[pid]) {
                     combinedMap[pid].transaksi = (combinedMap[pid].transaksi || 0) + baseline;
+                    if (!combinedMap[pid].link && p.link) combinedMap[pid].link = p.link;
                 } else {
-                    combinedMap[pid] = { id: pid, campaign: p.campaign || ('ID Campaign ' + pid), pic: p.namaCRM || 'Progdist', transaksi: baseline, salur: 0 };
+                    combinedMap[pid] = { id: pid, campaign: p.campaign || ('ID Campaign ' + pid), pic: p.namaCRM || 'Progdist', transaksi: baseline, salur: 0, link: p.link || '' };
                 }
             });
 
@@ -1685,16 +1693,23 @@
             const elRingkasan = document.getElementById('ringkasanDataCount');
             if(elRingkasan) elRingkasan.innerText = campaigns.length;
             
+            const totalCombinedBadge = document.getElementById('totalCombinedTable');
+            if(totalCombinedBadge) totalCombinedBadge.innerText = `${combinedList.length} Campaign`;
+            
             const tbCombined = document.getElementById('dataTableBodyCombined');
             if(tbCombined) {
-                tbCombined.innerHTML = combinedList.length ? '' : '<tr><td colspan="5" class="p-8 text-center text-slate-400 italic">Data Kosong</td></tr>';
+                tbCombined.innerHTML = combinedList.length ? '' : '<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Data Kosong</td></tr>';
                 combinedList.forEach(item => {
                     const row = document.createElement('tr');
                     const saldo = item.transaksi - item.salur;
+                    const linkCell = item.link
+                        ? `<a href="${item.link}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline inline-flex items-center gap-1 font-medium">Buka <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg></a>`
+                        : `<span class="text-slate-300">-</span>`;
                     row.className = "hover:bg-slate-50";
                     row.innerHTML = `
                         <td class="px-5 py-3 font-mono text-xs text-slate-500">${item.id}</td>
                         <td class="px-5 py-3 font-medium text-slate-800">${item.campaign}</td>
+                        <td class="px-5 py-3 whitespace-nowrap">${linkCell}</td>
                         <td class="px-5 py-3 text-right text-indigo-600 font-medium">${formatter.format(item.transaksi)}</td>
                         <td class="px-5 py-3 text-right text-purple-600 font-medium">${formatter.format(item.salur)}</td>
                         <td class="px-5 py-3 text-right font-bold ${saldo < 0 ? 'text-red-600' : 'text-amber-600'}">${formatter.format(saldo)}</td>
@@ -1716,6 +1731,7 @@
                 return {
                     'ID': item.id,
                     'Campaign': item.campaign,
+                    'Link Campaign': item.link || '',
                     'Donasi': item.transaksi,
                     'Salur (Transaksi)': item.salur,
                     'Saldo': saldo
@@ -1724,7 +1740,7 @@
 
             const worksheet = XLSX.utils.json_to_sheet(rows);
             worksheet['!cols'] = [
-                { wch: 12 }, { wch: 36 }, { wch: 18 }, { wch: 18 }, { wch: 18 }
+                { wch: 12 }, { wch: 36 }, { wch: 34 }, { wch: 18 }, { wch: 18 }, { wch: 18 }
             ];
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Monitoring Capaian & Saldo');
