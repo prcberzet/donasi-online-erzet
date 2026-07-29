@@ -449,6 +449,10 @@
                                 <div id="modal-status" class="mt-1 inline-block"></div>
                             </div>
                             <div>
+                                <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Departemen</p>
+                                <p id="modal-department" class="text-slate-800 font-medium">-</p>
+                            </div>
+                            <div>
                                 <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Tanggal Rilis</p>
                                 <p id="modal-date" class="text-slate-800 font-medium"></p>
                             </div>
@@ -615,6 +619,15 @@
                             </select>
                         </div>
                         <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Departemen *</label>
+                            <select id="add-department" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                                <option value="">-- Pilih Departemen --</option>
+                                <option value="Program Executor Management">Program Executor Management</option>
+                                <option value="Scholarship">Scholarship</option>
+                                <option value="Social Service">Social Service</option>
+                            </select>
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Penanggung Jawab (PIC) *</label>
                             <input type="text" id="add-pic" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                         </div>
@@ -706,6 +719,15 @@
                                 <option value="Lembaga">Lembaga</option>
                                 <option value="Perorangan">Perorangan</option>
                                 <option value="Kepanitiaan">Kepanitiaan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Departemen *</label>
+                            <select id="edit-department" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                                <option value="">-- Pilih Departemen --</option>
+                                <option value="Program Executor Management">Program Executor Management</option>
+                                <option value="Scholarship">Scholarship</option>
+                                <option value="Social Service">Social Service</option>
                             </select>
                         </div>
                         <div>
@@ -1656,7 +1678,10 @@
                 }
             });
 
-            const combinedList = Object.values(combinedMap).filter(item => item.campaign.toLowerCase().includes(searchDonasi) || item.id.toLowerCase().includes(searchDonasi));
+            const registeredCampaignIds = new Set(campaigns.map(c => String(c.id).trim()));
+            const combinedList = Object.values(combinedMap)
+                .filter(item => registeredCampaignIds.has(String(item.id).trim()))
+                .filter(item => item.campaign.toLowerCase().includes(searchDonasi) || item.id.toLowerCase().includes(searchDonasi));
             return { combinedMap, combinedList };
         }
 
@@ -1899,6 +1924,7 @@
                     'ID Campaign': campaign.id,
                     'Nama Campaign': campaign.name,
                     'Status Kemitraan': campaign.partnershipStatus || '',
+                    'Departemen': campaign.department || '',
                     'Tanggal Rilis': campaign.releaseDate || '',
                     'Lokasi': campaign.location || '',
                     'Alamat': campaign.address || '',
@@ -1917,7 +1943,7 @@
 
             const worksheet = XLSX.utils.json_to_sheet(rows);
             worksheet['!cols'] = [
-                { wch: 12 }, { wch: 30 }, { wch: 16 }, { wch: 14 }, { wch: 16 }, { wch: 24 },
+                { wch: 12 }, { wch: 30 }, { wch: 16 }, { wch: 24 }, { wch: 14 }, { wch: 16 }, { wch: 24 },
                 { wch: 16 }, { wch: 18 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 8 }, { wch: 14 },
                 { wch: 10 }, { wch: 30 }, { wch: 30 }
             ];
@@ -2107,6 +2133,7 @@
             document.getElementById('modal-id-display').innerText = 'ID: ' + campaign.id;
             document.getElementById('modal-poster').src = campaign.posterUrl;
             document.getElementById('modal-status').innerHTML = getStatusBadge(campaign.partnershipStatus);
+            document.getElementById('modal-department').innerText = campaign.department || '-';
             document.getElementById('modal-date').innerText = formatDate(campaign.releaseDate);
             document.getElementById('modal-link').href = campaign.link;
             document.querySelector('#modal-pic span').innerText = campaign.pic;
@@ -2423,7 +2450,7 @@
             if(form) form.reset(); 
             document.getElementById('edit-id').value = camp.id;
             document.getElementById('edit-poster').value = camp.posterUrl || "";
-            document.getElementById('edit-name').value = camp.name; document.getElementById('edit-link').value = camp.link; document.getElementById('edit-date').value = camp.releaseDate; document.getElementById('edit-status').value = camp.partnershipStatus; document.getElementById('edit-pic').value = camp.pic; document.getElementById('edit-contact').value = camp.contactPerson || ''; document.getElementById('edit-location').value = camp.location; document.getElementById('edit-address').value = camp.address;
+            document.getElementById('edit-name').value = camp.name; document.getElementById('edit-link').value = camp.link; document.getElementById('edit-date').value = camp.releaseDate; document.getElementById('edit-status').value = camp.partnershipStatus; document.getElementById('edit-department').value = camp.department || ''; document.getElementById('edit-pic').value = camp.pic; document.getElementById('edit-contact').value = camp.contactPerson || ''; document.getElementById('edit-location').value = camp.location; document.getElementById('edit-address').value = camp.address;
             const isPer = camp.partnershipStatus.toLowerCase() === 'perorangan';
             document.getElementById('edit-mou-wrapper').style.display = isPer ? 'none' : ''; document.getElementById('edit-proposal-wrapper').style.display = isPer ? 'none' : '';
             document.getElementById('edit-mou-check').checked = camp.documents.mou; document.getElementById('edit-consent-check').checked = camp.documents.consentLetter; document.getElementById('edit-proposal-check').checked = camp.documents.proposal;
@@ -2630,6 +2657,7 @@
                     link: document.getElementById('add-link').value, 
                     releaseDate: document.getElementById('add-date').value, 
                     partnershipStatus: document.getElementById('add-status').value, 
+                    department: document.getElementById('add-department').value,
                     location: document.getElementById('add-location').value, 
                     address: document.getElementById('add-address').value, 
                     pic: document.getElementById('add-pic').value, 
@@ -2674,6 +2702,7 @@
                     link: document.getElementById('edit-link').value, 
                     releaseDate: document.getElementById('edit-date').value, 
                     partnershipStatus: document.getElementById('edit-status').value, 
+                    department: document.getElementById('edit-department').value,
                     location: document.getElementById('edit-location').value, 
                     address: document.getElementById('edit-address').value, 
                     pic: document.getElementById('edit-pic').value, 
