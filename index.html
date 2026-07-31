@@ -204,24 +204,56 @@
 
     <!-- TAB 2: MONITORING CAMPAIGN -->
     <div id="view-monitoring" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+
+        <!-- WAITING LIST CAMPAIGN (belum rilis) -->
+        <div class="mb-10">
+            <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+                <div>
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <h2 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            Waiting List Campaign
+                        </h2>
+                        <span id="totalCampaignWaiting" class="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-full">0 Campaign</span>
+                    </div>
+                    <p class="text-slate-500 text-sm mt-1">Campaign yang sudah didata namun <strong>belum rilis</strong>. Edit campaign untuk mengubah status menjadi Aktif saat sudah siap dirilis.</p>
+                </div>
+                <button onclick="openAddModal('Non-Aktif')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Waiting List Campaign
+                </button>
+            </div>
+            <div id="campaign-grid-waiting" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Waiting list cards will be injected here by JS -->
+            </div>
+        </div>
+
         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
             <div>
                 <div class="flex items-center gap-3 flex-wrap">
                     <h2 class="text-xl font-semibold text-slate-800">Daftar Campaign Aktif</h2>
                     <span id="totalCampaignActive" class="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-full">0 Campaign</span>
+                    <button onclick="openFilterModal()" id="filterActiveBadge" class="hidden text-xs font-bold text-white bg-indigo-600 px-2.5 py-1 rounded-full items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                        Filter Aktif
+                    </button>
                 </div>
                 <p class="text-slate-500 text-sm mt-1">Klik pada kartu campaign untuk melihat detail lengkap, status dokumen, dan riwayat pencairan dana.</p>
             </div>
-            <div class="flex items-center gap-3 w-full sm:w-auto">
+            <div class="flex items-center gap-3 w-full sm:w-auto flex-wrap">
                 <div class="relative flex-1 sm:flex-initial">
                     <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                     <input type="text" id="searchCampaign" placeholder="Cari campaign..." class="text-sm pl-9 pr-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64 transition-all" />
                 </div>
+                <button onclick="openFilterModal()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    Filter
+                </button>
                 <button onclick="exportCampaignsToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Export Data
                 </button>
-                <button onclick="openAddModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
+                <button onclick="openAddModal('Aktif')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     Tambah Campaign
                 </button>
@@ -577,7 +609,7 @@
     <div id="add-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="add-modal-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
-                <h3 class="text-lg font-bold text-slate-800">Tambah Campaign Baru</h3>
+                <h3 class="text-lg font-bold text-slate-800" id="add-modal-title">Tambah Campaign Baru</h3>
                 <button onclick="closeModal('add-modal', 'add-modal-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
@@ -728,6 +760,13 @@
                                 <option value="Program Executor Management">Program Executor Management</option>
                                 <option value="Scholarship">Scholarship</option>
                                 <option value="Social Service">Social Service</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Status Campaign *</label>
+                            <select id="edit-campaign-status" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                                <option value="Aktif">Aktif</option>
+                                <option value="Non-Aktif">Non-Aktif (Waiting List / Belum Rilis)</option>
                             </select>
                         </div>
                         <div>
@@ -989,6 +1028,73 @@
         </div>
     </div>
 
+    <!-- Modal Filter Campaign -->
+    <div id="filter-campaign-modal" class="fixed inset-0 z-[130] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="filter-campaign-box">
+            <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
+                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    Filter Campaign
+                </h3>
+                <button onclick="closeModal('filter-campaign-modal', 'filter-campaign-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <form id="filter-campaign-form" class="flex flex-col flex-1 overflow-hidden">
+                <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Departemen</label>
+                        <select id="filter-department" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                            <option value="">Semua Departemen</option>
+                            <option value="Program Executor Management">Program Executor Management</option>
+                            <option value="Scholarship">Scholarship</option>
+                            <option value="Social Service">Social Service</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                        <select id="filter-status" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                            <option value="">Semua Status</option>
+                            <option value="Aktif">Aktif</option>
+                            <option value="Non-Aktif">Non-Aktif (Waiting List)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Kelengkapan Dokumen</label>
+                        <select id="filter-dokumen" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                            <option value="">Semua</option>
+                            <option value="Lengkap">Lengkap</option>
+                            <option value="Belum Lengkap">Belum Lengkap</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Rilis</label>
+                        <div class="flex items-center gap-2">
+                            <input type="date" id="filter-tanggal-start" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                            <span class="text-slate-400 text-xs shrink-0">s/d</span>
+                            <input type="date" id="filter-tanggal-end" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Capaian (Rentang Rp)</label>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="filter-capaian-min" min="0" placeholder="Minimal" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                            <span class="text-slate-400 text-xs shrink-0">s/d</span>
+                            <input type="number" id="filter-capaian-max" min="0" placeholder="Maksimal" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-between items-center gap-2 rounded-b-2xl shrink-0">
+                    <button type="button" onclick="resetCampaignFilter()" class="text-sm text-slate-500 hover:text-red-600 underline transition-colors">Reset Filter</button>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="closeModal('filter-campaign-modal', 'filter-campaign-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
+                        <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Terapkan Filter</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal Delete Confirmation -->
     <div id="delete-modal" class="fixed inset-0 z-[130] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="delete-modal-box">
@@ -1039,6 +1145,8 @@
         let donasiPeriodText = "";
         
         let currentCampaignId = null;
+        let campaignFilters = { department: '', status: '', dokumen: '', tanggalStart: '', tanggalEnd: '', capaianMin: '', capaianMax: '' };
+        let pendingAddStatus = 'Aktif'; // menentukan status campaign baru: 'Aktif' atau 'Non-Aktif' (Waiting List)
         let isAdminMode = false;
         let appPin = '123123'; // PIN default, bisa diganti admin lewat menu "Ganti PIN"
         let activityEditContext = null; // { campaignId, index, fromLog } - dipakai bersama oleh kartu campaign & Log Activity
@@ -1799,100 +1907,163 @@
             return p ? (p.capaian || 0) : 0;
         }
 
-        function renderCampaigns() {
-            const gridContainer = document.getElementById('campaign-grid');
-            if(!gridContainer) return;
-            gridContainer.innerHTML = ''; 
-            
-            campaigns.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
-
-            const totalBadge = document.getElementById('totalCampaignActive');
-            if (totalBadge) totalBadge.innerText = `${campaigns.length} Campaign`;
-
-            const searchQuery = (document.getElementById('searchCampaign')?.value || '').toLowerCase().trim();
-            const filteredCampaigns = searchQuery
-                ? campaigns.filter(c => String(c.id).toLowerCase().includes(searchQuery) || String(c.name || '').toLowerCase().includes(searchQuery))
-                : campaigns;
-
-            if (!filteredCampaigns.length) {
-                gridContainer.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 italic">Campaign tidak ditemukan.</div>';
-                return;
+        function docCompletionStatus(campaign) {
+            const docs = campaign.documents || {};
+            if ((campaign.partnershipStatus || '').toLowerCase() === 'perorangan') {
+                const complete = !!docs.consentLetter;
+                return { docStatus: complete ? "Lengkap (1/1)" : "Belum (0/1)", docColorClass: complete ? "text-emerald-600" : "text-amber-500", complete };
             }
+            const comp = (docs.mou ? 1 : 0) + (docs.consentLetter ? 1 : 0) + (docs.proposal ? 1 : 0);
+            const complete = comp === 3;
+            return { docStatus: complete ? "Lengkap (3/3)" : `Belum (${comp}/3)`, docColorClass: complete ? "text-emerald-600" : "text-amber-500", complete };
+        }
 
-            filteredCampaigns.forEach(campaign => {
-                const donasiMasukVlookup = fullDataDonasi
-                    .filter(d => String(d.id).trim() === String(campaign.id).trim())
-                    .reduce((sum, d) => sum + d.transaksi, 0) + getProgdistBaseline(campaign.id);
-                
-                const currentDonasiMasuk = donasiMasukVlookup > 0 ? donasiMasukVlookup : (campaign.donasiMasuk || 0);
+        function getCampaignFinancials(campaign) {
+            const donasiMasukVlookup = fullDataDonasi
+                .filter(d => String(d.id).trim() === String(campaign.id).trim())
+                .reduce((sum, d) => sum + d.transaksi, 0) + getProgdistBaseline(campaign.id);
+            const currentDonasiMasuk = donasiMasukVlookup > 0 ? donasiMasukVlookup : (campaign.donasiMasuk || 0);
+            const totalCair = fullDataTransaksi
+                .filter(t => String(t.id).trim() === String(campaign.id).trim())
+                .reduce((sum, t) => sum + t.totalDonasi, 0);
+            return { currentDonasiMasuk, totalCair, currentSaldo: currentDonasiMasuk - totalCair };
+        }
 
-                const totalCair = fullDataTransaksi
-                    .filter(t => String(t.id).trim() === String(campaign.id).trim())
-                    .reduce((sum, t) => sum + t.totalDonasi, 0);
-                    
-                const currentSaldo = currentDonasiMasuk - totalCair;
+        function buildCampaignCard(campaign) {
+            const { currentDonasiMasuk, totalCair, currentSaldo } = getCampaignFinancials(campaign);
+            const { docStatus, docColorClass } = docCompletionStatus(campaign);
+            const isWaiting = (campaign.status || 'Aktif') === 'Non-Aktif';
 
-                let docStatus = "", docColorClass = "";
-                const docs = campaign.documents || {};
-                
-                if (campaign.partnershipStatus.toLowerCase() === 'perorangan') {
-                    docStatus = docs.consentLetter ? "Lengkap (1/1)" : "Belum (0/1)";
-                    docColorClass = docs.consentLetter ? "text-emerald-600" : "text-amber-500";
-                } else {
-                    const comp = (docs.mou ? 1 : 0) + (docs.consentLetter ? 1 : 0) + (docs.proposal ? 1 : 0);
-                    docStatus = comp === 3 ? "Lengkap (3/3)" : `Belum (${comp}/3)`;
-                    docColorClass = comp === 3 ? "text-emerald-600" : "text-amber-500";
+            const card = document.createElement('div');
+            card.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col group" + (isWaiting ? " ring-1 ring-amber-200" : "");
+            card.onclick = () => window.openModal(campaign.id);
+            
+            card.innerHTML = `
+                <div class="relative overflow-hidden aspect-[4/3]">
+                    <img src="${campaign.posterUrl}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/eeeeee/999999?text=No+Image'">
+                    <div class="absolute top-3 right-3 flex flex-col items-end gap-1.5">
+                        ${isWaiting ? '<span class="text-[10px] font-bold uppercase tracking-wide bg-amber-500 text-white px-2 py-1 rounded-full shadow-sm">Waiting List</span>' : ''}
+                        ${getStatusBadge(campaign.partnershipStatus)}
+                    </div>
+                </div>
+                <div class="p-5 flex flex-col flex-grow">
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <div class="text-xs text-slate-400 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Rilis: ${formatDate(campaign.releaseDate)}
+                        </div>
+                        <span class="inline-block w-fit text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded shrink-0">ID: ${campaign.id}</span>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-lg leading-tight mb-3 line-clamp-2">${campaign.name}</h3>
+                    <div class="mt-auto space-y-2 mb-4 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg> Dokumen</span>
+                            <span class="font-semibold ${docColorClass}">${docStatus}</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Donasi Masuk</span>
+                            <span class="font-semibold text-slate-800">${currentDonasiMasuk > 0 ? formatter.format(currentDonasiMasuk) : 'Rp 0'}</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Total Cair</span>
+                            <span class="font-semibold text-slate-800">${totalCair > 0 ? formatter.format(totalCair) : 'Rp 0'}</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs mt-1 pt-2 border-t border-slate-200">
+                            <span class="text-slate-600 font-bold flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Saldo</span>
+                            <span class="font-bold ${currentSaldo < 0 ? 'text-red-600' : 'text-amber-600'}">${formatter.format(currentSaldo)}</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1" onclick="window.handleLinkClick(event, '${campaign.link}')">
+                            Link Donasi <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+                        </span>
+                        <span class="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded">Klik Detail</span>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        // Menghasilkan daftar campaign yang lolos pencarian + filter panel - dipakai bersama oleh
+        // render kartu dan fitur export, supaya export selalu sesuai tampilan.
+        function getFilteredMonitoringCampaigns() {
+            const searchQuery = (document.getElementById('searchCampaign')?.value || '').toLowerCase().trim();
+            return campaigns.filter(c => {
+                if (searchQuery && !(String(c.id).toLowerCase().includes(searchQuery) || String(c.name || '').toLowerCase().includes(searchQuery))) return false;
+                if (campaignFilters.department && c.department !== campaignFilters.department) return false;
+                if (campaignFilters.status && (c.status || 'Aktif') !== campaignFilters.status) return false;
+                if (campaignFilters.dokumen) {
+                    const { complete } = docCompletionStatus(c);
+                    if (campaignFilters.dokumen === 'Lengkap' && !complete) return false;
+                    if (campaignFilters.dokumen === 'Belum Lengkap' && complete) return false;
                 }
-
-                const card = document.createElement('div');
-                card.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col group";
-                card.onclick = () => window.openModal(campaign.id);
-                
-                card.innerHTML = `
-                    <div class="relative overflow-hidden aspect-[4/3]">
-                        <img src="${campaign.posterUrl}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/eeeeee/999999?text=No+Image'">
-                        <div class="absolute top-3 right-3">${getStatusBadge(campaign.partnershipStatus)}</div>
-                    </div>
-                    <div class="p-5 flex flex-col flex-grow">
-                        <div class="flex items-center justify-between gap-2 mb-2">
-                            <div class="text-xs text-slate-400 flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                Rilis: ${formatDate(campaign.releaseDate)}
-                            </div>
-                            <span class="inline-block w-fit text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded shrink-0">ID: ${campaign.id}</span>
-                        </div>
-                        <h3 class="font-bold text-slate-800 text-lg leading-tight mb-3 line-clamp-2">${campaign.name}</h3>
-                        <div class="mt-auto space-y-2 mb-4 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg> Dokumen</span>
-                                <span class="font-semibold ${docColorClass}">${docStatus}</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Donasi Masuk</span>
-                                <span class="font-semibold text-slate-800">${currentDonasiMasuk > 0 ? formatter.format(currentDonasiMasuk) : 'Rp 0'}</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Total Cair</span>
-                                <span class="font-semibold text-slate-800">${totalCair > 0 ? formatter.format(totalCair) : 'Rp 0'}</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs mt-1 pt-2 border-t border-slate-200">
-                                <span class="text-slate-600 font-bold flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Saldo</span>
-                                <span class="font-bold ${currentSaldo < 0 ? 'text-red-600' : 'text-amber-600'}">${formatter.format(currentSaldo)}</span>
-                            </div>
-                        </div>
-                        <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
-                            <span class="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1" onclick="window.handleLinkClick(event, '${campaign.link}')">
-                                Link Donasi <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
-                            </span>
-                            <span class="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded">Klik Detail</span>
-                        </div>
-                    </div>
-                `;
-                gridContainer.appendChild(card);
+                if (campaignFilters.tanggalStart && c.releaseDate < campaignFilters.tanggalStart) return false;
+                if (campaignFilters.tanggalEnd && c.releaseDate > campaignFilters.tanggalEnd) return false;
+                if (campaignFilters.capaianMin !== '' || campaignFilters.capaianMax !== '') {
+                    const { currentDonasiMasuk } = getCampaignFinancials(c);
+                    if (campaignFilters.capaianMin !== '' && currentDonasiMasuk < parseFloat(campaignFilters.capaianMin)) return false;
+                    if (campaignFilters.capaianMax !== '' && currentDonasiMasuk > parseFloat(campaignFilters.capaianMax)) return false;
+                }
+                return true;
             });
         }
 
+        function renderCampaigns() {
+            const gridContainer = document.getElementById('campaign-grid');
+            const waitingContainer = document.getElementById('campaign-grid-waiting');
+            if(!gridContainer || !waitingContainer) return;
+
+            campaigns.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+
+            const filtered = getFilteredMonitoringCampaigns();
+            const waitingList = filtered.filter(c => (c.status || 'Aktif') === 'Non-Aktif');
+            const activeList = filtered.filter(c => (c.status || 'Aktif') !== 'Non-Aktif');
+
+            const totalBadge = document.getElementById('totalCampaignActive');
+            if (totalBadge) totalBadge.innerText = `${activeList.length} Campaign`;
+            const totalWaitingBadge = document.getElementById('totalCampaignWaiting');
+            if (totalWaitingBadge) totalWaitingBadge.innerText = `${waitingList.length} Campaign`;
+
+            const hasActiveFilter = Object.values(campaignFilters).some(v => v !== '');
+            const filterBadge = document.getElementById('filterActiveBadge');
+            if (filterBadge) {
+                filterBadge.classList.toggle('hidden', !hasActiveFilter);
+                filterBadge.classList.toggle('inline-flex', hasActiveFilter);
+            }
+
+            gridContainer.innerHTML = '';
+            if (!activeList.length) {
+                gridContainer.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 italic">Campaign tidak ditemukan.</div>';
+            } else {
+                activeList.forEach(campaign => gridContainer.appendChild(buildCampaignCard(campaign)));
+            }
+
+            waitingContainer.innerHTML = '';
+            if (!waitingList.length) {
+                waitingContainer.innerHTML = '<div class="col-span-full text-center py-8 text-slate-400 italic text-sm bg-white rounded-xl border border-dashed border-slate-200">Belum ada Waiting List Campaign.</div>';
+            } else {
+                waitingList.forEach(campaign => waitingContainer.appendChild(buildCampaignCard(campaign)));
+            }
+        }
+
         window.handleLinkClick = function(event, url) { event.stopPropagation(); window.open(url, '_blank'); };
+
+        window.openFilterModal = function() {
+            document.getElementById('filter-department').value = campaignFilters.department;
+            document.getElementById('filter-status').value = campaignFilters.status;
+            document.getElementById('filter-dokumen').value = campaignFilters.dokumen;
+            document.getElementById('filter-tanggal-start').value = campaignFilters.tanggalStart;
+            document.getElementById('filter-tanggal-end').value = campaignFilters.tanggalEnd;
+            document.getElementById('filter-capaian-min').value = campaignFilters.capaianMin;
+            document.getElementById('filter-capaian-max').value = campaignFilters.capaianMax;
+            window.openModalAnimation('filter-campaign-modal', 'filter-campaign-box');
+        };
+
+        window.resetCampaignFilter = function() {
+            campaignFilters = { department: '', status: '', dokumen: '', tanggalStart: '', tanggalEnd: '', capaianMin: '', capaianMax: '' };
+            renderCampaigns();
+            window.closeModal('filter-campaign-modal', 'filter-campaign-box');
+        };
 
         // Export daftar Campaign (sesuai hasil pencarian yang sedang ditampilkan) ke file .xlsx,
         // menggunakan perhitungan Donasi Masuk/Total Cair/Saldo yang sama persis dengan kartu.
@@ -2433,10 +2604,13 @@
             }
         };
 
-        window.openAddModal = function() {
+        window.openAddModal = function(status) {
+            pendingAddStatus = status || 'Aktif';
             const form = document.getElementById('add-campaign-form');
             if(form) form.reset();
             document.getElementById('add-mou-wrapper').style.display = ''; document.getElementById('add-proposal-wrapper').style.display = '';
+            const titleEl = document.getElementById('add-modal-title');
+            if (titleEl) titleEl.innerText = pendingAddStatus === 'Non-Aktif' ? 'Tambah Waiting List Campaign' : 'Tambah Campaign Baru';
             window.openModalAnimation('add-modal', 'add-modal-box');
         };
 
@@ -2450,7 +2624,7 @@
             if(form) form.reset(); 
             document.getElementById('edit-id').value = camp.id;
             document.getElementById('edit-poster').value = camp.posterUrl || "";
-            document.getElementById('edit-name').value = camp.name; document.getElementById('edit-link').value = camp.link; document.getElementById('edit-date').value = camp.releaseDate; document.getElementById('edit-status').value = camp.partnershipStatus; document.getElementById('edit-department').value = camp.department || ''; document.getElementById('edit-pic').value = camp.pic; document.getElementById('edit-contact').value = camp.contactPerson || ''; document.getElementById('edit-location').value = camp.location; document.getElementById('edit-address').value = camp.address;
+            document.getElementById('edit-name').value = camp.name; document.getElementById('edit-link').value = camp.link; document.getElementById('edit-date').value = camp.releaseDate; document.getElementById('edit-status').value = camp.partnershipStatus; document.getElementById('edit-department').value = camp.department || ''; document.getElementById('edit-campaign-status').value = camp.status || 'Aktif'; document.getElementById('edit-pic').value = camp.pic; document.getElementById('edit-contact').value = camp.contactPerson || ''; document.getElementById('edit-location').value = camp.location; document.getElementById('edit-address').value = camp.address;
             const isPer = camp.partnershipStatus.toLowerCase() === 'perorangan';
             document.getElementById('edit-mou-wrapper').style.display = isPer ? 'none' : ''; document.getElementById('edit-proposal-wrapper').style.display = isPer ? 'none' : '';
             document.getElementById('edit-mou-check').checked = camp.documents.mou; document.getElementById('edit-consent-check').checked = camp.documents.consentLetter; document.getElementById('edit-proposal-check').checked = camp.documents.proposal;
@@ -2658,6 +2832,7 @@
                     releaseDate: document.getElementById('add-date').value, 
                     partnershipStatus: document.getElementById('add-status').value, 
                     department: document.getElementById('add-department').value,
+                    status: pendingAddStatus || 'Aktif',
                     location: document.getElementById('add-location').value, 
                     address: document.getElementById('add-address').value, 
                     pic: document.getElementById('add-pic').value, 
