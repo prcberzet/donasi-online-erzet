@@ -214,17 +214,33 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                             Waiting List Campaign
                         </h2>
-                        <span id="totalCampaignWaiting" class="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-full">0 Campaign</span>
+                        <span id="totalCampaignWaiting" class="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-full">0 Pengajuan</span>
                     </div>
-                    <p class="text-slate-500 text-sm mt-1">Campaign yang sudah didata namun <strong>belum rilis</strong>. Edit campaign untuk mengubah status menjadi Aktif saat sudah siap dirilis.</p>
+                    <p class="text-slate-500 text-sm mt-1">Campaign yang masih dalam <strong>proses persiapan</strong> (belum punya ID, poster, atau data donasi). Klik satu baris untuk melihat & melengkapi progress asset-nya.</p>
                 </div>
-                <button onclick="openAddModal('Non-Aktif')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
+                <button onclick="openAddWaitingListModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    Waiting List Campaign
+                    Tambah Waiting List
                 </button>
             </div>
-            <div id="campaign-grid-waiting" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Waiting list cards will be injected here by JS -->
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                            <tr>
+                                <th class="px-5 py-3 font-semibold tracking-wider">Nama Campaign</th>
+                                <th class="px-5 py-3 font-semibold tracking-wider whitespace-nowrap">Tanggal Diajukan</th>
+                                <th class="px-5 py-3 font-semibold tracking-wider">Jenis</th>
+                                <th class="px-5 py-3 font-semibold tracking-wider">Kelengkapan Asset</th>
+                            </tr>
+                        </thead>
+                        <tbody id="waitingListTableBody" class="divide-y divide-slate-100 text-sm">
+                            <tr>
+                                <td colspan="4" class="px-6 py-10 text-center text-slate-400 italic text-sm">Belum ada Waiting List Campaign.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -253,7 +269,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Export Data
                 </button>
-                <button onclick="openAddModal('Aktif')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
+                <button onclick="openAddModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     Tambah Campaign
                 </button>
@@ -1029,6 +1045,75 @@
     </div>
 
     <!-- Modal Filter Campaign -->
+    <!-- Modal Tambah Waiting List -->
+    <div id="add-waitinglist-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="add-waitinglist-box">
+            <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
+                <h3 class="text-lg font-bold text-slate-800">Tambah Waiting List Campaign</h3>
+                <button onclick="closeModal('add-waitinglist-modal', 'add-waitinglist-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <form id="add-waitinglist-form" class="flex flex-col flex-1 overflow-hidden">
+                <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Nama Campaign *</label>
+                        <input type="text" id="wl-name" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Diajukan *</label>
+                        <input type="date" id="wl-date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Jenis *</label>
+                        <select id="wl-type" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                            <option value="Perorangan">Perorangan</option>
+                            <option value="Kepanitiaan">Kepanitiaan</option>
+                        </select>
+                        <p class="text-xs text-slate-500 mt-1">Menentukan kelengkapan asset yang perlu dipenuhi (KTP untuk Perorangan, atau Proposal & RAB untuk Kepanitiaan).</p>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl shrink-0">
+                    <button type="button" onclick="closeModal('add-waitinglist-modal', 'add-waitinglist-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors shadow-sm font-medium text-sm">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detail Waiting List / Kelengkapan Asset -->
+    <div id="waitinglist-detail-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="waitinglist-detail-box">
+            <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800" id="wl-detail-name">Nama Campaign</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Diajukan: <span id="wl-detail-date">-</span> &bull; Jenis: <span id="wl-detail-type">-</span></p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="wl-delete-btn" onclick="deleteWaitingListEntry()" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors hidden" title="Hapus Pengajuan">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                    </button>
+                    <button onclick="closeModal('waitinglist-detail-modal', 'waitinglist-detail-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 bg-white">
+                <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-600"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    Kelengkapan Asset
+                </h4>
+                <div id="wl-asset-checklist" class="space-y-2">
+                    <!-- Checklist items injected here by JS -->
+                </div>
+                <p id="wl-viewer-note" class="hidden text-xs text-slate-400 italic mt-3">Masuk Mode Admin untuk mengubah kelengkapan asset.</p>
+            </div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 text-right rounded-b-2xl">
+                <button onclick="closeModal('waitinglist-detail-modal', 'waitinglist-detail-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <div id="filter-campaign-modal" class="fixed inset-0 z-[130] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="filter-campaign-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
@@ -1146,7 +1231,8 @@
         
         let currentCampaignId = null;
         let campaignFilters = { department: '', status: '', dokumen: '', tanggalStart: '', tanggalEnd: '', capaianMin: '', capaianMax: '' };
-        let pendingAddStatus = 'Aktif'; // menentukan status campaign baru: 'Aktif' atau 'Non-Aktif' (Waiting List)
+        let waitingListCampaigns = []; // Pengajuan campaign yang masih dalam proses persiapan (belum rilis)
+        let currentWaitingListIndex = null;
         let isAdminMode = false;
         let appPin = '123123'; // PIN default, bisa diganti admin lewat menu "Ganti PIN"
         let activityEditContext = null; // { campaignId, index, fromLog } - dipakai bersama oleh kartu campaign & Log Activity
@@ -1251,6 +1337,7 @@
                     masterCampaigns = data.masterCampaigns || [];
                     progdistCampaigns = data.progdistCampaigns || [];
                     otherActivities = data.otherActivities || [];
+                    waitingListCampaigns = data.waitingListCampaigns || [];
                     donasiPeriodText = data.donasiPeriodText || "";
                     appPin = data.pin || '123123';
                     
@@ -1269,6 +1356,7 @@
                 renderProgdistTable();
                 renderCampaigns(); // Render ulang kartu agar sinkron data Excel VLOOKUP
                 renderLogActivity();
+                renderWaitingList();
             }, (err) => {
                 console.error(err);
                 const updateEl = document.getElementById('lastUpdate');
@@ -1310,6 +1398,7 @@
                     masterCampaigns,
                     progdistCampaigns,
                     otherActivities,
+                    waitingListCampaigns,
                     donasiPeriodText,
                     pin: appPin,
                     lastUpdate: new Date().toISOString()
@@ -1428,6 +1517,7 @@
             renderCampaigns();
             renderProgdistTable();
             renderLogActivity();
+            renderWaitingList();
             const detailModal = document.getElementById('detail-modal');
             const editIcons = document.getElementById('campaign-admin-actions');
             if (editIcons) {
@@ -1436,6 +1526,10 @@
             }
             if (detailModal && !detailModal.classList.contains('hidden') && currentCampaignId) {
                 window.openModal(currentCampaignId, 'skip');
+            }
+            const wlDetailModal = document.getElementById('waitinglist-detail-modal');
+            if (wlDetailModal && !wlDetailModal.classList.contains('hidden') && currentWaitingListIndex !== null) {
+                window.openWaitingListDetail(currentWaitingListIndex);
             }
         }
 
@@ -2022,19 +2116,14 @@
 
         function renderCampaigns() {
             const gridContainer = document.getElementById('campaign-grid');
-            const waitingContainer = document.getElementById('campaign-grid-waiting');
-            if(!gridContainer || !waitingContainer) return;
+            if(!gridContainer) return;
 
             campaigns.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
 
-            const filtered = getFilteredMonitoringCampaigns();
-            const waitingList = filtered.filter(c => (c.status || 'Aktif') === 'Non-Aktif');
-            const activeList = filtered.filter(c => (c.status || 'Aktif') !== 'Non-Aktif');
+            const activeList = getFilteredMonitoringCampaigns();
 
             const totalBadge = document.getElementById('totalCampaignActive');
             if (totalBadge) totalBadge.innerText = `${activeList.length} Campaign`;
-            const totalWaitingBadge = document.getElementById('totalCampaignWaiting');
-            if (totalWaitingBadge) totalWaitingBadge.innerText = `${waitingList.length} Campaign`;
 
             const hasActiveFilter = Object.values(campaignFilters).some(v => v !== '');
             const filterBadge = document.getElementById('filterActiveBadge');
@@ -2049,16 +2138,130 @@
             } else {
                 activeList.forEach(campaign => gridContainer.appendChild(buildCampaignCard(campaign)));
             }
-
-            waitingContainer.innerHTML = '';
-            if (!waitingList.length) {
-                waitingContainer.innerHTML = '<div class="col-span-full text-center py-8 text-slate-400 italic text-sm bg-white rounded-xl border border-dashed border-slate-200">Belum ada Waiting List Campaign.</div>';
-            } else {
-                waitingList.forEach(campaign => waitingContainer.appendChild(buildCampaignCard(campaign)));
-            }
         }
 
         window.handleLinkClick = function(event, url) { event.stopPropagation(); window.open(url, '_blank'); };
+
+        // ==========================================
+        // WAITING LIST CAMPAIGN (pengajuan campaign yang belum rilis)
+        // ==========================================
+
+        // Daftar item Kelengkapan Asset - beberapa bersyarat sesuai Jenis pengajuan.
+        function getWaitingListAssetItems(entry) {
+            const items = [
+                { key: 'foto', label: 'Foto' },
+                { key: 'video', label: 'Video' },
+                { key: 'deskripsi', label: 'Deskripsi' },
+                { key: 'formCampaignBaru', label: 'Form Campaign Baru' }
+            ];
+            if (entry.type === 'Kepanitiaan') {
+                items.push({ key: 'proposal', label: 'Proposal' });
+                items.push({ key: 'rab', label: 'RAB' });
+            } else {
+                items.push({ key: 'identitasKTP', label: 'Identitas Calon PM (KTP)' });
+            }
+            return items;
+        }
+
+        function getWaitingListProgress(entry) {
+            const items = getWaitingListAssetItems(entry);
+            const assets = entry.assets || {};
+            const done = items.filter(i => assets[i.key]).length;
+            return { done, total: items.length };
+        }
+
+        window.renderWaitingList = function() {
+            const tbody = document.getElementById('waitingListTableBody');
+            if (!tbody) return;
+
+            waitingListCampaigns.sort((a, b) => new Date(b.submittedDate || 0) - new Date(a.submittedDate || 0));
+
+            const totalBadge = document.getElementById('totalCampaignWaiting');
+            if (totalBadge) totalBadge.innerText = `${waitingListCampaigns.length} Pengajuan`;
+
+            if (!waitingListCampaigns.length) {
+                tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-10 text-center text-slate-400 italic text-sm">Belum ada Waiting List Campaign.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            waitingListCampaigns.forEach((entry, index) => {
+                const { done, total } = getWaitingListProgress(entry);
+                const complete = done === total;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-amber-50/60 transition-colors cursor-pointer";
+                tr.onclick = () => window.openWaitingListDetail(index);
+                tr.innerHTML = `
+                    <td class="px-5 py-3 font-medium text-slate-800">${entry.name || '-'}</td>
+                    <td class="px-5 py-3 whitespace-nowrap text-slate-600">${entry.submittedDate ? formatDate(entry.submittedDate) : '-'}</td>
+                    <td class="px-5 py-3 whitespace-nowrap"><span class="text-xs font-semibold px-2 py-0.5 rounded-full ${entry.type === 'Kepanitiaan' ? 'bg-purple-50 text-purple-700 border border-purple-100' : 'bg-blue-50 text-blue-700 border border-blue-100'}">${entry.type || '-'}</span></td>
+                    <td class="px-5 py-3 whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full ${complete ? 'bg-emerald-500' : 'bg-amber-400'}" style="width:${(done/total*100)}%"></div>
+                            </div>
+                            <span class="text-xs font-semibold ${complete ? 'text-emerald-600' : 'text-amber-600'}">${done}/${total}</span>
+                        </div>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+        };
+
+        window.openAddWaitingListModal = function() {
+            const form = document.getElementById('add-waitinglist-form');
+            if (form) form.reset();
+            window.openModalAnimation('add-waitinglist-modal', 'add-waitinglist-box');
+        };
+
+        window.openWaitingListDetail = function(index) {
+            const entry = waitingListCampaigns[index];
+            if (!entry) return;
+            currentWaitingListIndex = index;
+
+            document.getElementById('wl-detail-name').innerText = entry.name || '-';
+            document.getElementById('wl-detail-date').innerText = entry.submittedDate ? formatDate(entry.submittedDate) : '-';
+            document.getElementById('wl-detail-type').innerText = entry.type || '-';
+
+            const deleteBtn = document.getElementById('wl-delete-btn');
+            if (deleteBtn) deleteBtn.classList.toggle('hidden', !isAdminMode);
+
+            const viewerNote = document.getElementById('wl-viewer-note');
+            if (viewerNote) viewerNote.classList.toggle('hidden', isAdminMode);
+
+            const items = getWaitingListAssetItems(entry);
+            const assets = entry.assets || {};
+            const checklistEl = document.getElementById('wl-asset-checklist');
+            checklistEl.innerHTML = items.map(item => `
+                <label class="flex items-center gap-3 p-3 rounded-lg border ${assets[item.key] ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-slate-50'} ${isAdminMode ? 'cursor-pointer' : 'cursor-default opacity-90'}">
+                    <input type="checkbox" ${assets[item.key] ? 'checked' : ''} ${isAdminMode ? '' : 'disabled'} onchange="window.toggleWaitingListAsset('${item.key}', this.checked)" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
+                    <span class="text-sm font-medium ${assets[item.key] ? 'text-emerald-700' : 'text-slate-700'}">${item.label}</span>
+                    ${assets[item.key] ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-500 ml-auto" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 111.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd" /></svg>' : ''}
+                </label>
+            `).join('');
+
+            window.openModalAnimation('waitinglist-detail-modal', 'waitinglist-detail-box');
+        };
+
+        window.toggleWaitingListAsset = async function(key, checked) {
+            if (!isAdminMode) { requireAdmin(() => window.toggleWaitingListAsset(key, checked)); return; }
+            if (currentWaitingListIndex === null || !waitingListCampaigns[currentWaitingListIndex]) return;
+            if (!waitingListCampaigns[currentWaitingListIndex].assets) waitingListCampaigns[currentWaitingListIndex].assets = {};
+            waitingListCampaigns[currentWaitingListIndex].assets[key] = checked;
+            await saveTab1ToFirestore();
+            window.openWaitingListDetail(currentWaitingListIndex);
+            renderWaitingList();
+        };
+
+        window.deleteWaitingListEntry = async function() {
+            if (!isAdminMode) { requireAdmin(() => window.deleteWaitingListEntry()); return; }
+            if (currentWaitingListIndex === null || !waitingListCampaigns[currentWaitingListIndex]) return;
+            if (!confirm('Hapus pengajuan Waiting List Campaign ini?')) return;
+            waitingListCampaigns = waitingListCampaigns.filter((_, i) => i !== currentWaitingListIndex);
+            await saveTab1ToFirestore();
+            currentWaitingListIndex = null;
+            window.closeModal('waitinglist-detail-modal', 'waitinglist-detail-box');
+            renderWaitingList();
+        };
 
         window.openFilterModal = function() {
             document.getElementById('filter-department').value = campaignFilters.department;
@@ -2695,6 +2898,21 @@
             document.getElementById('logActivityFilterStart')?.addEventListener('change', renderLogActivity);
             document.getElementById('logActivityFilterEnd')?.addEventListener('change', renderLogActivity);
 
+            document.getElementById('add-waitinglist-form')?.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const entry = {
+                    name: document.getElementById('wl-name').value.trim(),
+                    submittedDate: document.getElementById('wl-date').value,
+                    type: document.getElementById('wl-type').value,
+                    assets: {}
+                };
+                waitingListCampaigns.push(entry);
+                await saveTab1ToFirestore();
+                window.closeModal('add-waitinglist-modal', 'add-waitinglist-box');
+                this.reset();
+                renderWaitingList();
+            });
+
             document.getElementById('progdist-form')?.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const id = document.getElementById('progdist-id').value.trim();
@@ -2912,22 +3130,37 @@
             });
         });
 
+        // Menentukan box-id dari modal-id untuk penutupan via klik-luar/Escape. Sebagian besar
+        // modal mengikuti pola "X-modal" -> "X-box", tapi beberapa memakai nama box yang berbeda -
+        // daftar pengecualian ini menghindari salah tebak (misal "waitinglist-detail-modal" jangan
+        // sampai tertukar dengan pengecualian "detail-modal").
+        function getBoxIdFor(modalId) {
+            const exceptions = {
+                'detail-modal': 'modal-box',
+                'add-modal': 'add-modal-box',
+                'edit-modal': 'edit-modal-box',
+                'delete-modal': 'delete-modal-box',
+                'progdist-modal': 'progdist-modal-box'
+            };
+            return exceptions[modalId] || modalId.replace('modal', 'box');
+        }
+
         window.addEventListener('click', function(e) {
-            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'delete-modal', 'upload-donasi-modal', 'progdist-modal', 'admin-pin-modal', 'change-pin-modal'];
+            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'delete-modal', 'upload-donasi-modal', 'progdist-modal', 'admin-pin-modal', 'change-pin-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'filter-campaign-modal'];
             modals.forEach(id => { 
                 if (e.target === document.getElementById(id)) {
-                    window.closeModal(id, id.replace('modal', 'box').replace('detail-', 'modal-').replace('upload-donasi-', 'upload-donasi-')); 
+                    window.closeModal(id, getBoxIdFor(id)); 
                 }
             });
         });
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                const arr = ['delete-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'admin-pin-modal', 'change-pin-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'progdist-modal'];
+                const arr = ['delete-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'admin-pin-modal', 'change-pin-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'filter-campaign-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'progdist-modal'];
                 for (const id of arr) { 
                     const el = document.getElementById(id); 
                     if (el && !el.classList.contains('hidden')) { 
-                        window.closeModal(id, id.replace('modal', 'box').replace('detail-', 'modal-')); 
+                        window.closeModal(id, getBoxIdFor(id)); 
                         break; 
                     } 
                 }
