@@ -1787,9 +1787,20 @@
             });
 
             const registeredCampaignIds = new Set(campaigns.map(c => String(c.id).trim()));
-            const combinedList = Object.values(combinedMap)
-                .filter(item => registeredCampaignIds.has(String(item.id).trim()))
-                .filter(item => item.campaign.toLowerCase().includes(searchDonasi) || item.id.toLowerCase().includes(searchDonasi));
+            let combinedList;
+            if (searchDonasi) {
+                // Ada kata kunci pencarian -> cari di SELURUH data yang pernah diunggah (termasuk
+                // campaign yang belum/tidak terdaftar di Monitoring Campaign), supaya campaign yang
+                // "disembunyikan" dari tampilan default tetap bisa ditemukan lewat search.
+                combinedList = Object.values(combinedMap)
+                    .filter(item => item.campaign.toLowerCase().includes(searchDonasi) || item.id.toLowerCase().includes(searchDonasi))
+                    .map(item => ({ ...item, isRegistered: registeredCampaignIds.has(String(item.id).trim()) }));
+            } else {
+                // Tanpa kata kunci -> tampilan default, hanya campaign yang terdaftar di Monitoring Campaign.
+                combinedList = Object.values(combinedMap)
+                    .filter(item => registeredCampaignIds.has(String(item.id).trim()))
+                    .map(item => ({ ...item, isRegistered: true }));
+            }
             return { combinedMap, combinedList };
         }
 
@@ -1840,7 +1851,7 @@
                         : `<span class="text-slate-300">-</span>`;
                     row.className = "hover:bg-slate-50";
                     row.innerHTML = `
-                        <td class="px-5 py-3 font-mono text-xs text-slate-500">${item.id}</td>
+                        <td class="px-5 py-3 font-mono text-xs text-slate-500 whitespace-nowrap">${item.id}${!item.isRegistered ? ' <span class="inline-block ml-1 text-[9px] font-sans font-bold uppercase tracking-wide text-amber-600 bg-amber-50 border border-amber-200 rounded px-1 py-0.5 align-middle" title="Belum terdaftar di Monitoring Campaign">Non-MC</span>' : ''}</td>
                         <td class="px-5 py-3 font-medium text-slate-800">${item.campaign}</td>
                         <td class="px-5 py-3 whitespace-nowrap">${linkCell}</td>
                         <td class="px-5 py-3 text-right text-indigo-600 font-medium">${formatter.format(item.transaksi)}</td>
@@ -1865,6 +1876,7 @@
                     'ID': item.id,
                     'Campaign': item.campaign,
                     'Link Campaign': item.link || '',
+                    'Terdaftar di Monitoring Campaign': item.isRegistered ? 'Ya' : 'Tidak',
                     'Donasi': item.transaksi,
                     'Salur (Transaksi)': item.salur,
                     'Saldo': saldo
@@ -1873,7 +1885,7 @@
 
             const worksheet = XLSX.utils.json_to_sheet(rows);
             worksheet['!cols'] = [
-                { wch: 12 }, { wch: 36 }, { wch: 34 }, { wch: 18 }, { wch: 18 }, { wch: 18 }
+                { wch: 12 }, { wch: 36 }, { wch: 34 }, { wch: 14 }, { wch: 18 }, { wch: 18 }, { wch: 18 }
             ];
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Monitoring Capaian & Saldo');
