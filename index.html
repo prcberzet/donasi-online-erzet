@@ -216,7 +216,7 @@
                         </h2>
                         <span id="totalCampaignWaiting" class="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-full">0 Pengajuan</span>
                     </div>
-                    <p class="text-slate-500 text-sm mt-1">Campaign yang masih dalam <strong>proses persiapan</strong>. Klik satu baris untuk melihat & melengkapi progress asset-nya.</p>
+                    <p class="text-slate-500 text-sm mt-1">Campaign yang masih dalam <strong>proses persiapan</strong> (belum punya ID, poster, atau data donasi). Klik satu baris untuk melihat & melengkapi progress asset-nya.</p>
                 </div>
                 <button onclick="openAddWaitingListModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -228,7 +228,7 @@
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
                             <tr>
-                                <th class="px-5 py-3 font-semibold tracking-wider">Usulan Nama Campaign</th>
+                                <th class="px-5 py-3 font-semibold tracking-wider">Nama Campaign</th>
                                 <th class="px-5 py-3 font-semibold tracking-wider whitespace-nowrap">Tanggal Diajukan</th>
                                 <th class="px-5 py-3 font-semibold tracking-wider">Jenis</th>
                                 <th class="px-5 py-3 font-semibold tracking-wider">Kelengkapan Asset</th>
@@ -264,6 +264,10 @@
                 <button onclick="openFilterModal()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
                     Filter
+                </button>
+                <button id="import-recovery-btn" onclick="openImportRecoveryModal()" class="hidden bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-300 px-4 py-2.5 rounded-lg text-sm font-semibold items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Import Data
                 </button>
                 <button onclick="exportCampaignsToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -1057,7 +1061,7 @@
             <form id="add-waitinglist-form" class="flex flex-col flex-1 overflow-hidden">
                 <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Usulan Nama Campaign *</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Nama Campaign *</label>
                         <input type="text" id="wl-name" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                     </div>
                     <div>
@@ -1177,6 +1181,39 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Import Data (Pemulihan) -->
+    <div id="import-recovery-modal" class="fixed inset-0 z-[130] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="import-recovery-box">
+            <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
+                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-600"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Import Data (Pemulihan)
+                </h3>
+                <button onclick="closeModal('import-recovery-modal', 'import-recovery-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 space-y-4">
+                <p class="text-sm text-slate-500 bg-amber-50 border border-amber-200 rounded-lg p-3">Gunakan ini untuk memulihkan data campaign dari file hasil <strong>Export Data</strong> sebelumnya. Campaign dengan ID yang sudah ada di server akan <strong>ditimpa</strong> oleh data dari file; ID baru akan ditambahkan. Poster gambar tidak bisa dipulihkan lewat cara ini.</p>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">File Export Monitoring Campaign (.xlsx) *</label>
+                    <input type="file" id="import-monitoring-file" accept=".xlsx,.xls" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                    <p class="text-xs text-slate-500 mt-1">Wajib. Kolom yang dibaca: ID Campaign, Nama Campaign, Status Kemitraan, Departemen, Tanggal Rilis, Lokasi, Alamat, PIC, Contact Person, Donasi Masuk, MoU, Consent Letter, Proposal, Link Donasi, Link Dokumen.</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">File Export Log Activity (.xlsx) <span class="text-slate-400 font-normal">(opsional)</span></label>
+                    <input type="file" id="import-logactivity-file" accept=".xlsx,.xls" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                    <p class="text-xs text-slate-500 mt-1">Kalau diisi, baris dengan Sumber "Monitoring Campaign" akan dipulihkan sebagai Riwayat Aktivitas ke campaign yang sesuai (dicocokkan via ID Campaign).</p>
+                </div>
+                <div id="import-recovery-summary" class="hidden text-sm bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-700"></div>
+            </div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl shrink-0">
+                <button type="button" onclick="closeModal('import-recovery-modal', 'import-recovery-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
+                <button type="button" onclick="runImportRecovery()" id="import-recovery-submit-btn" class="px-5 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors shadow-sm font-medium text-sm">Mulai Import</button>
+            </div>
         </div>
     </div>
 
@@ -1371,8 +1408,18 @@
                 if (docSnap.exists()) {
                     campaigns = docSnap.data().list || [];
                 } else {
-                    campaigns = [...defaultCampaigns];
-                    saveCampaignsToFirestore();
+                    // PENTING: jangan pernah otomatis menimpa/membuat dokumen di sini. Kalau dokumen
+                    // campaign benar-benar tidak ada di server (baik karena memang baru pertama kali
+                    // dipakai, atau karena masalah lain), tampilkan kosong dan beri peringatan jelas -
+                    // JANGAN diam-diam menulis data default ke server, supaya data asli tidak pernah
+                    // berisiko tertimpa oleh insiden serupa yang pernah terjadi.
+                    campaigns = [];
+                    console.warn('Dokumen campaign (tab2_campaigns) tidak ditemukan di server. Tidak melakukan penulisan otomatis apa pun untuk mencegah risiko menimpa data.');
+                    const updateEl = document.getElementById('lastUpdate');
+                    if (updateEl) {
+                        updateEl.classList.add('text-red-500', 'font-bold');
+                        updateEl.innerText = 'Peringatan: Data Campaign Tidak Ditemukan di Server';
+                    }
                 }
                 renderCampaigns();
                 updateUnifiedDashboard(); // "Total Donasi Masuk" bergantung pada daftar campaign terdaftar
@@ -1500,18 +1547,21 @@
             const icon = document.getElementById('admin-toggle-icon');
             const label = document.getElementById('admin-toggle-label');
             const changePinBtn = document.getElementById('change-pin-btn');
+            const importBtn = document.getElementById('import-recovery-btn');
             if (isAdminMode) {
                 btn.classList.remove('bg-slate-100', 'hover:bg-slate-200', 'text-slate-600', 'border-slate-300');
                 btn.classList.add('bg-emerald-50', 'hover:bg-emerald-100', 'text-emerald-700', 'border-emerald-300');
                 icon.innerHTML = '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>';
                 label.innerText = 'Mode Admin';
                 changePinBtn.classList.remove('hidden');
+                if (importBtn) { importBtn.classList.remove('hidden'); importBtn.classList.add('flex'); }
             } else {
                 btn.classList.add('bg-slate-100', 'hover:bg-slate-200', 'text-slate-600', 'border-slate-300');
                 btn.classList.remove('bg-emerald-50', 'hover:bg-emerald-100', 'text-emerald-700', 'border-emerald-300');
                 icon.innerHTML = '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
                 label.innerText = 'Mode Pemirsa';
                 changePinBtn.classList.add('hidden');
+                if (importBtn) { importBtn.classList.add('hidden'); importBtn.classList.remove('flex'); }
             }
             // Refresh tampilan yang memuat tombol Edit/Hapus
             renderCampaigns();
@@ -2341,6 +2391,168 @@
         };
 
         // ==========================================
+        // IMPORT DATA (PEMULIHAN) - dari file hasil Export sebelumnya
+        // ==========================================
+        window.openImportRecoveryModal = function() {
+            if (!isAdminMode) { requireAdmin(() => window.openImportRecoveryModal()); return; }
+            document.getElementById('import-monitoring-file').value = '';
+            document.getElementById('import-logactivity-file').value = '';
+            const summary = document.getElementById('import-recovery-summary');
+            summary.classList.add('hidden');
+            summary.innerHTML = '';
+            window.openModalAnimation('import-recovery-modal', 'import-recovery-box');
+        };
+
+        function readWorkbookFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                        resolve(XLSX.utils.sheet_to_json(sheet, { defval: '' }));
+                    } catch (err) { reject(err); }
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // "Kamis, 23 Juli 2026" -> "2026-07-23". Dipakai untuk membaca ulang kolom
+        // "Hari, Tanggal" dari file export Log Activity.
+        function parseIndonesianDateWithDay(text) {
+            if (!text) return '';
+            const bulanMap = { januari:1, februari:2, maret:3, april:4, mei:5, juni:6, juli:7, agustus:8, september:9, oktober:10, november:11, desember:12 };
+            const parts = String(text).split(',');
+            const datePart = (parts.length > 1 ? parts[1] : parts[0]).trim();
+            const segs = datePart.split(/\s+/);
+            if (segs.length < 3) return '';
+            const day = parseInt(segs[0], 10);
+            const month = bulanMap[segs[1].toLowerCase()];
+            const year = parseInt(segs[2], 10);
+            if (!day || !month || !year) return '';
+            return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        }
+
+        // Menormalkan nilai tanggal dari Excel: bisa berupa teks ISO ("2026-07-28") atau
+        // serial number tanggal Excel kalau kolomnya diformat sebagai Date oleh Excel.
+        function normalizeExcelDate(val) {
+            if (!val) return '';
+            if (typeof val === 'number') {
+                const d = XLSX.SSF.parse_date_code(val);
+                if (d) return `${d.y}-${String(d.m).padStart(2, '0')}-${String(d.d).padStart(2, '0')}`;
+            }
+            const str = String(val).trim();
+            const m = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+            if (m) return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
+            return str;
+        }
+
+        window.runImportRecovery = async function() {
+            const monitoringFileInput = document.getElementById('import-monitoring-file');
+            const logFileInput = document.getElementById('import-logactivity-file');
+            const summary = document.getElementById('import-recovery-summary');
+            const submitBtn = document.getElementById('import-recovery-submit-btn');
+
+            if (!monitoringFileInput.files[0]) {
+                alert('File Export Monitoring Campaign wajib dipilih.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Memproses...';
+
+            try {
+                const monitoringRows = await readWorkbookFile(monitoringFileInput.files[0]);
+                if (!monitoringRows.length) {
+                    alert('File Monitoring Campaign kosong atau formatnya tidak dikenali.');
+                    return;
+                }
+
+                // Bangun ulang objek campaign dari setiap baris.
+                const importedCampaigns = monitoringRows.map(row => {
+                    const id = String(row['ID Campaign'] || '').trim();
+                    return {
+                        id: id,
+                        name: String(row['Nama Campaign'] || '').trim(),
+                        posterUrl: '',
+                        link: String(row['Link Donasi'] || '').trim(),
+                        releaseDate: normalizeExcelDate(row['Tanggal Rilis']),
+                        partnershipStatus: String(row['Status Kemitraan'] || '').trim(),
+                        department: String(row['Departemen'] || '').trim(),
+                        location: String(row['Lokasi'] || '').trim(),
+                        address: String(row['Alamat'] || '').trim(),
+                        pic: String(row['PIC'] || '').trim(),
+                        contactPerson: String(row['Contact Person'] || '').trim(),
+                        docLink: String(row['Link Dokumen'] || '').trim(),
+                        donasiMasuk: parseFloat(row['Donasi Masuk']) || 0,
+                        documents: {
+                            mou: String(row['MoU'] || '').trim().toLowerCase() === 'ya',
+                            consentLetter: String(row['Consent Letter'] || '').trim().toLowerCase() === 'ya',
+                            proposal: String(row['Proposal'] || '').trim().toLowerCase() === 'ya'
+                        },
+                        activities: []
+                    };
+                }).filter(c => c.id);
+
+                // Kalau file Log Activity turut disertakan, cocokkan aktivitas "Monitoring Campaign"
+                // ke campaign yang sesuai berdasarkan ID Campaign.
+                let activitiesRestored = 0;
+                if (logFileInput.files[0]) {
+                    const logRows = await readWorkbookFile(logFileInput.files[0]);
+                    const byId = {};
+                    importedCampaigns.forEach(c => { byId[c.id] = c; });
+                    logRows.forEach(row => {
+                        const sumber = String(row['Sumber'] || '').trim();
+                        if (sumber !== 'Monitoring Campaign') return; // "Campaign Lain" sudah aman tersimpan terpisah
+                        const id = String(row['ID Campaign'] || '').trim();
+                        const target = byId[id];
+                        if (!target) return;
+                        target.activities.push({
+                            date: parseIndonesianDateWithDay(row['Hari, Tanggal']),
+                            activity: String(row['Aktivitas'] || '').trim(),
+                            description: String(row['Deskripsi'] || '').trim(),
+                            link: String(row['Link Bahan'] || '').trim()
+                        });
+                        activitiesRestored++;
+                    });
+                    Object.values(byId).forEach(c => c.activities.sort((a, b) => new Date(b.date) - new Date(a.date)));
+                }
+
+                // Gabungkan dengan data campaign yang sudah ada di server: ID yang sama ditimpa,
+                // ID baru ditambahkan. Campaign contoh/default bawaan (id "1") ikut dibersihkan
+                // kalau memang belum pernah diisi datanya sendiri.
+                const importedIds = new Set(importedCampaigns.map(c => c.id));
+                const keptExisting = campaigns.filter(c => !importedIds.has(String(c.id)) && String(c.id) !== '1');
+                const candidateList = [...importedCampaigns, ...keptExisting];
+
+                const confirmMsg = `Akan mengimpor ${importedCampaigns.length} campaign` +
+                    (activitiesRestored ? ` beserta ${activitiesRestored} riwayat aktivitas` : '') +
+                    `. Data campaign dengan ID yang sama di server akan DITIMPA. Lanjutkan?`;
+                if (!confirm(confirmMsg)) { return; }
+
+                const ok = await saveCampaignsToFirestore(candidateList);
+                if (!ok) return;
+
+                summary.classList.remove('hidden');
+                summary.innerHTML = `✅ Berhasil mengimpor <strong>${importedCampaigns.length}</strong> campaign` +
+                    (activitiesRestored ? ` dan <strong>${activitiesRestored}</strong> riwayat aktivitas.` : '.') +
+                    ` Poster gambar perlu diunggah ulang manual lewat Edit Campaign kalau diperlukan.`;
+
+                renderCampaigns();
+                renderLogActivity();
+                updateUnifiedDashboard();
+            } catch (err) {
+                console.error('Import recovery error', err);
+                alert('Gagal membaca/memproses file. Pastikan file yang diupload benar hasil export dari aplikasi ini. Detail error ada di console (F12).');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Mulai Import';
+            }
+        };
+
+        // ==========================================
         // LOG ACTIVITY (rekap seluruh aktivitas semua campaign)
         // ==========================================
         window.resetLogActivityDateFilter = function() {
@@ -3146,7 +3358,7 @@
         }
 
         window.addEventListener('click', function(e) {
-            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'delete-modal', 'upload-donasi-modal', 'progdist-modal', 'admin-pin-modal', 'change-pin-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'filter-campaign-modal'];
+            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'delete-modal', 'upload-donasi-modal', 'progdist-modal', 'admin-pin-modal', 'change-pin-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'filter-campaign-modal', 'import-recovery-modal'];
             modals.forEach(id => { 
                 if (e.target === document.getElementById(id)) {
                     window.closeModal(id, getBoxIdFor(id)); 
@@ -3156,7 +3368,7 @@
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                const arr = ['delete-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'admin-pin-modal', 'change-pin-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'filter-campaign-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'progdist-modal'];
+                const arr = ['delete-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'admin-pin-modal', 'change-pin-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'filter-campaign-modal', 'import-recovery-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'progdist-modal'];
                 for (const id of arr) { 
                     const el = document.getElementById(id); 
                     if (el && !el.classList.contains('hidden')) { 
