@@ -279,7 +279,7 @@
                     </div>
                     <p class="text-slate-500 text-sm mt-1">Campaign yang masih dalam <strong>proses persiapan</strong> (belum punya ID, poster, atau data donasi). Klik satu baris untuk melihat & melengkapi progress asset-nya.</p>
                 </div>
-                <button onclick="openAddWaitingListModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
+                <button id="btn-tambah-waitinglist" onclick="openAddWaitingListModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     Tambah Waiting List
                 </button>
@@ -289,15 +289,17 @@
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
                             <tr>
-                                <th class="px-5 py-3 font-semibold tracking-wider">Nama Campaign</th>
+                                <th class="px-5 py-3 font-semibold tracking-wider">Usulan Nama Campaign</th>
                                 <th class="px-5 py-3 font-semibold tracking-wider whitespace-nowrap">Tanggal Diajukan</th>
-                                <th class="px-5 py-3 font-semibold tracking-wider">Jenis</th>
+                                <th class="px-5 py-3 font-semibold tracking-wider whitespace-nowrap">Jenis Program</th>
+                                <th class="px-5 py-3 font-semibold tracking-wider whitespace-nowrap">Jenis Peserta</th>
+                                <th class="px-5 py-3 font-semibold tracking-wider whitespace-nowrap">Departemen</th>
                                 <th class="px-5 py-3 font-semibold tracking-wider">Kelengkapan Asset</th>
                             </tr>
                         </thead>
                         <tbody id="waitingListTableBody" class="divide-y divide-slate-100 text-sm">
                             <tr>
-                                <td colspan="4" class="px-6 py-10 text-center text-slate-400 italic text-sm">Belum ada Waiting List Campaign.</td>
+                                <td colspan="6" class="px-6 py-10 text-center text-slate-400 italic text-sm">Belum ada Waiting List Campaign.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1058,35 +1060,106 @@
     <!-- Modal Filter Campaign -->
     <!-- Modal Tambah Waiting List -->
     <div id="add-waitinglist-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="add-waitinglist-box">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="add-waitinglist-box">
             <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
-                <h3 class="text-lg font-bold text-slate-800">Tambah Waiting List Campaign</h3>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800" id="wl-form-title">Tambah Waiting List Campaign</h3>
+                    <p class="text-xs text-slate-500 mt-0.5" id="wl-form-subtitle">Tanggal pengajuan otomatis mengikuti tanggal penyimpanan.</p>
+                </div>
                 <button onclick="closeModal('add-waitinglist-modal', 'add-waitinglist-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
             <form id="add-waitinglist-form" class="flex flex-col flex-1 overflow-hidden">
-                <div class="p-6 overflow-y-auto flex-1 bg-white space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Nama Campaign *</label>
-                        <input type="text" id="wl-name" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                <div class="p-6 overflow-y-auto flex-1 bg-white space-y-5">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Usulan Nama Campaign *</label>
+                            <input type="text" id="wl-name" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Jenis Program *</label>
+                            <select id="wl-program-type" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                                <option value="">-- Pilih Jenis Program --</option>
+                                <option value="Infrastruktur">Infrastruktur</option>
+                                <option value="Kesehatan">Kesehatan</option>
+                                <option value="Pendidikan">Pendidikan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Jenis Peserta Program *</label>
+                            <select id="wl-participant-type" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                                <option value="">-- Pilih Jenis Peserta --</option>
+                                <option value="Perorangan">Perorangan</option>
+                                <option value="Kepanitiaan">Kepanitiaan</option>
+                                <option value="Lembaga">Lembaga</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">PIC *</label>
+                            <input type="text" id="wl-pic" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Contact Person</label>
+                            <input type="text" id="wl-contact" placeholder="No. HP / WhatsApp / Email" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Lokasi Project *</label>
+                            <input type="text" id="wl-location" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Departemen *</label>
+                            <select id="wl-department" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                                <option value="">-- Pilih Departemen --</option>
+                                <option value="Program Executor Management">Program Executor Management</option>
+                                <option value="Scholarship">Scholarship</option>
+                                <option value="Social Service">Social Service</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Alamat Detail *</label>
+                            <textarea id="wl-address" rows="2" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"></textarea>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Diajukan *</label>
-                        <input type="date" id="wl-date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+
+                    <div class="border-t border-slate-100 pt-4">
+                        <h4 class="text-sm font-bold text-slate-800 mb-1">Link Asset</h4>
+                        <p class="text-xs text-slate-500 mb-3">Asset otomatis tercentang begitu linknya diisi. Kosongkan kalau asset-nya belum tersedia.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Dokumentasi (Foto)</label>
+                            <input type="url" id="wl-link-dokumentasi" placeholder="https://..." oninput="updateWaitingListFormChecklist()" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                            <p class="text-xs text-slate-400 mt-1">Link folder/berkas foto dokumentasi.</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Formulir</label>
+                            <input type="url" id="wl-link-formulir" placeholder="https://..." oninput="updateWaitingListFormChecklist()" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                            <p class="text-xs text-slate-400 mt-1">Link Form Campaign Baru yang sudah diisi.</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Proposal</label>
+                            <input type="url" id="wl-link-proposal" placeholder="https://..." oninput="updateWaitingListFormChecklist()" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                            <p class="text-xs text-slate-400 mt-1">Link proposal program.</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Deskripsi Profil</label>
+                            <input type="url" id="wl-link-profil" placeholder="https://..." oninput="updateWaitingListFormChecklist()" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                            <p class="text-xs text-slate-400 mt-1">Link deskripsi/profil calon penerima manfaat.</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Identitas Calon PP (KTP)</label>
+                            <input type="url" id="wl-link-ktp" placeholder="https://..." oninput="updateWaitingListFormChecklist()" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                            <p class="text-xs text-slate-400 mt-1">Link scan/foto KTP calon penerima program.</p>
+                        </div>
+                        </div>
+                        <div id="wl-form-checklist" class="mt-4 flex flex-wrap gap-2"></div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Jenis *</label>
-                        <select id="wl-type" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                            <option value="Perorangan">Perorangan</option>
-                            <option value="Kepanitiaan">Kepanitiaan</option>
-                        </select>
-                        <p class="text-xs text-slate-500 mt-1">Menentukan kelengkapan asset yang perlu dipenuhi (KTP untuk Perorangan, atau Proposal & RAB untuk Kepanitiaan).</p>
-                    </div>
+
                 </div>
                 <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl shrink-0">
                     <button type="button" onclick="closeModal('add-waitinglist-modal', 'add-waitinglist-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
-                    <button type="submit" class="px-5 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors shadow-sm font-medium text-sm">Simpan</button>
+                    <button type="submit" id="wl-form-submit-btn" class="px-5 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors shadow-sm font-medium text-sm">Simpan</button>
                 </div>
             </form>
         </div>
@@ -1095,12 +1168,16 @@
     <!-- Modal Detail Waiting List / Kelengkapan Asset -->
     <div id="waitinglist-detail-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="waitinglist-detail-box">
-            <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
+            <div class="flex justify-between items-start p-5 border-b border-slate-100 bg-slate-50">
                 <div>
                     <h3 class="text-lg font-bold text-slate-800" id="wl-detail-name">Nama Campaign</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Diajukan: <span id="wl-detail-date">-</span> &bull; Jenis: <span id="wl-detail-type">-</span></p>
+                    <p class="text-xs text-slate-500 mt-0.5">Diajukan: <span id="wl-detail-date">-</span></p>
+                    <div class="flex flex-wrap items-center gap-2 mt-2" id="wl-detail-badges"></div>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1 shrink-0">
+                    <button id="wl-edit-btn" onclick="editWaitingListEntry()" class="text-indigo-500 hover:text-indigo-700 hover:bg-indigo-50 p-2 rounded-full transition-colors hidden" title="Edit Pengajuan">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    </button>
                     <button id="wl-delete-btn" onclick="deleteWaitingListEntry()" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors hidden" title="Hapus Pengajuan">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                     </button>
@@ -1109,18 +1186,26 @@
                     </button>
                 </div>
             </div>
-            <div class="p-6 overflow-y-auto flex-1 bg-white">
-                <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-600"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                    Kelengkapan Asset
-                </h4>
-                <div id="wl-asset-checklist" class="space-y-2">
-                    <!-- Checklist items injected here by JS -->
+            <div class="p-6 overflow-y-auto flex-1 bg-white space-y-6">
+                <div>
+                    <h4 class="text-sm font-bold text-slate-800 mb-3">Informasi Pengajuan</h4>
+                    <div id="wl-detail-info" class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm"></div>
                 </div>
-                <p id="wl-viewer-note" class="hidden text-xs text-slate-400 italic mt-3">Hanya akun Admin yang dapat mengubah kelengkapan asset.</p>
+                <div>
+                    <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-600"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        Kelengkapan Asset
+                    </h4>
+                    <div id="wl-asset-checklist" class="space-y-2"></div>
+                    <p id="wl-viewer-note" class="hidden text-xs text-slate-400 italic mt-3">Centang asset terisi otomatis dari link yang diinput. Hanya akun Admin yang dapat mengubahnya.</p>
+                </div>
             </div>
-            <div class="p-4 border-t border-slate-100 bg-slate-50 text-right rounded-b-2xl">
-                <button onclick="closeModal('waitinglist-detail-modal', 'waitinglist-detail-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Tutup</button>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 rounded-b-2xl">
+                <button id="wl-release-btn" onclick="releaseWaitingListToCampaign()" class="hidden px-5 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors shadow-sm font-semibold text-sm items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    Campaign Sudah Rilis - Daftarkan
+                </button>
+                <button onclick="closeModal('waitinglist-detail-modal', 'waitinglist-detail-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm sm:ml-auto">Tutup</button>
             </div>
         </div>
     </div>
@@ -1701,7 +1786,8 @@
                 { id: 'btn-progdist',                flexClass: 'inline-flex' }, // + Campaign Khusus Progdist (Ringkasan Donasi)
                 { id: 'btn-upload-donasi-wrapper',   flexClass: null          }, // + Unggah Donasi (Ringkasan Donasi)
                 { id: 'btn-upload-transaksi-wrapper',flexClass: null          }, // Unggah Transaksi/Salur (Ringkasan Donasi)
-                { id: 'btn-tambah-campaign',         flexClass: 'flex'        }  // + Tambah Campaign (Monitoring Campaign)
+                { id: 'btn-tambah-campaign',         flexClass: 'flex'        }, // + Tambah Campaign (Monitoring Campaign)
+                { id: 'btn-tambah-waitinglist',      flexClass: 'flex'        }  // + Tambah Waiting List (Monitoring Campaign)
             ].forEach(({ id, flexClass }) => {
                 const el = document.getElementById(id);
                 if (!el) return;
@@ -2331,27 +2417,60 @@
         // ==========================================
 
         // Daftar item Kelengkapan Asset - beberapa bersyarat sesuai Jenis pengajuan.
-        function getWaitingListAssetItems(entry) {
-            const items = [
-                { key: 'foto', label: 'Foto' },
-                { key: 'video', label: 'Video' },
-                { key: 'deskripsi', label: 'Deskripsi' },
-                { key: 'formCampaignBaru', label: 'Form Campaign Baru' }
-            ];
-            if (entry.type === 'Kepanitiaan') {
-                items.push({ key: 'proposal', label: 'Proposal' });
-                items.push({ key: 'rab', label: 'RAB' });
-            } else {
-                items.push({ key: 'identitasKTP', label: 'Identitas Calon PM (KTP)' });
-            }
-            return items;
+        // ==========================================================
+        // WAITING LIST CAMPAIGN
+        // ----------------------------------------------------------
+        // Setiap pengajuan menyimpan link asset. Checklist kelengkapan TIDAK
+        // dicentang manual lagi - status "terpenuhi" ditentukan otomatis dari
+        // ada/tidaknya link pada asset tersebut.
+        // ==========================================================
+        const WL_ASSET_ITEMS = [
+            { key: 'dokumentasi', label: 'Dokumentasi (Foto)',       fieldId: 'wl-link-dokumentasi', legacyKey: 'foto' },
+            { key: 'formulir',    label: 'Formulir',                  fieldId: 'wl-link-formulir',    legacyKey: 'formCampaignBaru' },
+            { key: 'proposal',    label: 'Proposal',                  fieldId: 'wl-link-proposal',    legacyKey: 'proposal' },
+            { key: 'profil',      label: 'Deskripsi Profil',          fieldId: 'wl-link-profil',      legacyKey: 'deskripsi' },
+            { key: 'ktp',         label: 'Identitas Calon PP (KTP)',  fieldId: 'wl-link-ktp',         legacyKey: 'identitasKTP' }
+        ];
+
+        let editingWaitingListIndex = null;      // null = mode tambah
+        let pendingReleaseWaitingListIndex = null; // dipakai saat pengajuan dirilis jadi campaign aktif
+
+        // Pengajuan lama (versi sebelumnya) hanya punya `type` + `assets` boolean.
+        // Fungsi ini menyeragamkan pembacaannya supaya data lama tidak hilang.
+        function wlParticipantType(entry) {
+            return entry.participantType || entry.type || '-';
+        }
+
+        function wlAssetLink(entry, item) {
+            return (entry.assetLinks && entry.assetLinks[item.key]) || '';
+        }
+
+        function wlAssetDone(entry, item) {
+            if (wlAssetLink(entry, item)) return true;
+            return !!(entry.assets && entry.assets[item.legacyKey]); // kompatibilitas data lama
         }
 
         function getWaitingListProgress(entry) {
-            const items = getWaitingListAssetItems(entry);
-            const assets = entry.assets || {};
-            const done = items.filter(i => assets[i.key]).length;
-            return { done, total: items.length };
+            const done = WL_ASSET_ITEMS.filter(item => wlAssetDone(entry, item)).length;
+            return { done, total: WL_ASSET_ITEMS.length };
+        }
+
+        const wlEscape = (t) => String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+        function wlTypeBadgeClass(type) {
+            const t = String(type || '').toLowerCase();
+            if (t === 'kepanitiaan') return 'bg-purple-50 text-purple-700 border-purple-100';
+            if (t === 'lembaga') return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+            if (t === 'perorangan') return 'bg-blue-50 text-blue-700 border-blue-100';
+            return 'bg-slate-50 text-slate-600 border-slate-200';
+        }
+
+        function wlProgramBadgeClass(program) {
+            const p = String(program || '').toLowerCase();
+            if (p === 'infrastruktur') return 'bg-orange-50 text-orange-700 border-orange-100';
+            if (p === 'kesehatan') return 'bg-rose-50 text-rose-700 border-rose-100';
+            if (p === 'pendidikan') return 'bg-sky-50 text-sky-700 border-sky-100';
+            return 'bg-slate-50 text-slate-600 border-slate-200';
         }
 
         window.renderWaitingList = function() {
@@ -2364,7 +2483,7 @@
             if (totalBadge) totalBadge.innerText = `${waitingListCampaigns.length} Pengajuan`;
 
             if (!waitingListCampaigns.length) {
-                tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-10 text-center text-slate-400 italic text-sm">Belum ada Waiting List Campaign.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-10 text-center text-slate-400 italic text-sm">Belum ada Waiting List Campaign.</td></tr>';
                 return;
             }
 
@@ -2372,13 +2491,16 @@
             waitingListCampaigns.forEach((entry, index) => {
                 const { done, total } = getWaitingListProgress(entry);
                 const complete = done === total;
+                const pType = wlParticipantType(entry);
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-amber-50/60 transition-colors cursor-pointer";
                 tr.onclick = () => window.openWaitingListDetail(index);
                 tr.innerHTML = `
-                    <td class="px-5 py-3 font-medium text-slate-800">${entry.name || '-'}</td>
+                    <td class="px-5 py-3 font-medium text-slate-800">${wlEscape(entry.name || '-')}</td>
                     <td class="px-5 py-3 whitespace-nowrap text-slate-600">${entry.submittedDate ? formatDate(entry.submittedDate) : '-'}</td>
-                    <td class="px-5 py-3 whitespace-nowrap"><span class="text-xs font-semibold px-2 py-0.5 rounded-full ${entry.type === 'Kepanitiaan' ? 'bg-purple-50 text-purple-700 border border-purple-100' : 'bg-blue-50 text-blue-700 border border-blue-100'}">${entry.type || '-'}</span></td>
+                    <td class="px-5 py-3 whitespace-nowrap">${entry.programType ? `<span class="text-xs font-semibold px-2 py-0.5 rounded-full border ${wlProgramBadgeClass(entry.programType)}">${wlEscape(entry.programType)}</span>` : '<span class="text-slate-300">-</span>'}</td>
+                    <td class="px-5 py-3 whitespace-nowrap"><span class="text-xs font-semibold px-2 py-0.5 rounded-full border ${wlTypeBadgeClass(pType)}">${wlEscape(pType)}</span></td>
+                    <td class="px-5 py-3 whitespace-nowrap text-slate-600 text-xs">${wlEscape(entry.department || '-')}</td>
                     <td class="px-5 py-3 whitespace-nowrap">
                         <div class="flex items-center gap-2">
                             <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -2391,10 +2513,64 @@
             });
         };
 
-        window.openAddWaitingListModal = function() {
+        // Checklist live di dalam form tambah/edit - ikut berubah saat link diketik.
+        window.updateWaitingListFormChecklist = function() {
+            const box = document.getElementById('wl-form-checklist');
+            if (!box) return;
+            box.innerHTML = WL_ASSET_ITEMS.map(item => {
+                const filled = !!(document.getElementById(item.fieldId)?.value || '').trim();
+                return `<span class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${filled ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-50 text-slate-400 border-slate-200'}">
+                    ${filled
+                        ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 111.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>'
+                        : '<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>'}
+                    ${wlEscape(item.label)}
+                </span>`;
+            }).join('');
+        };
+
+        function resetWaitingListForm() {
             const form = document.getElementById('add-waitinglist-form');
             if (form) form.reset();
+            window.updateWaitingListFormChecklist();
+        }
+
+        window.openAddWaitingListModal = function() {
+            if (!isAdminMode) { requireAdmin(() => window.openAddWaitingListModal()); return; }
+            editingWaitingListIndex = null;
+            resetWaitingListForm();
+            document.getElementById('wl-form-title').innerText = 'Tambah Waiting List Campaign';
+            document.getElementById('wl-form-subtitle').innerText = 'Tanggal pengajuan otomatis mengikuti tanggal penyimpanan.';
+            document.getElementById('wl-form-submit-btn').innerText = 'Simpan';
             window.openModalAnimation('add-waitinglist-modal', 'add-waitinglist-box');
+        };
+
+        window.editWaitingListEntry = function() {
+            if (!isAdminMode) { requireAdmin(() => window.editWaitingListEntry()); return; }
+            const entry = waitingListCampaigns[currentWaitingListIndex];
+            if (!entry) return;
+            editingWaitingListIndex = currentWaitingListIndex;
+            resetWaitingListForm();
+
+            document.getElementById('wl-name').value = entry.name || '';
+            document.getElementById('wl-program-type').value = entry.programType || '';
+            document.getElementById('wl-participant-type').value = wlParticipantType(entry) === '-' ? '' : wlParticipantType(entry);
+            document.getElementById('wl-pic').value = entry.pic || '';
+            document.getElementById('wl-contact').value = entry.contactPerson || '';
+            document.getElementById('wl-location').value = entry.location || '';
+            document.getElementById('wl-department').value = entry.department || '';
+            document.getElementById('wl-address').value = entry.address || '';
+            WL_ASSET_ITEMS.forEach(item => {
+                const el = document.getElementById(item.fieldId);
+                if (el) el.value = wlAssetLink(entry, item);
+            });
+            window.updateWaitingListFormChecklist();
+
+            document.getElementById('wl-form-title').innerText = 'Edit Waiting List Campaign';
+            document.getElementById('wl-form-subtitle').innerText = `Diajukan ${entry.submittedDate ? formatDate(entry.submittedDate) : '-'} (tanggal pengajuan tidak berubah saat diedit).`;
+            document.getElementById('wl-form-submit-btn').innerText = 'Simpan Perubahan';
+
+            window.closeModal('waitinglist-detail-modal', 'waitinglist-detail-box');
+            setTimeout(() => window.openModalAnimation('add-waitinglist-modal', 'add-waitinglist-box'), 300);
         };
 
         window.openWaitingListDetail = function(index) {
@@ -2404,36 +2580,63 @@
 
             document.getElementById('wl-detail-name').innerText = entry.name || '-';
             document.getElementById('wl-detail-date').innerText = entry.submittedDate ? formatDate(entry.submittedDate) : '-';
-            document.getElementById('wl-detail-type').innerText = entry.type || '-';
+
+            const pType = wlParticipantType(entry);
+            const badges = [];
+            if (entry.programType) badges.push(`<span class="text-xs font-semibold px-2.5 py-1 rounded-full border ${wlProgramBadgeClass(entry.programType)}">${wlEscape(entry.programType)}</span>`);
+            badges.push(`<span class="text-xs font-semibold px-2.5 py-1 rounded-full border ${wlTypeBadgeClass(pType)}">${wlEscape(pType)}</span>`);
+            document.getElementById('wl-detail-badges').innerHTML = badges.join('');
+
+            const infoRow = (label, value) => `
+                <div>
+                    <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">${label}</p>
+                    <p class="text-slate-800 font-medium mt-0.5 break-words">${wlEscape(value || '-')}</p>
+                </div>`;
+            document.getElementById('wl-detail-info').innerHTML = [
+                infoRow('PIC', entry.pic),
+                infoRow('Contact Person', entry.contactPerson),
+                infoRow('Departemen', entry.department),
+                infoRow('Lokasi Project', entry.location),
+                `<div class="sm:col-span-2">
+                    <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Alamat Detail</p>
+                    <p class="text-slate-700 mt-0.5 leading-relaxed break-words">${wlEscape(entry.address || '-')}</p>
+                </div>`
+            ].join('');
 
             const deleteBtn = document.getElementById('wl-delete-btn');
             if (deleteBtn) deleteBtn.classList.toggle('hidden', !isAdminMode);
+            const editBtn = document.getElementById('wl-edit-btn');
+            if (editBtn) editBtn.classList.toggle('hidden', !isAdminMode);
+
+            const releaseBtn = document.getElementById('wl-release-btn');
+            if (releaseBtn) {
+                if (isAdminMode) { releaseBtn.classList.remove('hidden'); releaseBtn.classList.add('flex'); }
+                else { releaseBtn.classList.add('hidden'); releaseBtn.classList.remove('flex'); }
+            }
 
             const viewerNote = document.getElementById('wl-viewer-note');
-            if (viewerNote) viewerNote.classList.toggle('hidden', isAdminMode);
+            if (viewerNote) viewerNote.classList.remove('hidden');
 
-            const items = getWaitingListAssetItems(entry);
-            const assets = entry.assets || {};
-            const checklistEl = document.getElementById('wl-asset-checklist');
-            checklistEl.innerHTML = items.map(item => `
-                <label class="flex items-center gap-3 p-3 rounded-lg border ${assets[item.key] ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-slate-50'} ${isAdminMode ? 'cursor-pointer' : 'cursor-default opacity-90'}">
-                    <input type="checkbox" ${assets[item.key] ? 'checked' : ''} ${isAdminMode ? '' : 'disabled'} onchange="window.toggleWaitingListAsset('${item.key}', this.checked)" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
-                    <span class="text-sm font-medium ${assets[item.key] ? 'text-emerald-700' : 'text-slate-700'}">${item.label}</span>
-                    ${assets[item.key] ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-500 ml-auto" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 111.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd" /></svg>' : ''}
-                </label>
-            `).join('');
+            document.getElementById('wl-asset-checklist').innerHTML = WL_ASSET_ITEMS.map(item => {
+                const link = wlAssetLink(entry, item);
+                const done = wlAssetDone(entry, item);
+                return `
+                <div class="flex items-center gap-3 p-3 rounded-lg border ${done ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-slate-50'}">
+                    <span class="${done ? 'text-emerald-500' : 'text-slate-300'}">
+                        ${done
+                            ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.7-9.3a1 1 0 00-1.4-1.4L9 10.6 7.7 9.3a1 1 0 10-1.4 1.4l2 2a1 1 0 001.4 0l3-3z" clip-rule="evenodd"/></svg>'
+                            : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>'}
+                    </span>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm font-medium ${done ? 'text-emerald-800' : 'text-slate-600'}">${wlEscape(item.label)}</p>
+                        ${link
+                            ? `<a href="${wlEscape(link)}" target="_blank" rel="noopener" class="text-xs text-indigo-600 hover:text-indigo-800 underline break-all">Buka link</a>`
+                            : '<p class="text-xs text-slate-400 italic">Link belum diinput</p>'}
+                    </div>
+                </div>`;
+            }).join('');
 
             window.openModalAnimation('waitinglist-detail-modal', 'waitinglist-detail-box');
-        };
-
-        window.toggleWaitingListAsset = async function(key, checked) {
-            if (!isAdminMode) { requireAdmin(() => window.toggleWaitingListAsset(key, checked)); return; }
-            if (currentWaitingListIndex === null || !waitingListCampaigns[currentWaitingListIndex]) return;
-            if (!waitingListCampaigns[currentWaitingListIndex].assets) waitingListCampaigns[currentWaitingListIndex].assets = {};
-            waitingListCampaigns[currentWaitingListIndex].assets[key] = checked;
-            await saveTab1ToFirestore();
-            window.openWaitingListDetail(currentWaitingListIndex);
-            renderWaitingList();
         };
 
         window.deleteWaitingListEntry = async function() {
@@ -2445,6 +2648,48 @@
             currentWaitingListIndex = null;
             window.closeModal('waitinglist-detail-modal', 'waitinglist-detail-box');
             renderWaitingList();
+        };
+
+        // Pengajuan yang campaignnya sudah rilis -> lanjut ke form Tambah Campaign Aktif,
+        // sudah terisi otomatis dari data pengajuan. Sisanya (ID Campaign, Link Donasi,
+        // Link Poster, kelengkapan dokumen) diisi manual di form tersebut.
+        window.releaseWaitingListToCampaign = function() {
+            if (!isAdminMode) { requireAdmin(() => window.releaseWaitingListToCampaign()); return; }
+            const index = currentWaitingListIndex;
+            const entry = waitingListCampaigns[index];
+            if (!entry) return;
+
+            const { done, total } = getWaitingListProgress(entry);
+            if (done < total && !confirm(`Kelengkapan asset baru ${done}/${total}. Tetap lanjutkan pendaftaran sebagai Campaign Aktif?`)) return;
+
+            window.closeModal('waitinglist-detail-modal', 'waitinglist-detail-box');
+            setTimeout(() => {
+                window.openAddModal('Aktif');
+                pendingReleaseWaitingListIndex = index;
+
+                const pType = wlParticipantType(entry);
+                document.getElementById('add-name').value = entry.name || '';
+                document.getElementById('add-pic').value = entry.pic || '';
+                document.getElementById('add-contact').value = entry.contactPerson || '';
+                document.getElementById('add-location').value = entry.location || '';
+                document.getElementById('add-address').value = entry.address || '';
+                document.getElementById('add-department').value = entry.department || '';
+                if (['Perorangan', 'Kepanitiaan', 'Lembaga'].includes(pType)) {
+                    document.getElementById('add-status').value = pType;
+                }
+                document.getElementById('add-date').value = new Date().toISOString().slice(0, 10);
+                const dokLink = wlAssetLink(entry, WL_ASSET_ITEMS[0]);
+                if (dokLink) document.getElementById('add-doclink').value = dokLink;
+
+                // Kelengkapan dokumen: Perorangan cukup Consent Letter;
+                // Kepanitiaan/Lembaga perlu MoU + Consent Letter + Proposal.
+                const isPer = String(pType).toLowerCase() === 'perorangan';
+                document.getElementById('add-mou-wrapper').style.display = isPer ? 'none' : '';
+                document.getElementById('add-proposal-wrapper').style.display = isPer ? 'none' : '';
+
+                const titleEl = document.getElementById('add-modal-title');
+                if (titleEl) titleEl.innerText = 'Daftarkan Campaign Rilis: ' + (entry.name || '');
+            }, 300);
         };
 
         window.openFilterModal = function() {
@@ -3167,6 +3412,7 @@
 
         window.openAddModal = function(status) {
             if (!isAdminMode) { requireAdmin(() => window.openAddModal(status)); return; }
+            pendingReleaseWaitingListIndex = null; // di-set ulang oleh releaseWaitingListToCampaign()
             pendingAddStatus = status || 'Aktif';
             const form = document.getElementById('add-campaign-form');
             if(form) form.reset();
@@ -3214,16 +3460,44 @@
 
             document.getElementById('add-waitinglist-form')?.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                const entry = {
+                if (!isAdminMode) { requireAdmin(() => {}); return; }
+
+                const assetLinks = {};
+                WL_ASSET_ITEMS.forEach(item => {
+                    assetLinks[item.key] = (document.getElementById(item.fieldId)?.value || '').trim();
+                });
+
+                const data = {
                     name: document.getElementById('wl-name').value.trim(),
-                    submittedDate: document.getElementById('wl-date').value,
-                    type: document.getElementById('wl-type').value,
-                    assets: {}
+                    programType: document.getElementById('wl-program-type').value,
+                    participantType: document.getElementById('wl-participant-type').value,
+                    pic: document.getElementById('wl-pic').value.trim(),
+                    contactPerson: document.getElementById('wl-contact').value.trim(),
+                    location: document.getElementById('wl-location').value.trim(),
+                    department: document.getElementById('wl-department').value,
+                    address: document.getElementById('wl-address').value.trim(),
+                    assetLinks: assetLinks
                 };
-                waitingListCampaigns.push(entry);
+
+                if (editingWaitingListIndex !== null && waitingListCampaigns[editingWaitingListIndex]) {
+                    // Edit: tanggal pengajuan asli dipertahankan.
+                    waitingListCampaigns[editingWaitingListIndex] = {
+                        ...waitingListCampaigns[editingWaitingListIndex],
+                        ...data
+                    };
+                } else {
+                    // Tambah: tanggal pengajuan = tanggal submit.
+                    waitingListCampaigns.push({
+                        ...data,
+                        submittedDate: new Date().toISOString().slice(0, 10)
+                    });
+                }
+
                 await saveTab1ToFirestore();
+                editingWaitingListIndex = null;
                 window.closeModal('add-waitinglist-modal', 'add-waitinglist-box');
                 this.reset();
+                window.updateWaitingListFormChecklist();
                 renderWaitingList();
             });
 
@@ -3386,6 +3660,20 @@
                     donasiMasuk: donasiMasuk,
                     documents: { mou: document.getElementById('add-mou-check').checked, consentLetter: document.getElementById('add-consent-check').checked, proposal: document.getElementById('add-proposal-check').checked }
                 };
+
+                // Kalau campaign ini berasal dari pengajuan Waiting List yang sudah rilis,
+                // catat otomatis progress pertamanya.
+                const releasedFromWL = pendingReleaseWaitingListIndex !== null
+                    ? waitingListCampaigns[pendingReleaseWaitingListIndex]
+                    : null;
+                if (releasedFromWL) {
+                    newCamp.activities = [{
+                        date: new Date().toISOString().slice(0, 10),
+                        activity: 'Pendaftaran Campaign',
+                        description: `Campaign resmi dirilis dan terdaftar di Monitoring Campaign. Berasal dari pengajuan Waiting List tanggal ${releasedFromWL.submittedDate ? formatDate(releasedFromWL.submittedDate) : '-'}.`,
+                        link: ''
+                    }];
+                }
                 // Uji-coba simpan ke server DULU dengan daftar campaign kandidat (campaign lama +
                 // yang baru). ID baru hanya benar-benar "terdaftar" di aplikasi kalau berhasil
                 // tersimpan - kalau gagal (misal kelebihan ukuran 1MB), ID ini TIDAK ikut tercatat,
@@ -3393,6 +3681,16 @@
                 const candidateList = [newCamp, ...campaigns];
                 const ok = await saveCampaignsToFirestore(candidateList);
                 if (!ok) return;
+
+                // Pengajuan Waiting List-nya dipindahkan (dihapus dari daftar) hanya SETELAH
+                // campaign benar-benar tersimpan di server.
+                if (pendingReleaseWaitingListIndex !== null) {
+                    waitingListCampaigns = waitingListCampaigns.filter((_, i) => i !== pendingReleaseWaitingListIndex);
+                    pendingReleaseWaitingListIndex = null;
+                    currentWaitingListIndex = null;
+                    await saveTab1ToFirestore();
+                    renderWaitingList();
+                }
 
                 window.closeModal('add-modal', 'add-modal-box');
                 delete this.dataset.donasiMasuk;
