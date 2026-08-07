@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Donation Monitor V20.4.26</title>
+    <title>Donation Monitor V21.0.0</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.48 12H2'/%3E%3C/svg%3E">
     <script type="text/javascript">
       // Single Page Apps for GitHub Pages - bagian kedua dari trik di 404.html.
@@ -66,7 +66,65 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800 font-sans pb-10">
+<body class="bg-slate-50 min-h-screen text-slate-800 font-sans pb-10 overflow-hidden">
+
+    <!-- ==========================================================
+         LOGIN SCREEN
+         Menutup seluruh aplikasi sampai user berhasil login.
+         ========================================================== -->
+    <div id="login-screen" class="fixed inset-0 z-[200] bg-gradient-to-br from-slate-100 via-slate-50 to-indigo-50 flex items-center justify-center p-4">
+
+        <!-- State: sedang memeriksa sesi login yang tersimpan -->
+        <div id="login-loading" class="flex flex-col items-center gap-3 text-slate-500">
+            <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+            <p class="text-sm font-medium">Memeriksa sesi login...</p>
+        </div>
+
+        <!-- State: form login -->
+        <div id="login-card" class="hidden w-full max-w-sm bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+            <div class="p-7 pb-5 text-center border-b border-slate-100">
+                <div class="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.48 12H2"/></svg>
+                </div>
+                <h1 class="text-lg font-bold text-slate-800 leading-tight uppercase tracking-tight">Donasi Online Rumah Zakat</h1>
+                <p class="text-xs text-slate-500 mt-1.5">Silakan masuk untuk mengakses dashboard monitoring campaign.</p>
+            </div>
+            <form id="login-form" class="p-6 space-y-4" autocomplete="on">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Username</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </span>
+                        <input type="text" id="login-username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder="admin / pemirsa" class="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </span>
+                        <input type="password" id="login-password" name="password" autocomplete="current-password" required placeholder="Masukkan password" class="w-full pl-9 pr-10 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        <button type="button" onclick="toggleLoginPasswordVisibility()" id="login-password-toggle" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-md transition-colors" aria-label="Tampilkan password">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="login-remember" checked class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                    <label for="login-remember" class="text-xs text-slate-600 select-none cursor-pointer">Tetap masuk di perangkat ini</label>
+                </div>
+                <p id="login-error" class="hidden text-xs text-red-600 font-medium bg-red-50 border border-red-200 rounded-lg px-3 py-2"></p>
+                <button type="submit" id="login-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 disabled:cursor-not-allowed text-white py-2.5 rounded-lg font-semibold text-sm shadow-sm transition-colors flex items-center justify-center gap-2">
+                    <span id="login-submit-label">Masuk</span>
+                </button>
+            </form>
+            <div class="px-6 pb-6">
+                <p class="text-[11px] text-slate-400 text-center leading-relaxed">Akses dibatasi untuk pengguna terdaftar.<br>Hubungi pengelola aplikasi jika lupa password.</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Header / Navbar -->
     <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-30">
@@ -75,15 +133,18 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.48 12H2"/></svg>
                 <div class="flex flex-col">
                     <span class="tracking-tight uppercase leading-none">Donasi Online Rumah Zakat</span>
-                    <span class="text-[10px] opacity-70 tracking-widest mt-1 text-slate-500">VERSION 20.4.26 (Realtime Sync)</span>
+                    <span class="text-[10px] opacity-70 tracking-widest mt-1 text-slate-500">VERSION 21.0.0 (Realtime Sync + Login)</span>
                 </div>
             </h1>
             
             <div class="flex items-center space-x-3">
-                <button id="change-pin-btn" onclick="openModalAnimation('change-pin-modal', 'change-pin-box')" class="hidden text-[11px] text-slate-400 hover:text-indigo-600 underline transition-colors">Ganti PIN</button>
-                <button id="admin-toggle-btn" onclick="handleAdminToggleClick()" class="flex items-center gap-1.5 text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-300 px-3 py-1.5 rounded-full transition-all font-bold uppercase tracking-wider">
-                    <svg xmlns="http://www.w3.org/2000/svg" id="admin-toggle-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    <span id="admin-toggle-label">Mode Pemirsa</span>
+                <div id="user-badge" class="flex items-center gap-1.5 text-[11px] bg-slate-100 text-slate-600 border border-slate-300 px-3 py-1.5 rounded-full font-bold uppercase tracking-wider">
+                    <svg xmlns="http://www.w3.org/2000/svg" id="user-badge-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <span id="user-badge-label">Pemirsa</span>
+                </div>
+                <button id="logout-btn" onclick="handleLogout()" title="Keluar dari aplikasi" class="flex items-center gap-1.5 text-[11px] bg-white hover:bg-red-50 text-slate-500 hover:text-red-600 border border-slate-300 hover:border-red-300 px-3 py-1.5 rounded-full transition-all font-bold uppercase tracking-wider">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                    <span>Keluar</span>
                 </button>
                 <div id="lastUpdate" class="text-xs text-slate-500 font-medium px-2 py-1 rounded-md transition-colors duration-300">Menyambungkan ke Server...</div>
             </div>
@@ -993,60 +1054,6 @@
         </div>
     </div>
 
-    <!-- Modal Admin PIN Login -->
-    <div id="admin-pin-modal" class="fixed inset-0 z-[130] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="admin-pin-box">
-            <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
-                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    Masuk Mode Admin
-                </h3>
-                <button onclick="closeModal('admin-pin-modal', 'admin-pin-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </button>
-            </div>
-            <form id="admin-pin-form" class="flex flex-col">
-                <div class="p-6 space-y-3">
-                    <p class="text-sm text-slate-500">Masukkan PIN Admin untuk mengaktifkan fitur Edit dan Hapus. Tanpa PIN, Anda hanya dapat melihat data.</p>
-                    <input type="password" id="admin-pin-input" inputmode="numeric" autocomplete="off" placeholder="Masukkan PIN" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm text-center tracking-[0.3em] font-semibold">
-                    <p id="admin-pin-error" class="hidden text-xs text-red-600 font-medium">PIN salah, silakan coba lagi.</p>
-                </div>
-                <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl">
-                    <button type="button" onclick="closeModal('admin-pin-modal', 'admin-pin-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Masuk</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal Ganti PIN Admin -->
-    <div id="change-pin-modal" class="fixed inset-0 z-[130] bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center opacity-0 transition-opacity duration-300 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="change-pin-box">
-            <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
-                <h3 class="text-lg font-bold text-slate-800">Ganti PIN Admin</h3>
-                <button onclick="closeModal('change-pin-modal', 'change-pin-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </button>
-            </div>
-            <form id="change-pin-form" class="flex flex-col">
-                <div class="p-6 space-y-3">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">PIN Baru *</label>
-                        <input type="password" id="new-pin-input" required minlength="4" inputmode="numeric" autocomplete="off" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm text-center tracking-[0.3em] font-semibold">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Ulangi PIN Baru *</label>
-                        <input type="password" id="confirm-pin-input" required minlength="4" inputmode="numeric" autocomplete="off" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm text-center tracking-[0.3em] font-semibold">
-                    </div>
-                    <p class="text-xs text-slate-500">Minimal 4 digit/karakter. Jangan lupa PIN barunya, ya!</p>
-                </div>
-                <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl">
-                    <button type="button" onclick="closeModal('change-pin-modal', 'change-pin-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium text-sm">Simpan PIN Baru</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- Modal Filter Campaign -->
     <!-- Modal Tambah Waiting List -->
@@ -1237,7 +1244,7 @@
     <!-- Script menggunakan ES Module agar bisa mengimpor Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Konfigurasi dari Anda (Hardcoded agar bekerja sempurna di GitHub Pages)
@@ -1270,8 +1277,44 @@
         let campaignFilters = { department: '', status: '', dokumen: '', tanggalStart: '', tanggalEnd: '', capaianMin: '', capaianMax: '' };
         let waitingListCampaigns = []; // Pengajuan campaign yang masih dalam proses persiapan (belum rilis)
         let currentWaitingListIndex = null;
-        let isAdminMode = false;
-        let appPin = '123123'; // PIN default, bisa diganti admin lewat menu "Ganti PIN"
+        let isAdminMode = false;   // true kalau user yang login berperan Admin
+        let currentRole = null;    // 'admin' | 'viewer' | null (belum login)
+
+        // ==========================================================
+        // DIREKTORI USER
+        // ----------------------------------------------------------
+        // Aplikasi memakai Firebase Authentication (Email/Password) supaya password
+        // TIDAK pernah disimpan di dalam file HTML ini. Yang ada di sini hanyalah
+        // pemetaan "username yang diketik user" -> "email akun Firebase"-nya,
+        // supaya user cukup mengetik username pendek, bukan alamat email.
+        //
+        // LANGKAH SETUP (sekali saja, di Firebase Console project donasi-online-erzet):
+        //   1. Authentication > Sign-in method > aktifkan "Email/Password".
+        //      (Provider "Anonymous" sebaiknya DIMATIKAN agar tidak ada jalan masuk lain.)
+        //   2. Authentication > Users > Add user, buat 2 akun berikut:
+        //        - admin@donasi-erzet.local      (password bebas, min. 6 karakter)
+        //        - pemirsa@donasi-erzet.local    (password bebas, min. 6 karakter)
+        //   3. Salin UID akun admin, lalu tempelkan ke ADMIN_UIDS di bawah
+        //      DAN ke Firestore Rules (lihat catatan di bawah blok ini).
+        //   4. Untuk ganti password: Firebase Console > Authentication > Users >
+        //      titik tiga di baris user > "Reset password" / atur ulang.
+        const USER_DIRECTORY = {
+            'admin':   { email: 'admin@donasi-erzet.local',   role: 'admin',  label: 'Admin'   },
+            'pemirsa': { email: 'pemirsa@donasi-erzet.local', role: 'viewer', label: 'Pemirsa' }
+        };
+
+        // UID akun Admin dari Firebase Console. WAJIB diisi & disamakan dengan Firestore Rules.
+        // Selama masih kosong, aplikasi jatuh ke pencocokan lewat email (kurang ketat, tapi tetap jalan).
+        const ADMIN_UIDS = [
+            // 'ganti-dengan-UID-akun-admin-dari-Firebase-Console'
+        ];
+
+        function resolveRole(user) {
+            if (!user) return null;
+            if (ADMIN_UIDS.length > 0) return ADMIN_UIDS.includes(user.uid) ? 'admin' : 'viewer';
+            const entry = Object.values(USER_DIRECTORY).find(u => u.email.toLowerCase() === (user.email || '').toLowerCase());
+            return entry ? entry.role : 'viewer';
+        }
         let activityEditContext = null; // { campaignId, index, fromLog } - dipakai bersama oleh kartu campaign & Log Activity
         let campaigns = [];
         let progdistCampaigns = [];
@@ -1313,54 +1356,142 @@
         // ==========================================
         // MENGAKTIFKAN OTENTIKASI & LISTENER
         // ==========================================
-        const initAuth = async () => {
+        function showLoginScreen(showForm) {
+            const screen = document.getElementById('login-screen');
+            const loading = document.getElementById('login-loading');
+            const card = document.getElementById('login-card');
+            if (!screen) return;
+            screen.classList.remove('hidden');
+            screen.classList.add('flex');
+            document.body.classList.add('overflow-hidden');
+            if (showForm) {
+                loading?.classList.add('hidden');
+                card?.classList.remove('hidden');
+                setTimeout(() => document.getElementById('login-username')?.focus(), 100);
+            } else {
+                card?.classList.add('hidden');
+                loading?.classList.remove('hidden');
+            }
+        }
+
+        function hideLoginScreen() {
+            const screen = document.getElementById('login-screen');
+            if (!screen) return;
+            screen.classList.add('hidden');
+            screen.classList.remove('flex');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        function setLoginError(msg) {
+            const el = document.getElementById('login-error');
+            if (!el) return;
+            if (!msg) { el.classList.add('hidden'); el.innerText = ''; return; }
+            el.innerText = msg;
+            el.classList.remove('hidden');
+        }
+
+        function setLoginBusy(busy) {
+            const btn = document.getElementById('login-submit-btn');
+            const label = document.getElementById('login-submit-label');
+            if (btn) btn.disabled = busy;
+            if (label) label.innerText = busy ? 'Memproses...' : 'Masuk';
+        }
+
+        window.toggleLoginPasswordVisibility = function() {
+            const input = document.getElementById('login-password');
+            if (!input) return;
+            input.type = input.type === 'password' ? 'text' : 'password';
+            input.focus();
+        };
+
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            setLoginError('');
+            const rawUser = (document.getElementById('login-username').value || '').trim().toLowerCase();
+            const password = document.getElementById('login-password').value || '';
+            if (!rawUser || !password) { setLoginError('Username dan password wajib diisi.'); return; }
+
+            // Username boleh diketik pendek ("admin") atau langsung emailnya.
+            const entry = USER_DIRECTORY[rawUser];
+            const email = entry ? entry.email : (rawUser.includes('@') ? rawUser : null);
+            if (!email) { setLoginError('Username tidak dikenali.'); return; }
+
+            setLoginBusy(true);
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
+                const remember = document.getElementById('login-remember')?.checked;
+                await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
+                await signInWithEmailAndPassword(auth, email, password);
+                document.getElementById('login-password').value = '';
+                // Sisanya ditangani oleh onAuthStateChanged.
+            } catch (err) {
+                console.error('Login gagal:', err);
+                const code = err?.code || '';
+                let msg = 'Gagal masuk. Coba lagi beberapa saat.';
+                if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+                    msg = 'Username atau password salah.';
+                } else if (code === 'auth/too-many-requests') {
+                    msg = 'Terlalu banyak percobaan gagal. Tunggu beberapa menit lalu coba lagi.';
+                } else if (code === 'auth/network-request-failed') {
+                    msg = 'Koneksi ke server gagal. Cek internet / nonaktifkan ad-blocker.';
+                } else if (code === 'auth/user-disabled') {
+                    msg = 'Akun ini dinonaktifkan oleh pengelola.';
+                } else if (code === 'auth/operation-not-allowed') {
+                    msg = 'Login Email/Password belum diaktifkan di Firebase Console.';
                 }
-            } catch (error) {
-                console.error("Firebase Auth Error:", error);
-                const updateEl = document.getElementById('lastUpdate');
-                if (updateEl) {
-                    updateEl.classList.remove('text-slate-500');
-                    updateEl.classList.add('text-red-500', 'font-bold');
-                    updateEl.innerText = "Error: Cek Konsol Firebase";
-                }
+                setLoginError(msg);
+            } finally {
+                setLoginBusy(false);
+            }
+        }
+
+        window.handleLogout = async function() {
+            if (!confirm('Keluar dari aplikasi?')) return;
+            try {
+                await signOut(auth);
+                // Reload supaya seluruh state (data, mode admin, modal terbuka) benar-benar bersih.
+                window.location.reload();
+            } catch (e) {
+                console.error('Gagal logout:', e);
+                alert('Gagal keluar. Coba lagi.');
             }
         };
 
-        initAuth();
-
-        // Jika dalam 15 detik koneksi/otentikasi ke Firebase belum juga berhasil (misalnya karena
-        // internet lambat, domain Firebase terblokir ad-blocker/ekstensi, atau konfigurasi project
-        // bermasalah), tampilkan pesan yang jelas alih-alih "Menyambungkan ke Server..." selamanya.
+        // Kalau dalam 12 detik Firebase belum juga menjawab (internet lambat, domain Firebase
+        // diblokir ad-blocker/ekstensi, atau Email/Password belum diaktifkan), jangan biarkan
+        // user terjebak di layar "Memeriksa sesi login..." selamanya - tampilkan form + peringatan.
+        let authStateResolved = false;
         setTimeout(() => {
-            if (!isFirebaseInitialized) {
-                const updateEl = document.getElementById('lastUpdate');
-                if (updateEl) {
-                    updateEl.classList.remove('text-slate-500', 'text-emerald-600');
-                    updateEl.classList.add('text-red-500', 'font-bold');
-                    updateEl.innerText = "Gagal terhubung ke Server (Timeout). Cek koneksi internet / nonaktifkan ad-blocker, lalu refresh.";
-                }
-                console.error("Firebase auth timeout: onAuthStateChanged tidak pernah menerima user setelah 15 detik. Cek console untuk error lain, koneksi internet, ad-blocker/ekstensi browser, atau pengaturan Firebase (Anonymous Auth harus aktif).");
+            if (!authStateResolved) {
+                showLoginScreen(true);
+                setLoginError('Koneksi ke server autentikasi lambat atau terblokir. Cek internet Anda, nonaktifkan ad-blocker/ekstensi, lalu muat ulang halaman.');
+                console.error('Firebase Auth timeout: onAuthStateChanged belum menjawab setelah 12 detik.');
             }
-        }, 15000);
+        }, 12000);
 
         onAuthStateChanged(auth, (user) => {
-            if (user && !isFirebaseInitialized) {
+            authStateResolved = true;
+            if (user) {
                 currentUser = user;
-                isFirebaseInitialized = true;
-                
-                const updateEl = document.getElementById('lastUpdate');
-                if (updateEl) {
-                    updateEl.classList.remove('text-red-500');
-                    updateEl.classList.add('text-emerald-600', 'font-bold');
-                    updateEl.innerText = "Menarik Data dari Server...";
-                }
+                currentRole = resolveRole(user);
+                isAdminMode = (currentRole === 'admin');
+                hideLoginScreen();
+                updateAdminUI();
 
-                setupFirestoreListeners();
+                if (!isFirebaseInitialized) {
+                    isFirebaseInitialized = true;
+                    const updateEl = document.getElementById('lastUpdate');
+                    if (updateEl) {
+                        updateEl.classList.remove('text-red-500');
+                        updateEl.classList.add('text-emerald-600', 'font-bold');
+                        updateEl.innerText = "Menarik Data dari Server...";
+                    }
+                    setupFirestoreListeners();
+                }
+            } else {
+                currentUser = null;
+                currentRole = null;
+                isAdminMode = false;
+                showLoginScreen(true);
             }
         });
 
@@ -1376,7 +1507,6 @@
                     otherActivities = data.otherActivities || [];
                     waitingListCampaigns = data.waitingListCampaigns || [];
                     donasiPeriodText = data.donasiPeriodText || "";
-                    appPin = data.pin || '123123';
                     
                     const st = data.lastUpdate;
                     const updateEl = document.getElementById('lastUpdate');
@@ -1447,7 +1577,6 @@
                     otherActivities,
                     waitingListCampaigns,
                     donasiPeriodText,
-                    pin: appPin,
                     lastUpdate: new Date().toISOString()
                 });
             } catch (e) { console.error("Error saving data", e); }
@@ -1543,25 +1672,26 @@
         // ADMIN PIN MODE (proteksi Edit & Hapus)
         // ==========================================
         function updateAdminUI() {
-            const btn = document.getElementById('admin-toggle-btn');
-            const icon = document.getElementById('admin-toggle-icon');
-            const label = document.getElementById('admin-toggle-label');
-            const changePinBtn = document.getElementById('change-pin-btn');
+            const badge = document.getElementById('user-badge');
+            const icon = document.getElementById('user-badge-icon');
+            const label = document.getElementById('user-badge-label');
             const importBtn = document.getElementById('import-recovery-btn');
-            if (isAdminMode) {
-                btn.classList.remove('bg-slate-100', 'hover:bg-slate-200', 'text-slate-600', 'border-slate-300');
-                btn.classList.add('bg-emerald-50', 'hover:bg-emerald-100', 'text-emerald-700', 'border-emerald-300');
-                icon.innerHTML = '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>';
-                label.innerText = 'Mode Admin';
-                changePinBtn.classList.remove('hidden');
-                if (importBtn) { importBtn.classList.remove('hidden'); importBtn.classList.add('flex'); }
-            } else {
-                btn.classList.add('bg-slate-100', 'hover:bg-slate-200', 'text-slate-600', 'border-slate-300');
-                btn.classList.remove('bg-emerald-50', 'hover:bg-emerald-100', 'text-emerald-700', 'border-emerald-300');
-                icon.innerHTML = '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
-                label.innerText = 'Mode Pemirsa';
-                changePinBtn.classList.add('hidden');
-                if (importBtn) { importBtn.classList.add('hidden'); importBtn.classList.remove('flex'); }
+            if (badge && icon && label) {
+                if (isAdminMode) {
+                    badge.classList.remove('bg-slate-100', 'text-slate-600', 'border-slate-300');
+                    badge.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
+                    icon.innerHTML = '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>';
+                    label.innerText = 'Admin';
+                } else {
+                    badge.classList.add('bg-slate-100', 'text-slate-600', 'border-slate-300');
+                    badge.classList.remove('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
+                    icon.innerHTML = '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
+                    label.innerText = currentRole ? 'Pemirsa' : '-';
+                }
+            }
+            if (importBtn) {
+                if (isAdminMode) { importBtn.classList.remove('hidden'); importBtn.classList.add('flex'); }
+                else { importBtn.classList.add('hidden'); importBtn.classList.remove('flex'); }
             }
             // Refresh tampilan yang memuat tombol Edit/Hapus
             renderCampaigns();
@@ -1583,32 +1713,13 @@
             }
         }
 
-        window.handleAdminToggleClick = function() {
-            if (isAdminMode) {
-                if (confirm('Keluar dari Mode Admin? Tombol Edit dan Hapus akan disembunyikan lagi.')) {
-                    isAdminMode = false;
-                    sessionStorage.removeItem('isAdminMode');
-                    updateAdminUI();
-                }
-            } else {
-                document.getElementById('admin-pin-input').value = '';
-                document.getElementById('admin-pin-error').classList.add('hidden');
-                window.openModalAnimation('admin-pin-modal', 'admin-pin-box');
-                setTimeout(() => document.getElementById('admin-pin-input')?.focus(), 350);
-            }
-        };
-
-        // Dipanggil oleh tombol Edit/Hapus manapun sebelum menjalankan aksinya. Jika belum
-        // Admin, munculkan form PIN dan tahan aksinya sampai PIN benar dimasukkan.
+        // Dipanggil oleh tombol Edit/Hapus manapun sebelum menjalankan aksinya.
+        // Hak akses sekarang melekat pada akun yang login, jadi tidak ada lagi "naik level"
+        // di tengah sesi: akun Pemirsa harus logout dan login sebagai Admin.
         function requireAdmin(action) {
             if (isAdminMode) { action(); return; }
-            pendingAdminAction = action;
-            document.getElementById('admin-pin-input').value = '';
-            document.getElementById('admin-pin-error').classList.add('hidden');
-            window.openModalAnimation('admin-pin-modal', 'admin-pin-box');
-            setTimeout(() => document.getElementById('admin-pin-input')?.focus(), 350);
+            alert('Anda masuk sebagai Pemirsa dan hanya bisa melihat data.\n\nUntuk mengubah atau menghapus data, keluar dulu lalu masuk kembali menggunakan akun Admin.');
         }
-        let pendingAdminAction = null;
 
         window.switchTab = function(tabId, urlMode) {
             document.getElementById('tab-ringkasan').className = tabId === 'ringkasan' ? 'tab-btn active' : 'tab-btn';
@@ -3064,42 +3175,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             applyRoute(); // buka menu/campaign sesuai URL saat halaman pertama kali dimuat
 
-            // Pulihkan status Mode Admin selama tab browser masih terbuka (hilang saat ditutup)
-            if (sessionStorage.getItem('isAdminMode') === '1') { isAdminMode = true; }
             updateAdminUI();
 
-            document.getElementById('admin-pin-form')?.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const entered = document.getElementById('admin-pin-input').value;
-                if (entered === appPin) {
-                    isAdminMode = true;
-                    sessionStorage.setItem('isAdminMode', '1');
-                    window.closeModal('admin-pin-modal', 'admin-pin-box');
-                    updateAdminUI();
-                    if (pendingAdminAction) {
-                        const action = pendingAdminAction;
-                        pendingAdminAction = null;
-                        setTimeout(action, 350);
-                    }
-                } else {
-                    document.getElementById('admin-pin-error').classList.remove('hidden');
-                    document.getElementById('admin-pin-input').value = '';
-                    document.getElementById('admin-pin-input').focus();
-                }
-            });
-
-            document.getElementById('change-pin-form')?.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const newPin = document.getElementById('new-pin-input').value;
-                const confirmPin = document.getElementById('confirm-pin-input').value;
-                if (newPin !== confirmPin) { alert('PIN baru dan konfirmasi PIN tidak sama.'); return; }
-                if (newPin.length < 4) { alert('PIN minimal 4 digit/karakter.'); return; }
-                appPin = newPin;
-                await saveTab1ToFirestore();
-                window.closeModal('change-pin-modal', 'change-pin-box');
-                this.reset();
-                alert('PIN Admin berhasil diubah.');
-            });
+            document.getElementById('login-form')?.addEventListener('submit', handleLoginSubmit);
 
             document.getElementById('fileInputDonasi')?.addEventListener('change', (e) => handleExcel(e, 'donasi'));
             document.getElementById('fileInputTransaksi')?.addEventListener('change', (e) => handleExcel(e, 'transaksi'));
@@ -3358,7 +3436,7 @@
         }
 
         window.addEventListener('click', function(e) {
-            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'delete-modal', 'upload-donasi-modal', 'progdist-modal', 'admin-pin-modal', 'change-pin-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'filter-campaign-modal', 'import-recovery-modal'];
+            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'delete-modal', 'upload-donasi-modal', 'progdist-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'filter-campaign-modal', 'import-recovery-modal'];
             modals.forEach(id => { 
                 if (e.target === document.getElementById(id)) {
                     window.closeModal(id, getBoxIdFor(id)); 
@@ -3368,7 +3446,7 @@
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                const arr = ['delete-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'admin-pin-modal', 'change-pin-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'filter-campaign-modal', 'import-recovery-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'progdist-modal'];
+                const arr = ['delete-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'filter-campaign-modal', 'import-recovery-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'progdist-modal'];
                 for (const id of arr) { 
                     const el = document.getElementById(id); 
                     if (el && !el.classList.contains('hidden')) { 
