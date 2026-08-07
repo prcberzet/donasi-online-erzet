@@ -1292,21 +1292,22 @@
         //   1. Authentication > Sign-in method > aktifkan "Email/Password".
         //      (Provider "Anonymous" sebaiknya DIMATIKAN agar tidak ada jalan masuk lain.)
         //   2. Authentication > Users > Add user, buat 2 akun berikut:
-        //        - admin@donasi-erzet.local      (password bebas, min. 6 karakter)
-        //        - pemirsa@donasi-erzet.local    (password bebas, min. 6 karakter)
+        //        - prcb@admin.erzet              -> akun Admin   (username ketik: admin)
+        //        - pemirsa@donasi-erzet.local    -> akun Pemirsa (username ketik: pemirsa)
+        //      Kalau email akun Pemirsa mau diganti, ubah juga di USER_DIRECTORY di bawah.
         //   3. Salin UID akun admin, lalu tempelkan ke ADMIN_UIDS di bawah
         //      DAN ke Firestore Rules (lihat catatan di bawah blok ini).
         //   4. Untuk ganti password: Firebase Console > Authentication > Users >
         //      titik tiga di baris user > "Reset password" / atur ulang.
         const USER_DIRECTORY = {
-            'admin':   { email: 'admin@donasi-erzet.local',   role: 'admin',  label: 'Admin'   },
+            'admin':   { email: 'prcb@admin.erzet',           role: 'admin',  label: 'Admin'   },
             'pemirsa': { email: 'pemirsa@donasi-erzet.local', role: 'viewer', label: 'Pemirsa' }
         };
 
         // UID akun Admin dari Firebase Console. WAJIB diisi & disamakan dengan Firestore Rules.
         // Selama masih kosong, aplikasi jatuh ke pencocokan lewat email (kurang ketat, tapi tetap jalan).
         const ADMIN_UIDS = [
-            // 'ganti-dengan-UID-akun-admin-dari-Firebase-Console'
+            'iEPAI8mzP4ehcQyPlp11UVx7MNl2'
         ];
 
         function resolveRole(user) {
