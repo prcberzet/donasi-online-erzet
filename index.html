@@ -1301,7 +1301,7 @@
         //      titik tiga di baris user > "Reset password" / atur ulang.
         const USER_DIRECTORY = {
             'admin':   { email: 'prcb@admin.erzet',           role: 'admin',  label: 'Admin'   },
-            'viewer': { email: 'sahabat.amil@er.zet', role: 'viewer', label: 'Viewer' }
+            'sahabatamil': { email: 'sahabat.amil@er.zet', role: 'sahabatamil', label: 'Viewer' }
         };
 
         // UID akun Admin dari Firebase Console. WAJIB diisi & disamakan dengan Firestore Rules.
@@ -1312,7 +1312,7 @@
 
         function resolveRole(user) {
             if (!user) return null;
-            if (ADMIN_UIDS.length > 0) return ADMIN_UIDS.includes(user.uid) ? 'admin' : 'viewer';
+            if (ADMIN_UIDS.length > 0) return ADMIN_UIDS.includes(user.uid) ? 'admin' : 'sahabatamil';
             const entry = Object.values(USER_DIRECTORY).find(u => u.email.toLowerCase() === (user.email || '').toLowerCase());
             return entry ? entry.role : 'viewer';
         }
