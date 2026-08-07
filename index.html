@@ -1196,8 +1196,9 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-600"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                         Kelengkapan Asset
                     </h4>
+                    <div id="wl-asset-summary" class="mb-4"></div>
                     <div id="wl-asset-checklist" class="space-y-2"></div>
-                    <p id="wl-viewer-note" class="hidden text-xs text-slate-400 italic mt-3">Centang asset terisi otomatis dari link yang diinput. Hanya akun Admin yang dapat mengubahnya.</p>
+                    <p id="wl-viewer-note" class="hidden text-xs text-slate-400 italic mt-3">Asset hanya terhitung terpenuhi jika linknya sudah diinput. Tanggal input tercatat otomatis saat link pertama kali disimpan.</p>
                 </div>
             </div>
             <div class="p-4 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 rounded-b-2xl">
@@ -2446,14 +2447,33 @@
             return (entry.assetLinks && entry.assetLinks[item.key]) || '';
         }
 
+        // Asset dianggap terpenuhi HANYA kalau linknya sudah diinput.
+        // (Centang manual dari versi lama sengaja tidak lagi dipakai supaya
+        // status kelengkapan selalu bisa ditelusuri ke link yang nyata.)
         function wlAssetDone(entry, item) {
-            if (wlAssetLink(entry, item)) return true;
-            return !!(entry.assets && entry.assets[item.legacyKey]); // kompatibilitas data lama
+            return !!wlAssetLink(entry, item);
+        }
+
+        // Tanggal link asset ini pertama kali diinput.
+        function wlAssetDate(entry, item) {
+            return (entry.assetDates && entry.assetDates[item.key]) || '';
         }
 
         function getWaitingListProgress(entry) {
             const done = WL_ASSET_ITEMS.filter(item => wlAssetDone(entry, item)).length;
-            return { done, total: WL_ASSET_ITEMS.length };
+            const total = WL_ASSET_ITEMS.length;
+            return { done, total, ratio: total ? done / total : 0 };
+        }
+
+        // Skala warna kelengkapan asset: makin lengkap makin "hangat ke hijau".
+        // Dipakai bersama oleh tabel Waiting List dan modal detail agar konsisten.
+        function wlScale(ratio) {
+            if (ratio >= 1)    return { bar: 'bg-emerald-500', text: 'text-emerald-700', chip: 'bg-emerald-50 text-emerald-700 border-emerald-200', label: 'Lengkap' };
+            if (ratio >= 0.8)  return { bar: 'bg-lime-500',    text: 'text-lime-700',    chip: 'bg-lime-50 text-lime-700 border-lime-200',          label: 'Hampir Lengkap' };
+            if (ratio >= 0.6)  return { bar: 'bg-amber-400',   text: 'text-amber-700',   chip: 'bg-amber-50 text-amber-700 border-amber-200',       label: 'Cukup' };
+            if (ratio >= 0.4)  return { bar: 'bg-orange-400',  text: 'text-orange-700',  chip: 'bg-orange-50 text-orange-700 border-orange-200',    label: 'Kurang' };
+            if (ratio > 0)     return { bar: 'bg-rose-400',    text: 'text-rose-700',    chip: 'bg-rose-50 text-rose-700 border-rose-200',          label: 'Sangat Kurang' };
+            return               { bar: 'bg-slate-300',  text: 'text-slate-500',   chip: 'bg-slate-50 text-slate-500 border-slate-200',       label: 'Belum Ada' };
         }
 
         const wlEscape = (t) => String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -2490,8 +2510,8 @@
 
             tbody.innerHTML = '';
             waitingListCampaigns.forEach((entry, index) => {
-                const { done, total } = getWaitingListProgress(entry);
-                const complete = done === total;
+                const { done, total, ratio } = getWaitingListProgress(entry);
+                const sc = wlScale(ratio);
                 const pType = wlParticipantType(entry);
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-amber-50/60 transition-colors cursor-pointer";
@@ -2505,9 +2525,9 @@
                     <td class="px-5 py-3 whitespace-nowrap">
                         <div class="flex items-center gap-2">
                             <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                <div class="h-full ${complete ? 'bg-emerald-500' : 'bg-amber-400'}" style="width:${(done/total*100)}%"></div>
+                                <div class="h-full ${sc.bar} transition-all" style="width:${(ratio * 100)}%"></div>
                             </div>
-                            <span class="text-xs font-semibold ${complete ? 'text-emerald-600' : 'text-amber-600'}">${done}/${total}</span>
+                            <span class="text-xs font-semibold ${sc.text}">${done}/${total}</span>
                         </div>
                     </td>`;
                 tbody.appendChild(tr);
@@ -2618,18 +2638,38 @@
             const viewerNote = document.getElementById('wl-viewer-note');
             if (viewerNote) viewerNote.classList.remove('hidden');
 
+            const prog = getWaitingListProgress(entry);
+            const sc = wlScale(prog.ratio);
+            const summaryEl = document.getElementById('wl-asset-summary');
+            if (summaryEl) {
+                summaryEl.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold ${sc.text}">${prog.done} dari ${prog.total} asset terpenuhi</span>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full border ${sc.chip}">${sc.label}</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full ${sc.bar} transition-all" style="width:${(prog.ratio * 100)}%"></div>
+                    </div>`;
+            }
+
             document.getElementById('wl-asset-checklist').innerHTML = WL_ASSET_ITEMS.map(item => {
                 const link = wlAssetLink(entry, item);
                 const done = wlAssetDone(entry, item);
+                const inputDate = wlAssetDate(entry, item);
                 return `
-                <div class="flex items-center gap-3 p-3 rounded-lg border ${done ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-slate-50'}">
-                    <span class="${done ? 'text-emerald-500' : 'text-slate-300'}">
+                <div class="flex items-start gap-3 p-3 rounded-lg border ${done ? 'border-emerald-200 bg-emerald-50/70' : 'border-dashed border-slate-300 bg-slate-50'}">
+                    <span class="mt-0.5 ${done ? 'text-emerald-500' : 'text-slate-300'}">
                         ${done
                             ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.7-9.3a1 1 0 00-1.4-1.4L9 10.6 7.7 9.3a1 1 0 10-1.4 1.4l2 2a1 1 0 001.4 0l3-3z" clip-rule="evenodd"/></svg>'
-                            : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>'}
+                            : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" stroke-dasharray="3 3"/></svg>'}
                     </span>
                     <div class="min-w-0 flex-1">
-                        <p class="text-sm font-medium ${done ? 'text-emerald-800' : 'text-slate-600'}">${wlEscape(item.label)}</p>
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                            <p class="text-sm font-medium ${done ? 'text-emerald-800' : 'text-slate-500'}">${wlEscape(item.label)}</p>
+                            ${done
+                                ? `<span class="text-[11px] font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full whitespace-nowrap">Diinput ${inputDate ? formatDate(inputDate) : 'tanggal tidak tercatat'}</span>`
+                                : '<span class="text-[11px] font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full whitespace-nowrap">Belum diinput</span>'}
+                        </div>
                         ${link
                             ? `<a href="${wlEscape(link)}" target="_blank" rel="noopener" class="text-xs text-indigo-600 hover:text-indigo-800 underline break-all">Buka link</a>`
                             : '<p class="text-xs text-slate-400 italic">Link belum diinput</p>'}
@@ -3463,9 +3503,19 @@
                 e.preventDefault();
                 if (!isAdminMode) { requireAdmin(() => {}); return; }
 
+                const existing = (editingWaitingListIndex !== null && waitingListCampaigns[editingWaitingListIndex]) || {};
+                const today = new Date().toISOString().slice(0, 10);
                 const assetLinks = {};
+                const assetDates = { ...(existing.assetDates || {}) };
                 WL_ASSET_ITEMS.forEach(item => {
-                    assetLinks[item.key] = (document.getElementById(item.fieldId)?.value || '').trim();
+                    const value = (document.getElementById(item.fieldId)?.value || '').trim();
+                    assetLinks[item.key] = value;
+                    const previous = (existing.assetLinks && existing.assetLinks[item.key]) || '';
+                    if (!value) {
+                        delete assetDates[item.key];              // link dihapus -> tanggalnya ikut hilang
+                    } else if (!previous || value !== previous || !assetDates[item.key]) {
+                        assetDates[item.key] = today;             // link baru / diganti -> catat tanggal input
+                    }
                 });
 
                 const data = {
@@ -3477,7 +3527,8 @@
                     location: document.getElementById('wl-location').value.trim(),
                     department: document.getElementById('wl-department').value,
                     address: document.getElementById('wl-address').value.trim(),
-                    assetLinks: assetLinks
+                    assetLinks: assetLinks,
+                    assetDates: assetDates
                 };
 
                 if (editingWaitingListIndex !== null && waitingListCampaigns[editingWaitingListIndex]) {
