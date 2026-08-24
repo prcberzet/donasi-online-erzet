@@ -2871,6 +2871,32 @@
             { key: 'selesai',  label: 'Selesai',                            fields: [] }
         ];
 
+        // Nilai isian tiap tahap, dipakai di preview checklist (kolom kanan).
+        // Mengembalikan array {label, value, link} - link diisi kalau nilainya berupa URL.
+        function penyaluranStageValues(stage, data) {
+            if (stage.key === 'timeline') {
+                const items = getTimelineItems(data);
+                if (!items.length) return [];
+                return [{ label: 'Timeline', value: `${items.length} tanggal & target`, link: '' }];
+            }
+            if (stage.key === 'kroscek') {
+                return [
+                    { label: 'Data PM', value: data.dataPM ? 'Ada' : 'Belum', link: '' },
+                    { label: 'BA',      value: data.ba     ? 'Ada' : 'Belum', link: '' },
+                    { label: 'CA',      value: data.ca     ? 'Ada' : 'Belum', link: '' }
+                ];
+            }
+            return stage.fields.map(f => {
+                const raw = data[f.key];
+                if (raw === '' || raw === undefined || raw === null) return null;
+                let value;
+                if (f.type === 'number') value = formatter.format(raw);
+                else if (f.type === 'date') value = formatDate(raw);
+                else value = String(raw);
+                return { label: f.label, value: value, link: f.type === 'url' ? String(raw) : '' };
+            }).filter(Boolean);
+        }
+
         // Ringkasan isi tiap tahap untuk ditampilkan di Riwayat Aktivitas / Progress.
         function penyaluranStageSummary(stageKey, data) {
             switch (stageKey) {
@@ -3193,16 +3219,27 @@
                         const data = stages[stage.key] || {};
                         const isDone = !!data.done;
                         const isActive = i === activeIdx;
+                        const values = penyaluranStageValues(stage, data);
                         return `
-                        <div class="flex items-center gap-3 py-2 ${i ? 'border-t border-slate-100' : ''}">
-                            <span class="${isDone ? 'text-emerald-500' : (isActive ? 'text-teal-500' : 'text-slate-300')} shrink-0">
+                        <div class="flex items-start gap-3 py-2.5 ${i ? 'border-t border-slate-100' : ''}">
+                            <span class="${isDone ? 'text-emerald-500' : (isActive ? 'text-teal-500' : 'text-slate-300')} shrink-0 mt-px">
                                 ${isDone
                                     ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.7-9.3a1 1 0 00-1.4-1.4L9 10.6 7.7 9.3a1 1 0 10-1.4 1.4l2 2a1 1 0 001.4 0l3-3z" clip-rule="evenodd"/></svg>'
                                     : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" stroke-dasharray="3 3"/></svg>'}
                             </span>
-                            <p class="text-sm flex-1 min-w-0 ${isDone ? 'text-slate-800 font-medium' : (isActive ? 'text-slate-700' : 'text-slate-400')}">
+                            <p class="text-sm w-52 shrink-0 ${isDone ? 'text-slate-800 font-medium' : (isActive ? 'text-slate-700' : 'text-slate-400')}">
                                 <span class="text-xs font-mono text-slate-400 mr-1">${i + 1}.</span>${wlEscape(stage.label)}
                             </p>
+                            <div class="flex-1 min-w-0 border-l border-slate-200 pl-3">
+                                ${values.length
+                                    ? values.map(v => `<p class="text-xs text-slate-600 leading-relaxed truncate">
+                                            <span class="text-slate-400">${wlEscape(v.label)}:</span>
+                                            ${v.link
+                                                ? `<a href="${wlEscape(v.link)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="text-indigo-600 hover:text-indigo-800 underline font-medium">Buka link</a>`
+                                                : `<span class="text-slate-800 font-medium">${wlEscape(v.value)}</span>`}
+                                        </p>`).join('')
+                                    : '<p class="text-xs text-slate-300 italic">Belum ada isian</p>'}
+                            </div>
                             ${isDone
                                 ? `<span class="text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full whitespace-nowrap shrink-0">${data.date ? formatDate(data.date) : 'Selesai'}</span>`
                                 : (isActive
