@@ -2880,11 +2880,11 @@
                 return [{ label: 'Timeline', value: `${items.length} tanggal & target`, link: '' }];
             }
             if (stage.key === 'kroscek') {
-                return [
-                    { label: 'Data PM', value: data.dataPM ? 'Ada' : 'Belum', link: '' },
-                    { label: 'BA',      value: data.ba     ? 'Ada' : 'Belum', link: '' },
-                    { label: 'CA',      value: data.ca     ? 'Ada' : 'Belum', link: '' }
-                ];
+                // Cukup sebutkan yang sudah tercentang - kalau belum ada, biarkan kosong
+                // agar barisnya tidak penuh kata "Belum" yang berulang.
+                const ok = [['Data PM', data.dataPM], ['BA', data.ba], ['CA', data.ca]]
+                    .filter(([, v]) => v).map(([n]) => n);
+                return ok.length ? [{ label: 'Kelengkapan', value: ok.join(', '), link: '' }] : [];
             }
             return stage.fields.map(f => {
                 const raw = data[f.key];
@@ -2893,7 +2893,14 @@
                 if (f.type === 'number') value = formatter.format(raw);
                 else if (f.type === 'date') value = formatDate(raw);
                 else value = String(raw);
-                return { label: f.label, value: value, link: f.type === 'url' ? String(raw) : '' };
+                const isUrl = f.type === 'url';
+                return {
+                    label: f.label,
+                    value: value,
+                    link: isUrl ? String(raw) : '',
+                    // "Link RAB" -> "RAB", "Link Bukti Transfer" -> "Bukti Transfer"
+                    linkShort: isUrl ? f.label.replace(/^link\s*/i, '').trim() || 'link' : ''
+                };
             }).filter(Boolean);
         }
 
@@ -3232,12 +3239,17 @@
                             </p>
                             <div class="flex-1 min-w-0 border-l border-slate-200 pl-3">
                                 ${values.length
-                                    ? values.map(v => `<p class="text-xs text-slate-600 leading-relaxed truncate">
-                                            <span class="text-slate-400">${wlEscape(v.label)}:</span>
-                                            ${v.link
-                                                ? `<a href="${wlEscape(v.link)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="text-indigo-600 hover:text-indigo-800 underline font-medium">Buka link</a>`
-                                                : `<span class="text-slate-800 font-medium">${wlEscape(v.value)}</span>`}
-                                        </p>`).join('')
+                                    ? values.map(v => v.link
+                                        // Field berisi link: langsung tampilkan tautannya saja, tanpa label.
+                                        // Nama fieldnya tetap ada di tooltip untuk tahap yang punya lebih dari satu link.
+                                        ? `<p class="text-xs leading-relaxed truncate">
+                                            <a href="${wlEscape(v.link)}" target="_blank" rel="noopener" title="${wlEscape(v.label)}" onclick="event.stopPropagation()" class="text-indigo-600 hover:text-indigo-800 underline font-medium inline-flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+                                                Buka ${wlEscape(v.linkShort || 'link')}
+                                            </a>
+                                        </p>`
+                                        : `<p class="text-xs text-slate-800 font-medium leading-relaxed truncate" title="${wlEscape(v.label)}">${wlEscape(v.value)}</p>`
+                                      ).join('')
                                     : '<p class="text-xs text-slate-300 italic">Belum ada isian</p>'}
                             </div>
                             ${isDone
