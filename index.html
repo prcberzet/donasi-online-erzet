@@ -1371,8 +1371,12 @@
             <div class="p-6 overflow-y-auto flex-1 bg-slate-50/60">
                 <div id="pyd-stages" class="space-y-3"></div>
             </div>
-            <div class="p-4 border-t border-slate-100 bg-slate-50 text-right rounded-b-2xl">
-                <button onclick="closeModal('penyaluran-detail-modal', 'penyaluran-detail-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Tutup</button>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-between items-center gap-2 rounded-b-2xl">
+                <button id="pyd-continue-btn" onclick="continuePenyaluranProgress()" class="hidden px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors shadow-sm font-semibold text-sm items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    Edit / Lanjutkan Progress
+                </button>
+                <button onclick="closeModal('penyaluran-detail-modal', 'penyaluran-detail-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm ml-auto">Tutup</button>
             </div>
         </div>
     </div>
@@ -2889,43 +2893,41 @@
             }
         }
 
-        // Progress penyaluran ikut tampil di Riwayat Aktivitas / Progress campaign.
-        // Entri ini dihasilkan dari data tahapan (bukan disimpan terpisah), jadi tidak
-        // bisa diedit/dihapus langsung dari tabel riwayat.
+        // Progress penyaluran ikut tampil di Riwayat Aktivitas / Progress campaign
+        // sebagai SATU baris per penyaluran (bukan per tahap), supaya riwayat tetap ringkas.
+        // Baris ini dihasilkan dari data tahapan, jadi tidak bisa diedit langsung dari tabel:
+        // klik barisnya untuk melihat preview checklist progressnya.
         function getPenyaluranLogEntries(campaign) {
-            const out = [];
-            (campaign.penyaluran || []).forEach(py => {
-                const stages = py.stages || {};
-                PENYALURAN_STAGES.forEach((st, i) => {
-                    const data = stages[st.key];
-                    if (!data || !data.done) return;
-                    out.push({
-                        date: data.date || py.createdDate || '',
-                        activity: `Penyaluran: ${st.label}`,
-                        description: `[${py.title || 'Tanpa Judul'}] Tahap ${i + 1}/${PENYALURAN_STAGES.length} — ${penyaluranStageSummary(st.key, data)}`,
-                        link: data.linkRAB || data.linkLaporan || data.linkBukti || '',
-                        penyaluranId: py.pid
-                    });
-                    // Tiap titik timeline juga muncul sendiri supaya jadwalnya terbaca di riwayat.
-                    if (st.key === 'timeline') {
-                        getTimelineItems(data).forEach(it => {
-                            if (!it.tanggal && !it.target) return;
-                            out.push({
-                                date: it.tanggal || data.date || '',
-                                activity: 'Penyaluran: Target Timeline',
-                                description: `[${py.title || 'Tanpa Judul'}] Target: ${it.target || '-'}`,
-                                link: '',
-                                penyaluranId: py.pid
-                            });
-                        });
-                    }
-                });
+            return (campaign.penyaluran || []).map(py => {
+                const { done, total } = getPenyaluranProgress(py);
+                const activeIdx = getActiveStageIndex(py);
+                const status = activeIdx >= PENYALURAN_STAGES.length
+                    ? 'Seluruh tahapan selesai.'
+                    : `Tahap berjalan: ${PENYALURAN_STAGES[activeIdx].label}.`;
+                // Tanggal baris = tahap terakhir yang diselesaikan, agar posisinya di riwayat mengikuti progres terbaru.
+                const lastDate = PENYALURAN_STAGES
+                    .map(st => (py.stages || {})[st.key])
+                    .filter(d => d && d.done && d.date)
+                    .map(d => d.date)
+                    .sort()
+                    .pop();
+                return {
+                    date: lastDate || py.createdDate || '',
+                    activity: py.title || 'Tanpa Judul',
+                    description: `${status} Progress ${done}/${total} tahap.`,
+                    link: '',
+                    penyaluranId: py.pid,
+                    progressDone: done,
+                    progressTotal: total
+                };
             });
-            return out;
         }
 
         let currentPenyaluranCampaignId = null;
         let currentPenyaluranId = null;
+        // 'edit'    -> tampilkan kolom isian tiap tahap (dibuka dari tombol +Penyaluran)
+        // 'preview' -> hanya checklist progress tanpa kolom isian (dibuka dari Riwayat Aktivitas)
+        let penyaluranViewMode = 'edit';
 
         function penyaluranScale(ratio) {
             if (ratio >= 1)   return { bar: 'bg-emerald-500', text: 'text-emerald-700', chip: 'bg-emerald-50 text-emerald-700 border-emerald-200', label: 'Selesai' };
@@ -3049,8 +3051,9 @@
             window.openPenyaluranDetail(newEntry.pid);
         };
 
-        window.openPenyaluranDetail = function(pid) {
+        window.openPenyaluranDetail = function(pid, mode) {
             currentPenyaluranId = pid;
+            penyaluranViewMode = mode === 'preview' ? 'preview' : 'edit';
             const py = findPenyaluran();
             if (!py) return;
 
@@ -3058,7 +3061,14 @@
             document.getElementById('pyd-subtitle').innerText = `Dibuat ${py.createdDate ? formatDate(py.createdDate) : '-'}`;
 
             const delBtn = document.getElementById('pyd-delete-btn');
-            if (delBtn) delBtn.classList.toggle('hidden', !isAdminMode);
+            if (delBtn) delBtn.classList.toggle('hidden', !isAdminMode || penyaluranViewMode === 'preview');
+
+            const contBtn = document.getElementById('pyd-continue-btn');
+            if (contBtn) {
+                const show = isAdminMode && penyaluranViewMode === 'preview';
+                contBtn.classList.toggle('hidden', !show);
+                contBtn.classList.toggle('inline-flex', show);
+            }
 
             renderPenyaluranStages();
             window.openModalAnimation('penyaluran-detail-modal', 'penyaluran-detail-box');
@@ -3174,6 +3184,40 @@
             document.getElementById('pyd-progress-label').className = `text-xs font-semibold ${sc.text}`;
 
             const activeIdx = getActiveStageIndex(py);
+
+            // Mode preview: hanya checklist progress, tanpa kolom isian dan tanpa tombol aksi.
+            if (penyaluranViewMode === 'preview') {
+                box.innerHTML = `
+                <div class="bg-white border border-slate-200 rounded-xl p-4 space-y-1">
+                    ${PENYALURAN_STAGES.map((stage, i) => {
+                        const data = stages[stage.key] || {};
+                        const isDone = !!data.done;
+                        const isActive = i === activeIdx;
+                        return `
+                        <div class="flex items-center gap-3 py-2 ${i ? 'border-t border-slate-100' : ''}">
+                            <span class="${isDone ? 'text-emerald-500' : (isActive ? 'text-teal-500' : 'text-slate-300')} shrink-0">
+                                ${isDone
+                                    ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.7-9.3a1 1 0 00-1.4-1.4L9 10.6 7.7 9.3a1 1 0 10-1.4 1.4l2 2a1 1 0 001.4 0l3-3z" clip-rule="evenodd"/></svg>'
+                                    : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" stroke-dasharray="3 3"/></svg>'}
+                            </span>
+                            <p class="text-sm flex-1 min-w-0 ${isDone ? 'text-slate-800 font-medium' : (isActive ? 'text-slate-700' : 'text-slate-400')}">
+                                <span class="text-xs font-mono text-slate-400 mr-1">${i + 1}.</span>${wlEscape(stage.label)}
+                            </p>
+                            ${isDone
+                                ? `<span class="text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full whitespace-nowrap shrink-0">${data.date ? formatDate(data.date) : 'Selesai'}</span>`
+                                : (isActive
+                                    ? '<span class="text-[11px] font-medium text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full whitespace-nowrap shrink-0">Sedang Berjalan</span>'
+                                    : '<span class="text-[11px] text-slate-300 whitespace-nowrap shrink-0">Belum</span>')}
+                        </div>`;
+                    }).join('')}
+                </div>
+                ${(() => {
+                    // Timeline implementasi tetap ditampilkan visualnya karena bersifat informasi, bukan isian.
+                    const tl = stages.timeline;
+                    return tl ? timelineVisualHtml(getTimelineItems(tl)) : '';
+                })()}`;
+                return;
+            }
 
             box.innerHTML = PENYALURAN_STAGES.map((stage, i) => {
                 const data = stages[stage.key] || {};
@@ -3324,6 +3368,12 @@
             if (!ok) return;
             renderPenyaluranStages();
             renderPenyaluranList();
+        };
+
+        // Dari preview checklist -> beralih ke tampilan isian untuk melanjutkan tahapan.
+        window.continuePenyaluranProgress = function() {
+            if (!isAdminMode) { requireAdmin(() => {}); return; }
+            window.openPenyaluranDetail(currentPenyaluranId, 'edit');
         };
 
         window.deletePenyaluran = async function() {
@@ -3827,14 +3877,19 @@
                         const isPenyaluran = item.penyaluranId !== undefined;
                         const tr = document.createElement('tr');
                         tr.className = (isPenyaluran ? "bg-teal-50/40 hover:bg-teal-50 " : "hover:bg-indigo-50/60 ") + "transition-colors align-top cursor-pointer";
-                        tr.onclick = () => isPenyaluran
-                            ? (window.openPenyaluranList(campaign.id), window.openPenyaluranDetail(item.penyaluranId))
-                            : window.viewActivityDetail(index);
+                        tr.onclick = () => {
+                            if (isPenyaluran) {
+                                currentPenyaluranCampaignId = campaign.id;
+                                window.openPenyaluranDetail(item.penyaluranId, 'preview');
+                            } else {
+                                window.viewActivityDetail(index);
+                            }
+                        };
                         const linkCell = item.link
                             ? `<a href="${item.link}" target="_blank" onclick="event.stopPropagation()" class="text-indigo-600 hover:text-indigo-800 hover:underline inline-flex items-center gap-1 font-medium">Buka <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg></a>`
                             : `<span class="text-slate-300">-</span>`;
                         const actionCell = isPenyaluran
-                            ? `<span class="text-[10px] font-bold uppercase tracking-wide text-teal-700 bg-teal-100 px-2 py-1 rounded-full whitespace-nowrap">Penyaluran</span>`
+                            ? `<span class="text-[10px] font-bold uppercase tracking-wide text-teal-700 bg-teal-100 px-2 py-1 rounded-full whitespace-nowrap">Penyaluran ${item.progressDone}/${item.progressTotal}</span>`
                             : isAdminMode
                             ? `<div class="flex items-center justify-end gap-3" onclick="event.stopPropagation()"><button type="button" onclick="window.openEditActivityModal(${index})" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button><button type="button" onclick="window.deleteActivity(${index})" class="text-red-500 hover:text-red-700 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Hapus</button></div>`
                             : `<span class="text-slate-300 text-xs">-</span>`;
