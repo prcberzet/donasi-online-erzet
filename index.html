@@ -655,10 +655,16 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
                                 Riwayat Aktivitas / Progress
                             </h4>
-                            <button onclick="openAddActivityModal()" class="text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-md border border-indigo-200 transition-colors flex items-center gap-1 font-semibold">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                +Activity
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <button onclick="window.openPenyaluranList(currentCampaignId)" class="text-xs bg-teal-50 text-teal-700 hover:bg-teal-100 px-3 py-1.5 rounded-md border border-teal-200 transition-colors flex items-center gap-1 font-semibold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                    +Penyaluran
+                                </button>
+                                <button onclick="openAddActivityModal()" class="text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-md border border-indigo-200 transition-colors flex items-center gap-1 font-semibold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                    +Activity
+                                </button>
+                            </div>
                         </div>
                         <div class="overflow-x-auto rounded-lg border border-slate-200">
                             <table class="min-w-full divide-y divide-slate-200 text-sm">
@@ -1306,6 +1312,67 @@
             <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-2xl shrink-0">
                 <button type="button" onclick="closeModal('import-recovery-modal', 'import-recovery-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Batal</button>
                 <button type="button" onclick="runImportRecovery()" id="import-recovery-submit-btn" class="px-5 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors shadow-sm font-medium text-sm">Mulai Import</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================
+         MODAL PENYALURAN - daftar penyaluran per campaign
+         ========================================================== -->
+    <div id="penyaluran-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-[120] opacity-0 transition-opacity duration-300 flex">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="penyaluran-box">
+            <div class="flex justify-between items-start p-5 border-b border-slate-100 bg-slate-50">
+                <div class="min-w-0">
+                    <h3 class="text-lg font-bold text-slate-800">Penyaluran Campaign</h3>
+                    <p class="text-xs text-slate-500 mt-0.5 truncate" id="penyaluran-campaign-name">-</p>
+                </div>
+                <button onclick="closeModal('penyaluran-modal', 'penyaluran-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 bg-white">
+                <div id="penyaluran-list" class="space-y-3"></div>
+            </div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-between items-center gap-2 rounded-b-2xl">
+                <button id="penyaluran-add-btn" onclick="addPenyaluran()" class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors shadow-sm font-semibold text-sm items-center gap-2 hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Tambah Penyaluran
+                </button>
+                <button onclick="closeModal('penyaluran-modal', 'penyaluran-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm ml-auto">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================
+         MODAL TAHAPAN PENYALURAN
+         ========================================================== -->
+    <div id="penyaluran-detail-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-[125] opacity-0 transition-opacity duration-300 flex">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="penyaluran-detail-box">
+            <div class="flex justify-between items-start p-5 border-b border-slate-100 bg-slate-50">
+                <div class="min-w-0 flex-1">
+                    <h3 class="text-lg font-bold text-slate-800 truncate" id="pyd-title">Tahapan Penyaluran</h3>
+                    <p class="text-xs text-slate-500 mt-0.5" id="pyd-subtitle">-</p>
+                    <div class="mt-2 flex items-center gap-3">
+                        <div class="w-40 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div id="pyd-bar" class="h-full bg-slate-300 transition-all" style="width:0%"></div>
+                        </div>
+                        <span id="pyd-progress-label" class="text-xs font-semibold text-slate-500">0/9</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                    <button id="pyd-delete-btn" onclick="deletePenyaluran()" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors hidden" title="Hapus Penyaluran">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                    </button>
+                    <button onclick="closeModal('penyaluran-detail-modal', 'penyaluran-detail-box')" class="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 bg-slate-50/60">
+                <div id="pyd-stages" class="space-y-3"></div>
+            </div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 text-right rounded-b-2xl">
+                <button onclick="closeModal('penyaluran-detail-modal', 'penyaluran-detail-box')" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">Tutup</button>
             </div>
         </div>
     </div>
@@ -2312,6 +2379,25 @@
             const { docStatus, docColorClass } = docCompletionStatus(campaign);
             const isWaiting = (campaign.status || 'Aktif') === 'Non-Aktif';
 
+            // Ringkasan progres penyaluran untuk ditampilkan di kaki kartu.
+            const penyaluranList = campaign.penyaluran || [];
+            let penyaluranBar = '<p class="text-[11px] text-slate-400 italic">Belum ada penyaluran dicatat.</p>';
+            if (penyaluranList.length) {
+                const selesai = penyaluranList.filter(p => getPenyaluranProgress(p).done === PENYALURAN_STAGES.length).length;
+                const avg = penyaluranList.reduce((sum, p) => sum + getPenyaluranProgress(p).ratio, 0) / penyaluranList.length;
+                const psc = penyaluranScale(avg);
+                penyaluranBar = `
+                    <div>
+                        <div class="flex justify-between items-center text-[11px] mb-1">
+                            <span class="text-slate-500 font-medium">Penyaluran (${penyaluranList.length})</span>
+                            <span class="font-semibold ${psc.text}">${selesai}/${penyaluranList.length} selesai</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full ${psc.bar}" style="width:${(avg * 100).toFixed(0)}%"></div>
+                        </div>
+                    </div>`;
+            }
+
             const card = document.createElement('div');
             card.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col group" + (isWaiting ? " ring-1 ring-amber-200" : "");
             card.onclick = () => window.openModal(campaign.id);
@@ -2351,11 +2437,17 @@
                             <span class="font-bold ${currentSaldo < 0 ? 'text-red-600' : 'text-amber-600'}">${formatter.format(currentSaldo)}</span>
                         </div>
                     </div>
-                    <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
-                        <span class="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1" onclick="window.handleLinkClick(event, '${campaign.link}')">
-                            Link Donasi <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
-                        </span>
-                        <span class="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded">Klik Detail</span>
+                    <div class="pt-3 border-t border-slate-100 space-y-2.5">
+                        ${penyaluranBar}
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1" onclick="window.handleLinkClick(event, '${campaign.link}')">
+                                Link Donasi <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+                            </span>
+                            <button onclick="event.stopPropagation(); window.openPenyaluranList('${campaign.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-md border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors flex items-center gap-1 shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Penyaluran
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -2731,6 +2823,379 @@
                 const titleEl = document.getElementById('add-modal-title');
                 if (titleEl) titleEl.innerText = 'Daftarkan Campaign Rilis: ' + (entry.name || '');
             }, 300);
+        };
+
+        // ==========================================================
+        // PENYALURAN CAMPAIGN
+        // ----------------------------------------------------------
+        // Satu campaign bisa punya beberapa penyaluran. Tiap penyaluran melalui
+        // 9 tahapan berurutan; sebuah tahap baru bisa ditandai selesai kalau
+        // tahap sebelumnya sudah selesai, supaya urutan prosesnya terjaga.
+        // Data disimpan di campaign.penyaluran[] dan ikut tersimpan ke Firestore
+        // lewat saveCampaignsToFirestore().
+        // ==========================================================
+        const PENYALURAN_STAGES = [
+            { key: 'judul',    label: 'Judul Penyaluran',                   fields: [
+                { key: 'title',        label: 'Judul Penyaluran',   type: 'text',     required: true, placeholder: 'Contoh: Termin 1 - Pembelian Material' }
+            ]},
+            { key: 'rab',      label: 'Penyusunan RAB Development',         fields: [
+                { key: 'linkRAB',      label: 'Link RAB',           type: 'url',      required: true, placeholder: 'https://...' }
+            ]},
+            { key: 'mipro',    label: 'Pengajuan Proses Mipro',             fields: [
+                { key: 'noTiket',      label: 'No. Tiket',          type: 'text',     required: true }
+            ]},
+            { key: 'download', label: 'Download Transaksi yang Dimiprokan', fields: [
+                { key: 'idMipro',      label: 'ID Mipro',           type: 'text',     required: true }
+            ]},
+            { key: 'spp',      label: 'Pengajuan SPP',                      fields: [
+                { key: 'noSPP',        label: 'No. SPP',            type: 'text',     required: true },
+                { key: 'nominalDSS',   label: 'Nominal DSS (Rp)',   type: 'number',   required: true }
+            ]},
+            { key: 'spk',      label: 'Pengiriman SPK',                     fields: [
+                { key: 'noSPK',        label: 'No. SPK',            type: 'text',     required: true },
+                { key: 'linkBukti',    label: 'Link Bukti Transfer',type: 'url',      required: true, placeholder: 'https://...' },
+                { key: 'linkLaporan',  label: 'Link Laporan',       type: 'url',      required: false, placeholder: 'https://...' }
+            ]},
+            { key: 'timeline', label: 'Timeline Implementasi Program',      fields: [
+                { key: 'tanggal',      label: 'Tanggal Implementasi', type: 'date',   required: true },
+                { key: 'kpi',          label: 'KPI',                type: 'textarea', required: true, placeholder: 'Indikator capaian yang ditargetkan' }
+            ]},
+            { key: 'kroscek',  label: 'Kroscek Kelengkapan Laporan',        fields: [
+                { key: 'dataPM',       label: 'Data PM',            type: 'checkbox' },
+                { key: 'ba',           label: 'BA (Berita Acara)',  type: 'checkbox' },
+                { key: 'ca',           label: 'CA (Catatan Akhir)', type: 'checkbox' }
+            ]},
+            { key: 'selesai',  label: 'Selesai',                            fields: [] }
+        ];
+
+        let currentPenyaluranCampaignId = null;
+        let currentPenyaluranId = null;
+
+        function penyaluranScale(ratio) {
+            if (ratio >= 1)   return { bar: 'bg-emerald-500', text: 'text-emerald-700', chip: 'bg-emerald-50 text-emerald-700 border-emerald-200', label: 'Selesai' };
+            if (ratio >= 0.7) return { bar: 'bg-lime-500',    text: 'text-lime-700',    chip: 'bg-lime-50 text-lime-700 border-lime-200',          label: 'Hampir Selesai' };
+            if (ratio >= 0.4) return { bar: 'bg-amber-400',   text: 'text-amber-700',   chip: 'bg-amber-50 text-amber-700 border-amber-200',       label: 'Berjalan' };
+            if (ratio > 0)    return { bar: 'bg-orange-400',  text: 'text-orange-700',  chip: 'bg-orange-50 text-orange-700 border-orange-200',    label: 'Tahap Awal' };
+            return              { bar: 'bg-slate-300',  text: 'text-slate-500',   chip: 'bg-slate-50 text-slate-500 border-slate-200',       label: 'Belum Mulai' };
+        }
+
+        function getPenyaluranProgress(py) {
+            const stages = py.stages || {};
+            const done = PENYALURAN_STAGES.filter(st => stages[st.key] && stages[st.key].done).length;
+            const total = PENYALURAN_STAGES.length;
+            return { done, total, ratio: total ? done / total : 0 };
+        }
+
+        // Tahap saat ini = tahap pertama yang belum selesai.
+        function getActiveStageIndex(py) {
+            const stages = py.stages || {};
+            for (let i = 0; i < PENYALURAN_STAGES.length; i++) {
+                if (!(stages[PENYALURAN_STAGES[i].key] || {}).done) return i;
+            }
+            return PENYALURAN_STAGES.length;
+        }
+
+        function findCampaignForPenyaluran() {
+            return campaigns.find(c => String(c.id) === String(currentPenyaluranCampaignId));
+        }
+
+        function findPenyaluran() {
+            const camp = findCampaignForPenyaluran();
+            if (!camp) return null;
+            return (camp.penyaluran || []).find(p => p.pid === currentPenyaluranId) || null;
+        }
+
+        // Menyimpan perubahan penyaluran ke campaign terkait, lalu ke Firestore.
+        async function savePenyaluranList(newList) {
+            const idx = campaigns.findIndex(c => String(c.id) === String(currentPenyaluranCampaignId));
+            if (idx === -1) return false;
+            const updatedCamp = { ...campaigns[idx], penyaluran: newList };
+            const candidate = campaigns.map((c, i) => i === idx ? updatedCamp : c);
+            const ok = await saveCampaignsToFirestore(candidate);
+            if (ok) renderCampaigns();
+            return ok;
+        }
+
+        window.openPenyaluranList = function(campaignId) {
+            const camp = campaigns.find(c => String(c.id) === String(campaignId));
+            if (!camp) return;
+            currentPenyaluranCampaignId = camp.id;
+            document.getElementById('penyaluran-campaign-name').innerText = `${camp.name} (ID: ${camp.id})`;
+
+            const addBtn = document.getElementById('penyaluran-add-btn');
+            if (addBtn) {
+                if (isAdminMode) { addBtn.classList.remove('hidden'); addBtn.classList.add('flex'); }
+                else { addBtn.classList.add('hidden'); addBtn.classList.remove('flex'); }
+            }
+
+            renderPenyaluranList();
+            window.openModalAnimation('penyaluran-modal', 'penyaluran-box');
+        };
+
+        function renderPenyaluranList() {
+            const camp = findCampaignForPenyaluran();
+            const box = document.getElementById('penyaluran-list');
+            if (!camp || !box) return;
+            const list = camp.penyaluran || [];
+
+            if (!list.length) {
+                box.innerHTML = `<div class="p-8 text-center text-slate-400 italic text-sm border border-dashed border-slate-300 rounded-xl">
+                    Belum ada penyaluran untuk campaign ini.${isAdminMode ? '<br>Klik "Tambah Penyaluran" untuk memulai tahapan.' : ''}
+                </div>`;
+                return;
+            }
+
+            box.innerHTML = list.map(py => {
+                const { done, total, ratio } = getPenyaluranProgress(py);
+                const sc = penyaluranScale(ratio);
+                const activeIdx = getActiveStageIndex(py);
+                const activeLabel = activeIdx >= PENYALURAN_STAGES.length
+                    ? 'Seluruh tahapan selesai'
+                    : `Tahap berjalan: ${PENYALURAN_STAGES[activeIdx].label}`;
+                return `
+                <div onclick="openPenyaluranDetail('${wlEscape(py.pid)}')" class="p-4 rounded-xl border border-slate-200 bg-white hover:border-teal-300 hover:shadow-sm cursor-pointer transition-all">
+                    <div class="flex justify-between items-start gap-3 mb-2">
+                        <div class="min-w-0">
+                            <p class="font-semibold text-slate-800 text-sm">${wlEscape(py.title || 'Tanpa Judul')}</p>
+                            <p class="text-xs text-slate-500 mt-0.5">Dibuat ${py.createdDate ? formatDate(py.createdDate) : '-'}</p>
+                        </div>
+                        <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full border shrink-0 ${sc.chip}">${sc.label}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full ${sc.bar} transition-all" style="width:${(ratio * 100).toFixed(0)}%"></div>
+                        </div>
+                        <span class="text-xs font-semibold ${sc.text} shrink-0">${done}/${total}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-2">${wlEscape(activeLabel)}</p>
+                </div>`;
+            }).join('');
+        }
+
+        window.addPenyaluran = async function() {
+            if (!isAdminMode) { requireAdmin(() => {}); return; }
+            const camp = findCampaignForPenyaluran();
+            if (!camp) return;
+            const title = (prompt('Judul Penyaluran:') || '').trim();
+            if (!title) return;
+
+            const newEntry = {
+                pid: 'py' + Date.now() + Math.floor(Math.random() * 1000),
+                title: title,
+                createdDate: new Date().toISOString().slice(0, 10),
+                stages: {
+                    judul: { done: true, date: new Date().toISOString().slice(0, 10), title: title }
+                }
+            };
+            const ok = await savePenyaluranList([...(camp.penyaluran || []), newEntry]);
+            if (!ok) return;
+            renderPenyaluranList();
+            window.openPenyaluranDetail(newEntry.pid);
+        };
+
+        window.openPenyaluranDetail = function(pid) {
+            currentPenyaluranId = pid;
+            const py = findPenyaluran();
+            if (!py) return;
+
+            document.getElementById('pyd-title').innerText = py.title || 'Tanpa Judul';
+            document.getElementById('pyd-subtitle').innerText = `Dibuat ${py.createdDate ? formatDate(py.createdDate) : '-'}`;
+
+            const delBtn = document.getElementById('pyd-delete-btn');
+            if (delBtn) delBtn.classList.toggle('hidden', !isAdminMode);
+
+            renderPenyaluranStages();
+            window.openModalAnimation('penyaluran-detail-modal', 'penyaluran-detail-box');
+        };
+
+        function penyaluranFieldInput(stage, field, data, disabled) {
+            const id = `pyf-${stage.key}-${field.key}`;
+            const val = data[field.key] != null ? data[field.key] : '';
+            const cls = 'w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent disabled:bg-slate-100 disabled:text-slate-500';
+            const dis = disabled ? 'disabled' : '';
+            if (field.type === 'checkbox') {
+                return `<label class="flex items-center gap-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-lg px-3 py-2 ${disabled ? 'opacity-70' : 'cursor-pointer'}">
+                    <input type="checkbox" id="${id}" ${val ? 'checked' : ''} ${dis} class="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500">
+                    ${wlEscape(field.label)}
+                </label>`;
+            }
+            if (field.type === 'textarea') {
+                return `<div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">${wlEscape(field.label)}${field.required ? ' *' : ''}</label>
+                    <textarea id="${id}" rows="2" ${dis} placeholder="${wlEscape(field.placeholder || '')}" class="${cls}">${wlEscape(val)}</textarea>
+                </div>`;
+            }
+            const inputType = field.type === 'number' ? 'number' : (field.type === 'date' ? 'date' : (field.type === 'url' ? 'url' : 'text'));
+            return `<div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">${wlEscape(field.label)}${field.required ? ' *' : ''}</label>
+                <input type="${inputType}" id="${id}" value="${wlEscape(val)}" ${dis} placeholder="${wlEscape(field.placeholder || '')}" class="${cls}">
+            </div>`;
+        }
+
+        function renderPenyaluranStages() {
+            const py = findPenyaluran();
+            const box = document.getElementById('pyd-stages');
+            if (!py || !box) return;
+
+            const stages = py.stages || {};
+            const { done, total, ratio } = getPenyaluranProgress(py);
+            const sc = penyaluranScale(ratio);
+            const bar = document.getElementById('pyd-bar');
+            bar.className = `h-full ${sc.bar} transition-all`;
+            bar.style.width = (ratio * 100).toFixed(0) + '%';
+            document.getElementById('pyd-progress-label').innerText = `${done}/${total}`;
+            document.getElementById('pyd-progress-label').className = `text-xs font-semibold ${sc.text}`;
+
+            const activeIdx = getActiveStageIndex(py);
+
+            box.innerHTML = PENYALURAN_STAGES.map((stage, i) => {
+                const data = stages[stage.key] || {};
+                const isDone = !!data.done;
+                const isActive = i === activeIdx;
+                const isLocked = i > activeIdx;             // tahap berikutnya belum boleh diisi
+                const editable = isAdminMode && !isLocked;
+
+                const stateIcon = isDone
+                    ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.7-9.3a1 1 0 00-1.4-1.4L9 10.6 7.7 9.3a1 1 0 10-1.4 1.4l2 2a1 1 0 001.4 0l3-3z" clip-rule="evenodd"/></svg>'
+                    : (isLocked
+                        ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+                        : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" stroke-dasharray="3 3"/></svg>');
+
+                const border = isDone ? 'border-emerald-200 bg-emerald-50/60'
+                            : isActive ? 'border-teal-300 bg-white ring-1 ring-teal-100'
+                            : 'border-slate-200 bg-slate-100/60';
+                const iconColor = isDone ? 'text-emerald-500' : (isActive ? 'text-teal-500' : 'text-slate-300');
+
+                const fieldsHtml = stage.fields.length
+                    ? `<div class="mt-3 ${stage.key === 'kroscek' ? 'flex flex-wrap gap-2' : 'grid grid-cols-1 sm:grid-cols-2 gap-3'}">
+                            ${stage.fields.map(f => penyaluranFieldInput(stage, f, data, !editable)).join('')}
+                       </div>`
+                    : `<p class="mt-2 text-xs text-slate-500 italic">Tandai selesai jika seluruh proses penyaluran ini sudah tuntas.</p>`;
+
+                let actionHtml = '';
+                if (isLocked) {
+                    actionHtml = `<p class="mt-3 text-xs text-slate-400 italic">Selesaikan tahap sebelumnya terlebih dahulu.</p>`;
+                } else if (isAdminMode) {
+                    actionHtml = `<div class="mt-3 flex flex-wrap gap-2">
+                        ${isDone
+                            ? `<button onclick="savePenyaluranStage('${stage.key}', true)" class="text-xs font-semibold px-3 py-1.5 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 transition-colors">Simpan Perubahan</button>
+                               <button onclick="reopenPenyaluranStage('${stage.key}')" class="text-xs font-semibold px-3 py-1.5 rounded-md border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors">Buka Kembali</button>`
+                            : `<button onclick="savePenyaluranStage('${stage.key}', false)" class="text-xs font-semibold px-3 py-1.5 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 transition-colors">Simpan Draft</button>
+                               <button onclick="savePenyaluranStage('${stage.key}', true)" class="text-xs font-semibold px-3 py-1.5 rounded-md bg-teal-600 text-white hover:bg-teal-700 transition-colors">Tandai Selesai</button>`}
+                    </div>`;
+                }
+
+                return `
+                <div class="p-4 rounded-xl border ${border} transition-colors">
+                    <div class="flex items-start gap-3">
+                        <span class="${iconColor} mt-0.5 shrink-0">${stateIcon}</span>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between gap-2 flex-wrap">
+                                <p class="text-sm font-bold ${isDone ? 'text-emerald-800' : (isActive ? 'text-slate-800' : 'text-slate-500')}">
+                                    <span class="text-xs font-mono text-slate-400 mr-1">${i + 1}.</span>${wlEscape(stage.label)}
+                                </p>
+                                ${isDone
+                                    ? `<span class="text-[11px] font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full whitespace-nowrap">Selesai ${data.date ? formatDate(data.date) : '-'}</span>`
+                                    : (isActive
+                                        ? '<span class="text-[11px] font-medium text-teal-700 bg-teal-100 px-2 py-0.5 rounded-full whitespace-nowrap">Sedang Berjalan</span>'
+                                        : '<span class="text-[11px] font-medium text-slate-400 bg-slate-200 px-2 py-0.5 rounded-full whitespace-nowrap">Terkunci</span>')}
+                            </div>
+                            ${fieldsHtml}
+                            ${actionHtml}
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        window.savePenyaluranStage = async function(stageKey, markDone) {
+            if (!isAdminMode) { requireAdmin(() => {}); return; }
+            const camp = findCampaignForPenyaluran();
+            const py = findPenyaluran();
+            if (!camp || !py) return;
+            const stage = PENYALURAN_STAGES.find(st => st.key === stageKey);
+            if (!stage) return;
+
+            const data = { ...(py.stages && py.stages[stageKey] ? py.stages[stageKey] : {}) };
+            for (const f of stage.fields) {
+                const el = document.getElementById(`pyf-${stage.key}-${f.key}`);
+                if (!el) continue;
+                if (f.type === 'checkbox') {
+                    data[f.key] = el.checked;
+                } else if (f.type === 'number') {
+                    data[f.key] = el.value === '' ? '' : parseFloat(el.value);
+                } else {
+                    data[f.key] = (el.value || '').trim();
+                }
+            }
+
+            // Validasi hanya saat tahap ditandai selesai - draft boleh disimpan setengah jalan.
+            if (markDone) {
+                for (const f of stage.fields) {
+                    if (!f.required) continue;
+                    const v = data[f.key];
+                    if (v === '' || v === undefined || v === null || (f.type === 'number' && isNaN(v))) {
+                        alert(`"${f.label}" wajib diisi sebelum tahap ini ditandai selesai.`);
+                        return;
+                    }
+                }
+                if (stage.key === 'kroscek' && !(data.dataPM && data.ba && data.ca)) {
+                    if (!confirm('Data PM, BA, dan CA belum semuanya tercentang. Tetap tandai tahap ini selesai?')) return;
+                }
+                data.done = true;
+                if (!data.date) data.date = new Date().toISOString().slice(0, 10);
+            }
+
+            const updatedPy = { ...py, stages: { ...(py.stages || {}), [stageKey]: data } };
+            if (stageKey === 'judul' && data.title) updatedPy.title = data.title;
+
+            const newList = (camp.penyaluran || []).map(p => p.pid === py.pid ? updatedPy : p);
+            const ok = await savePenyaluranList(newList);
+            if (!ok) return;
+
+            renderPenyaluranStages();
+            renderPenyaluranList();
+            document.getElementById('pyd-title').innerText = updatedPy.title || 'Tanpa Judul';
+        };
+
+        window.reopenPenyaluranStage = async function(stageKey) {
+            if (!isAdminMode) { requireAdmin(() => {}); return; }
+            const camp = findCampaignForPenyaluran();
+            const py = findPenyaluran();
+            if (!camp || !py) return;
+
+            const startIdx = PENYALURAN_STAGES.findIndex(st => st.key === stageKey);
+            if (startIdx === -1) return;
+            const affected = PENYALURAN_STAGES.slice(startIdx).filter(st => (py.stages || {})[st.key]?.done);
+            if (affected.length > 1 && !confirm(`Membuka kembali tahap ini juga akan membatalkan status selesai pada ${affected.length - 1} tahap sesudahnya. Lanjutkan?`)) return;
+
+            // Tahap sesudahnya ikut dibuka supaya urutan tahapan tetap konsisten.
+            const newStages = { ...(py.stages || {}) };
+            PENYALURAN_STAGES.slice(startIdx).forEach(st => {
+                if (newStages[st.key]) newStages[st.key] = { ...newStages[st.key], done: false, date: '' };
+            });
+
+            const updatedPy = { ...py, stages: newStages };
+            const newList = (camp.penyaluran || []).map(p => p.pid === py.pid ? updatedPy : p);
+            const ok = await savePenyaluranList(newList);
+            if (!ok) return;
+            renderPenyaluranStages();
+            renderPenyaluranList();
+        };
+
+        window.deletePenyaluran = async function() {
+            if (!isAdminMode) { requireAdmin(() => {}); return; }
+            const camp = findCampaignForPenyaluran();
+            const py = findPenyaluran();
+            if (!camp || !py) return;
+            if (!confirm(`Hapus penyaluran "${py.title || 'Tanpa Judul'}" beserta seluruh tahapannya?`)) return;
+
+            const newList = (camp.penyaluran || []).filter(p => p.pid !== py.pid);
+            const ok = await savePenyaluranList(newList);
+            if (!ok) return;
+            currentPenyaluranId = null;
+            window.closeModal('penyaluran-detail-modal', 'penyaluran-detail-box');
+            renderPenyaluranList();
         };
 
         window.openFilterModal = function() {
@@ -3709,6 +4174,7 @@
                     contactPerson: document.getElementById('add-contact').value.trim(),
                     docLink: document.getElementById('add-doclink').value, 
                     activities: [],
+                    penyaluran: [],
                     donasiMasuk: donasiMasuk,
                     documents: { mou: document.getElementById('add-mou-check').checked, consentLetter: document.getElementById('add-consent-check').checked, proposal: document.getElementById('add-proposal-check').checked }
                 };
@@ -3804,13 +4270,15 @@
                 'add-modal': 'add-modal-box',
                 'edit-modal': 'edit-modal-box',
                 'delete-modal': 'delete-modal-box',
-                'progdist-modal': 'progdist-modal-box'
+                'progdist-modal': 'progdist-modal-box',
+                'penyaluran-modal': 'penyaluran-box',
+                'penyaluran-detail-modal': 'penyaluran-detail-box'
             };
             return exceptions[modalId] || modalId.replace('modal', 'box');
         }
 
         window.addEventListener('click', function(e) {
-            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'delete-modal', 'upload-donasi-modal', 'progdist-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'filter-campaign-modal', 'import-recovery-modal'];
+            const modals = ['detail-modal', 'add-modal', 'edit-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'delete-modal', 'upload-donasi-modal', 'progdist-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'penyaluran-modal', 'penyaluran-detail-modal', 'filter-campaign-modal', 'import-recovery-modal'];
             modals.forEach(id => { 
                 if (e.target === document.getElementById(id)) {
                     window.closeModal(id, getBoxIdFor(id)); 
@@ -3820,7 +4288,7 @@
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                const arr = ['delete-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'filter-campaign-modal', 'import-recovery-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'progdist-modal'];
+                const arr = ['delete-modal', 'add-activity-modal', 'edit-activity-modal', 'view-activity-modal', 'add-other-activity-modal', 'penyaluran-detail-modal', 'penyaluran-modal', 'add-waitinglist-modal', 'waitinglist-detail-modal', 'filter-campaign-modal', 'import-recovery-modal', 'add-modal', 'edit-modal', 'detail-modal', 'upload-donasi-modal', 'progdist-modal'];
                 for (const id of arr) { 
                     const el = document.getElementById(id); 
                     if (el && !el.classList.contains('hidden')) { 
