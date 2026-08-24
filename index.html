@@ -2857,8 +2857,7 @@
                 { key: 'linkLaporan',  label: 'Link Laporan',       type: 'url',      required: false, placeholder: 'https://...' }
             ]},
             { key: 'timeline', label: 'Timeline Implementasi Program',      fields: [
-                { key: 'tanggal',      label: 'Tanggal Implementasi', type: 'date',   required: true },
-                { key: 'kpi',          label: 'KPI',                type: 'textarea', required: true, placeholder: 'Indikator capaian yang ditargetkan' }
+                { key: 'items',        label: 'Timeline Implementasi', type: 'timeline', required: true }
             ]},
             { key: 'kroscek',  label: 'Kroscek Kelengkapan Laporan',        fields: [
                 { key: 'dataPM',       label: 'Data PM',            type: 'checkbox' },
@@ -2867,6 +2866,63 @@
             ]},
             { key: 'selesai',  label: 'Selesai',                            fields: [] }
         ];
+
+        // Ringkasan isi tiap tahap untuk ditampilkan di Riwayat Aktivitas / Progress.
+        function penyaluranStageSummary(stageKey, data) {
+            switch (stageKey) {
+                case 'judul':    return `Penyaluran "${data.title || '-'}" mulai dicatat.`;
+                case 'rab':      return 'RAB Development selesai disusun.';
+                case 'mipro':    return `Pengajuan proses Mipro dengan No. Tiket ${data.noTiket || '-'}.`;
+                case 'download': return `Transaksi yang dimiprokan diunduh (ID Mipro: ${data.idMipro || '-'}).`;
+                case 'spp':      return `Pengajuan SPP No. ${data.noSPP || '-'}, Nominal DSS ${data.nominalDSS ? formatter.format(data.nominalDSS) : '-'}.`;
+                case 'spk':      return `SPK No. ${data.noSPK || '-'} dikirim beserta bukti transfer.`;
+                case 'timeline': {
+                    const n = getTimelineItems(data).length;
+                    return `Timeline implementasi disusun (${n} titik tanggal & target).`;
+                }
+                case 'kroscek': {
+                    const ok = ['dataPM', 'ba', 'ca'].filter(k => data[k]).length;
+                    return `Kroscek kelengkapan laporan: ${ok}/3 terpenuhi (Data PM, BA, CA).`;
+                }
+                case 'selesai':  return 'Seluruh tahapan penyaluran dinyatakan selesai.';
+                default:         return '';
+            }
+        }
+
+        // Progress penyaluran ikut tampil di Riwayat Aktivitas / Progress campaign.
+        // Entri ini dihasilkan dari data tahapan (bukan disimpan terpisah), jadi tidak
+        // bisa diedit/dihapus langsung dari tabel riwayat.
+        function getPenyaluranLogEntries(campaign) {
+            const out = [];
+            (campaign.penyaluran || []).forEach(py => {
+                const stages = py.stages || {};
+                PENYALURAN_STAGES.forEach((st, i) => {
+                    const data = stages[st.key];
+                    if (!data || !data.done) return;
+                    out.push({
+                        date: data.date || py.createdDate || '',
+                        activity: `Penyaluran: ${st.label}`,
+                        description: `[${py.title || 'Tanpa Judul'}] Tahap ${i + 1}/${PENYALURAN_STAGES.length} — ${penyaluranStageSummary(st.key, data)}`,
+                        link: data.linkRAB || data.linkLaporan || data.linkBukti || '',
+                        penyaluranId: py.pid
+                    });
+                    // Tiap titik timeline juga muncul sendiri supaya jadwalnya terbaca di riwayat.
+                    if (st.key === 'timeline') {
+                        getTimelineItems(data).forEach(it => {
+                            if (!it.tanggal && !it.target) return;
+                            out.push({
+                                date: it.tanggal || data.date || '',
+                                activity: 'Penyaluran: Target Timeline',
+                                description: `[${py.title || 'Tanpa Judul'}] Target: ${it.target || '-'}`,
+                                link: '',
+                                penyaluranId: py.pid
+                            });
+                        });
+                    }
+                });
+            });
+            return out;
+        }
 
         let currentPenyaluranCampaignId = null;
         let currentPenyaluranId = null;
@@ -3008,9 +3064,80 @@
             window.openModalAnimation('penyaluran-detail-modal', 'penyaluran-detail-box');
         };
 
+        // Membaca daftar timeline dari data tahap. Data versi lama (satu tanggal + KPI)
+        // otomatis dibaca sebagai satu baris timeline supaya tidak hilang.
+        function getTimelineItems(data) {
+            if (Array.isArray(data.items)) return data.items;
+            if (data.tanggal || data.kpi) return [{ tanggal: data.tanggal || '', target: data.kpi || '' }];
+            return [];
+        }
+
+        function timelineRowHtml(item, disabled) {
+            const dis = disabled ? 'disabled' : '';
+            return `
+            <div class="pyf-timeline-row flex items-start gap-2">
+                <input type="date" value="${wlEscape(item.tanggal || '')}" ${dis} class="pyf-tl-date w-40 shrink-0 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-slate-100 disabled:text-slate-500">
+                <input type="text" value="${wlEscape(item.target || '')}" ${dis} placeholder="Target yang ingin dicapai" class="pyf-tl-target flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-slate-100 disabled:text-slate-500">
+                ${disabled ? '' : `<button type="button" onclick="this.closest('.pyf-timeline-row').remove()" title="Hapus baris" class="mt-1 text-slate-400 hover:text-red-600 p-1.5 rounded-md hover:bg-red-50 transition-colors shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>
+                </button>`}
+            </div>`;
+        }
+
+        window.addTimelineRow = function() {
+            const box = document.getElementById('pyf-timeline-rows');
+            if (!box) return;
+            const wrap = document.createElement('div');
+            wrap.innerHTML = timelineRowHtml({ tanggal: '', target: '' }, false).trim();
+            box.appendChild(wrap.firstChild);
+        };
+
+        // Garis timeline vertikal - urut menurut tanggal, tanggal kosong ditaruh paling akhir.
+        function timelineVisualHtml(items) {
+            const valid = items.filter(it => it.tanggal || it.target);
+            if (!valid.length) return '';
+            const sorted = [...valid].sort((a, b) => {
+                if (!a.tanggal) return 1;
+                if (!b.tanggal) return -1;
+                return new Date(a.tanggal) - new Date(b.tanggal);
+            });
+            const todayStr = new Date().toISOString().slice(0, 10);
+            return `
+            <div class="mt-3 mb-4 p-4 bg-white border border-slate-200 rounded-xl">
+                <p class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-3">Garis Waktu Implementasi</p>
+                <div class="relative pl-6">
+                    <div class="absolute left-[7px] top-1.5 bottom-1.5 w-0.5 bg-slate-200 rounded"></div>
+                    ${sorted.map(it => {
+                        const passed = it.tanggal && it.tanggal <= todayStr;
+                        return `
+                        <div class="relative pb-4 last:pb-0">
+                            <span class="absolute -left-6 top-1 h-3.5 w-3.5 rounded-full border-2 ${passed ? 'bg-teal-500 border-teal-200' : 'bg-white border-slate-300'}"></span>
+                            <p class="text-xs font-semibold ${passed ? 'text-teal-700' : 'text-slate-500'}">${it.tanggal ? formatDate(it.tanggal) : 'Tanggal belum diisi'}</p>
+                            <p class="text-sm text-slate-700 mt-0.5 break-words">${wlEscape(it.target || '-')}</p>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>`;
+        }
+
         function penyaluranFieldInput(stage, field, data, disabled) {
             const id = `pyf-${stage.key}-${field.key}`;
             const val = data[field.key] != null ? data[field.key] : '';
+            if (field.type === 'timeline') {
+                const items = getTimelineItems(data);
+                return `<div class="sm:col-span-2">
+                    ${timelineVisualHtml(items)}
+                    <label class="block text-xs font-medium text-slate-600 mb-1.5">${wlEscape(field.label)}${field.required ? ' *' : ''} — tanggal &amp; target</label>
+                    <div id="pyf-timeline-rows" class="space-y-2">
+                        ${(items.length ? items : (disabled ? [] : [{ tanggal: '', target: '' }])).map(it => timelineRowHtml(it, disabled)).join('')}
+                        ${(!items.length && disabled) ? '<p class="text-xs text-slate-400 italic">Belum ada tanggal yang diisi.</p>' : ''}
+                    </div>
+                    ${disabled ? '' : `<button type="button" onclick="addTimelineRow()" class="mt-2 text-xs font-semibold text-teal-700 bg-teal-50 border border-teal-200 hover:bg-teal-100 px-3 py-1.5 rounded-md transition-colors inline-flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Tambah Tanggal
+                    </button>`}
+                </div>`;
+            }
             const cls = 'w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent disabled:bg-slate-100 disabled:text-slate-500';
             const dis = disabled ? 'disabled' : '';
             if (field.type === 'checkbox') {
@@ -3118,6 +3245,15 @@
 
             const data = { ...(py.stages && py.stages[stageKey] ? py.stages[stageKey] : {}) };
             for (const f of stage.fields) {
+                if (f.type === 'timeline') {
+                    const rows = [...document.querySelectorAll('#pyf-timeline-rows .pyf-timeline-row')];
+                    data.items = rows.map(r => ({
+                        tanggal: r.querySelector('.pyf-tl-date')?.value || '',
+                        target: (r.querySelector('.pyf-tl-target')?.value || '').trim()
+                    })).filter(it => it.tanggal || it.target);
+                    delete data.tanggal; delete data.kpi; // rapikan sisa format lama
+                    continue;
+                }
                 const el = document.getElementById(`pyf-${stage.key}-${f.key}`);
                 if (!el) continue;
                 if (f.type === 'checkbox') {
@@ -3133,6 +3269,13 @@
             if (markDone) {
                 for (const f of stage.fields) {
                     if (!f.required) continue;
+                    if (f.type === 'timeline') {
+                        const items = data.items || [];
+                        if (!items.length) { alert('Isi minimal satu tanggal timeline sebelum tahap ini ditandai selesai.'); return; }
+                        const incomplete = items.find(it => !it.tanggal || !it.target);
+                        if (incomplete) { alert('Setiap baris timeline harus punya tanggal dan target. Lengkapi atau hapus baris yang kosong.'); return; }
+                        continue;
+                    }
                     const v = data[f.key];
                     if (v === '' || v === undefined || v === null || (f.type === 'number' && isNaN(v))) {
                         alert(`"${f.label}" wajib diisi sebelum tahap ini ditandai selesai.`);
@@ -3670,18 +3813,32 @@
             const historyBody = document.getElementById('modal-history-body'); const emptyState = document.getElementById('modal-history-empty');
             if(historyBody && emptyState) {
                 historyBody.innerHTML = ''; 
-                
-                if (campaign.activities && campaign.activities.length > 0) {
+
+                // Aktivitas manual + progress penyaluran ditampilkan dalam satu riwayat,
+                // diurutkan dari yang terbaru. srcIndex hanya ada pada aktivitas manual.
+                const manualEntries = (campaign.activities || []).map((a, i) => ({ ...a, srcIndex: i }));
+                const combinedHistory = [...manualEntries, ...getPenyaluranLogEntries(campaign)]
+                    .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+                if (combinedHistory.length > 0) {
                     historyBody.parentElement.classList.remove('hidden'); emptyState.classList.add('hidden');
-                    campaign.activities.forEach((item, index) => {
-                        const tr = document.createElement('tr'); tr.className = "hover:bg-indigo-50/60 transition-colors align-top cursor-pointer"; tr.onclick = () => window.viewActivityDetail(index);
+                    combinedHistory.forEach((item) => {
+                        const index = item.srcIndex;
+                        const isPenyaluran = item.penyaluranId !== undefined;
+                        const tr = document.createElement('tr');
+                        tr.className = (isPenyaluran ? "bg-teal-50/40 hover:bg-teal-50 " : "hover:bg-indigo-50/60 ") + "transition-colors align-top cursor-pointer";
+                        tr.onclick = () => isPenyaluran
+                            ? (window.openPenyaluranList(campaign.id), window.openPenyaluranDetail(item.penyaluranId))
+                            : window.viewActivityDetail(index);
                         const linkCell = item.link
                             ? `<a href="${item.link}" target="_blank" onclick="event.stopPropagation()" class="text-indigo-600 hover:text-indigo-800 hover:underline inline-flex items-center gap-1 font-medium">Buka <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg></a>`
                             : `<span class="text-slate-300">-</span>`;
-                        const actionCell = isAdminMode
+                        const actionCell = isPenyaluran
+                            ? `<span class="text-[10px] font-bold uppercase tracking-wide text-teal-700 bg-teal-100 px-2 py-1 rounded-full whitespace-nowrap">Penyaluran</span>`
+                            : isAdminMode
                             ? `<div class="flex items-center justify-end gap-3" onclick="event.stopPropagation()"><button type="button" onclick="window.openEditActivityModal(${index})" class="text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Edit</button><button type="button" onclick="window.deleteActivity(${index})" class="text-red-500 hover:text-red-700 transition-colors inline-flex items-center gap-1 font-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Hapus</button></div>`
                             : `<span class="text-slate-300 text-xs">-</span>`;
-                        tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-slate-600">${formatDateWithDay(item.date)}</td><td class="px-6 py-4 font-medium text-slate-800">${item.activity}</td><td class="px-6 py-4 text-slate-600 max-w-xs"><span class="line-clamp-2">${item.description}</span></td><td class="px-6 py-4 whitespace-nowrap">${linkCell}</td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">${actionCell}</td>`;
+                        tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-slate-600">${item.date ? formatDateWithDay(item.date) : '-'}</td><td class="px-6 py-4 font-medium ${isPenyaluran ? 'text-teal-800' : 'text-slate-800'}">${item.activity}</td><td class="px-6 py-4 text-slate-600 max-w-xs"><span class="line-clamp-2">${item.description}</span></td><td class="px-6 py-4 whitespace-nowrap">${linkCell}</td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">${actionCell}</td>`;
                         historyBody.appendChild(tr);
                     });
                 } else { historyBody.parentElement.classList.add('hidden'); emptyState.classList.remove('hidden'); }
