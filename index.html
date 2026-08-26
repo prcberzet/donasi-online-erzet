@@ -2402,8 +2402,14 @@
                     </div>`;
             }
 
+            const onGoingBadge = isCampaignOnGoing(campaign)
+                ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-teal-700 bg-teal-100 border border-teal-200 px-2 py-0.5 rounded-full">
+                        <span class="h-1.5 w-1.5 rounded-full bg-teal-500"></span>On Going
+                   </span>`
+                : '';
+
             const card = document.createElement('div');
-            card.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col group" + (isWaiting ? " ring-1 ring-amber-200" : "");
+            card.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col group" + (isWaiting ? " ring-1 ring-amber-200" : (onGoingBadge ? " ring-1 ring-teal-300" : ""));
             card.onclick = () => window.openModal(campaign.id);
             
             card.innerHTML = `
@@ -2411,6 +2417,7 @@
                     <img src="${campaign.posterUrl}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/eeeeee/999999?text=No+Image'">
                     <div class="absolute top-3 right-3 flex flex-col items-end gap-1.5">
                         ${isWaiting ? '<span class="text-[10px] font-bold uppercase tracking-wide bg-amber-500 text-white px-2 py-1 rounded-full shadow-sm">Waiting List</span>' : ''}
+                        ${onGoingBadge}
                         ${getStatusBadge(campaign.partnershipStatus)}
                     </div>
                 </div>
@@ -2504,8 +2511,31 @@
             if (!activeList.length) {
                 gridContainer.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 italic">Campaign tidak ditemukan.</div>';
             } else {
-                activeList.forEach(campaign => gridContainer.appendChild(buildCampaignCard(campaign)));
+                // Campaign yang penyalurannya masih berjalan diangkat ke atas, dipisah garis
+                // dari sisanya. Begitu seluruh penyalurannya tuntas, campaign kembali turun
+                // ke daftar biasa dengan sendirinya.
+                const onGoing = activeList.filter(isCampaignOnGoing);
+                const others = activeList.filter(c => !isCampaignOnGoing(c));
+
+                onGoing.forEach(campaign => gridContainer.appendChild(buildCampaignCard(campaign)));
+
+                if (onGoing.length && others.length) {
+                    const divider = document.createElement('div');
+                    divider.className = 'col-span-full border-t border-slate-200 my-1';
+                    gridContainer.appendChild(divider);
+                }
+
+                others.forEach(campaign => gridContainer.appendChild(buildCampaignCard(campaign)));
             }
+        }
+
+        // Campaign dianggap "On Going" kalau punya minimal satu penyaluran
+        // yang tahapannya belum tuntas seluruhnya.
+        function isCampaignOnGoing(campaign) {
+            return (campaign.penyaluran || []).some(py => {
+                const { done, total } = getPenyaluranProgress(py);
+                return done < total;
+            });
         }
 
         window.handleLinkClick = function(event, url) { event.stopPropagation(); window.open(url, '_blank'); };
