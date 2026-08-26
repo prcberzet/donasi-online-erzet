@@ -3066,7 +3066,15 @@
                 return;
             }
 
-            box.innerHTML = list.map(py => {
+            // Penyaluran terbaru di paling atas (urut tanggal dibuat, terbaru dulu).
+            // Salinan array dipakai agar urutan data aslinya tidak ikut berubah.
+            const sorted = [...list].sort((a, b) => {
+                const diff = new Date(b.createdDate || 0) - new Date(a.createdDate || 0);
+                if (diff !== 0) return diff;
+                return list.indexOf(b) - list.indexOf(a); // dibuat pada hari yang sama -> yang belakangan di atas
+            });
+
+            box.innerHTML = sorted.map(py => {
                 const { done, total, ratio } = getPenyaluranProgress(py);
                 const sc = penyaluranScale(ratio);
                 const activeIdx = getActiveStageIndex(py);
@@ -3345,7 +3353,16 @@
                                     <span class="text-xs font-mono text-slate-400 mr-1">${i + 1}.</span>${wlEscape(stage.label)}
                                 </p>
                                 ${isDone
-                                    ? `<span class="text-[11px] font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full whitespace-nowrap">Selesai ${data.date ? formatDate(data.date) : '-'}</span>`
+                                    ? (isAdminMode
+                                        // Tanggal penyelesaian bisa dikoreksi admin, misalnya kalau
+                                        // tahapannya baru dicatat beberapa hari setelah kejadiannya.
+                                        ? `<label class="flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 bg-emerald-100 pl-2 pr-1 py-0.5 rounded-full whitespace-nowrap" title="Ubah tanggal penyelesaian tahap ini">
+                                                Selesai
+                                                <input type="date" id="pyd-date-${stage.key}" value="${wlEscape(data.date || '')}" max="${new Date().toISOString().slice(0, 10)}"
+                                                    onchange="updatePenyaluranStageDate('${stage.key}', this.value)"
+                                                    class="bg-white/80 border border-emerald-200 rounded-full px-1.5 py-0.5 text-[11px] text-emerald-800 focus:outline-none focus:ring-1 focus:ring-emerald-400 cursor-pointer">
+                                           </label>`
+                                        : `<span class="text-[11px] font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full whitespace-nowrap">Selesai ${data.date ? formatDate(data.date) : '-'}</span>`)
                                     : (isActive
                                         ? '<span class="text-[11px] font-medium text-teal-700 bg-teal-100 px-2 py-0.5 rounded-full whitespace-nowrap">Sedang Berjalan</span>'
                                         : '<span class="text-[11px] font-medium text-slate-400 bg-slate-200 px-2 py-0.5 rounded-full whitespace-nowrap">Terkunci</span>')}
@@ -3422,6 +3439,45 @@
             renderPenyaluranStages();
             renderPenyaluranList();
             document.getElementById('pyd-title').innerText = updatedPy.title || 'Tanpa Judul';
+        };
+
+        // Mengubah tanggal penyelesaian sebuah tahap yang sudah selesai.
+        window.updatePenyaluranStageDate = async function(stageKey, newDate) {
+            if (!isAdminMode) { requireAdmin(() => {}); return; }
+            const camp = findCampaignForPenyaluran();
+            const py = findPenyaluran();
+            if (!camp || !py) return;
+
+            const data = (py.stages || {})[stageKey];
+            if (!data || !data.done) return;
+            if (!newDate) { renderPenyaluranStages(); return; } // dikosongkan -> kembalikan tampilan
+
+            const stageIdx = PENYALURAN_STAGES.findIndex(st => st.key === stageKey);
+
+            // Tanggal antar tahap harus tetap masuk akal: tidak boleh lebih awal dari
+            // tahap sebelumnya atau lebih akhir dari tahap sesudahnya yang sudah selesai.
+            const prev = PENYALURAN_STAGES.slice(0, stageIdx).map(st => (py.stages || {})[st.key])
+                .filter(d => d && d.done && d.date).map(d => d.date).sort().pop();
+            const next = PENYALURAN_STAGES.slice(stageIdx + 1).map(st => (py.stages || {})[st.key])
+                .filter(d => d && d.done && d.date).map(d => d.date).sort().shift();
+
+            if (prev && newDate < prev) {
+                alert(`Tanggal tidak boleh lebih awal dari tahap sebelumnya (${formatDate(prev)}).`);
+                renderPenyaluranStages();
+                return;
+            }
+            if (next && newDate > next) {
+                alert(`Tanggal tidak boleh lebih akhir dari tahap sesudahnya (${formatDate(next)}).`);
+                renderPenyaluranStages();
+                return;
+            }
+
+            const updatedPy = { ...py, stages: { ...(py.stages || {}), [stageKey]: { ...data, date: newDate } } };
+            const newList = (camp.penyaluran || []).map(p => p.pid === py.pid ? updatedPy : p);
+            const ok = await savePenyaluranList(newList);
+            if (!ok) return;
+            renderPenyaluranStages();
+            renderPenyaluranList();
         };
 
         window.reopenPenyaluranStage = async function(stageKey) {
